@@ -72,13 +72,13 @@ The parent `cedar-synthesis-engine` repo provides the verification backbone:
 
 ## What Is Already Built
 
-The repository now contains a first working baseline stack for policy-generation experiments:
+The repository contains a working pipeline for policy-generation experiments with a verifier-guided repair loop:
 
-- single-model prompt strategy experiments under [src/experiments/single_model_baselines/](src/experiments/single_model_baselines)
+- synthesis pipeline under [src/pipeline/](src/pipeline) — prompt strategies, repair loop runner, and task registry
 - reusable evaluation code under [src/metrics/](src/metrics)
-- prepared local datasets with `references/` and `verification_plan.py` so semantic alignment can be checked formally
+- prepared local datasets under [dataset/](dataset) with `references/` and `verification_plan.py` for formal semantic checks
 
-The current evaluation flow is:
+The evaluation flow is:
 
 1. `Syntax`
    Use `cedar validate` to determine whether the generated policy is valid Cedar.
@@ -87,18 +87,20 @@ The current evaluation flow is:
 3. `Semantic`
    Use `verification_plan.py`, `references/*.cedar`, `cedar symcc`, and `cvc5` to test semantic alignment and detect counterexamples.
 
+When a policy fails, the repair loop feeds structured verifier feedback back into the model for another attempt, iterating until the policy passes or the iteration budget is exhausted.
+
 ## Current Layout
 
 - [docs/](docs): research documentation — design decisions, research log, repair loop evolution
-- [dataset/](dataset): local task datasets, now including reference policies and verification plans
-- [src/test_lm.py](src/test_lm.py): quick local model endpoint test
-- [src/experiments/](src/experiments): prompt strategies and single-model baselines
+- [dataset/](dataset): benchmark task datasets with schemas, policy specs, reference policies, and verification plans
+- [src/pipeline/](src/pipeline): synthesis runner, prompt strategies, repair loop, and task registry
 - [src/metrics/](src/metrics): reusable syntax/schema/semantic evaluation code
+- [src/test_lm.py](src/test_lm.py): quick local model endpoint test
 - [SETUP_COMMANDS.md](SETUP_COMMANDS.md): environment setup and verification commands
 
 ## Immediate Directions
 
-- finish benchmarking single-model baselines across prompt strategies
+- extend the benchmark task suite with more policy scenarios
 - compare open-source local models with the shared evaluation metrics
 - define the multi-agent roles needed for Cedar generation
 - test whether multi-agent orchestration beats the strongest single-model baseline
