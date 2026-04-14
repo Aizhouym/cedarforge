@@ -20,7 +20,7 @@ Chinese is only acceptable in this file and in user-facing documentation outside
 - Each record is marked `needs_expansion: true` for later Claude/OpenAI API enrichment
 
 ### What NOT to Use as Training Data
-- `/Users/chou/Cedarforge/dataset/` — this is the target benchmark (test set), not training data
+- `cedarbench/` — this is the target benchmark (test set), not training data; scenarios live under `cedarbench/scenarios/` and `cedarbench/scenarios/realworld/`
 - `cedar-integration-tests` and `cedar-examples` — used in CedarBench, cannot be used for training
 
 ### Output Format
