@@ -69,4 +69,7 @@ action CreateDocument appliesTo {
 action AddComment, EditComment, DeleteComment appliesTo {
     principal: [User],
     resource: [Comment],
+    context: {
+        "is_authenticated": Bool,
+    }
 };

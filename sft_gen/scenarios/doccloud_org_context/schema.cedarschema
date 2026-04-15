@@ -45,14 +45,18 @@ action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo 
   resource: [Document],
   context: {
     "is_authenticated": Bool,
-  }
+        userOrg: String,
+    }
+
 };
 action ModifyDocument appliesTo {
   principal: [User],
   resource: [Document],
   context: {
     "is_authenticated": Bool,
-  }
+        userOrg: String,
+    }
+
 };
 action CreateDocument appliesTo {
   principal: [User],

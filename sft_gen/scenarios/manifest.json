@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated": "2026-04-15T18:50:36.137750+00:00",
+  "generated": "2026-04-15T22:14:00.888735+00:00",
   "dataset": "sft_train",
   "total_scenarios": 77,
   "note": "Training data only \u2014 does NOT overlap with CedarBench test set.",

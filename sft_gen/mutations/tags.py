@@ -75,7 +75,8 @@ class TagsExpiry(Mutation):
 
     def apply(self, base_schema: str) -> MutationResult:
         schema = schema_ops.add_attribute(base_schema, "Workspace", "expiresAt", "datetime")
-        schema = schema_ops.add_context_field(schema, "ReadWorkspace", "now", "datetime")
+        for action_name in ["ReadWorkspace", "UpdateWorkspace", "DeleteWorkspace"]:
+            schema = schema_ops.add_context_field(schema, action_name, "now", "datetime")
         spec = _BASE_SPEC + """\
 ### 3. Workspace Expiry (Deny Rule)
 - Workspaces may have an `expiresAt: datetime` attribute.
@@ -141,7 +142,9 @@ class TagsMfaGate(Mutation):
         )
 
     def apply(self, base_schema: str) -> MutationResult:
-        schema = schema_ops.add_context_field(base_schema, "UpdateWorkspace", "mfaVerified", "Bool")
+        schema = base_schema
+        for action_name in ["UpdateWorkspace", "DeleteWorkspace"]:
+            schema = schema_ops.add_context_field(schema, action_name, "mfaVerified", "Bool")
         spec = _BASE_SPEC + """\
 ### 3. MFA Gate for Write Actions (Deny Rule)
 - **UpdateWorkspace** and **DeleteWorkspace** are **forbidden** when
@@ -152,7 +155,7 @@ class TagsMfaGate(Mutation):
 ## Notes (MFA Gate)
 - The MFA check is in addition to the tag-based access check, not a replacement.
 - Both conditions must hold for write operations: tag match AND MFA verified.
-- Forbid pattern: `forbid UpdateWorkspace ... when { !context.mfaVerified }`.
+- Forbid pattern: `forbid ... action in [UpdateWorkspace, DeleteWorkspace] ... when { !context.mfaVerified }`.
 """
         return MutationResult(schema=schema, policy_spec=spec)
 
@@ -285,7 +288,8 @@ class TagsIpAllowlist(Mutation):
 
     def apply(self, base_schema: str) -> MutationResult:
         schema = schema_ops.add_attribute(base_schema, "User", "allowedIPs", "Set<String>")
-        schema = schema_ops.add_context_field(schema, "UpdateWorkspace", "clientIP", "String")
+        for action_name in ["UpdateWorkspace", "DeleteWorkspace"]:
+            schema = schema_ops.add_context_field(schema, action_name, "clientIP", "String")
         spec = _BASE_SPEC + """\
 ### 3. IP Allowlist Gate (Deny Rule)
 - Users may have an `allowedIPs: Set<String>` attribute listing permitted IP addresses.

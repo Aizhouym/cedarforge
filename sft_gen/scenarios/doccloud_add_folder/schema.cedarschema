@@ -70,4 +70,7 @@ action CreateDocument appliesTo {
 action ViewFolder, ShareFolder appliesTo {
     principal: [User, Public],
     resource: [Folder],
+    context: {
+        "is_authenticated": Bool,
+    }
 };

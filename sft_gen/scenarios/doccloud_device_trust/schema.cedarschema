@@ -42,7 +42,9 @@ action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo 
   resource: [Document],
   context: {
     "is_authenticated": Bool,
-  }
+        deviceTrusted: Bool,
+    }
+
 };
 action ModifyDocument appliesTo {
   principal: [User],

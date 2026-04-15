@@ -47,8 +47,11 @@ action grantViewAccessToPresentation, grantEditAccessToPresentation
   appliesTo {
     principal: User,
     resource: Presentation,
-    context: { target: User, },
-  };
+    context: { target: User,
+        onVPN: Bool,
+    },
+  
+};
   
 // Actions -- Templates
 action InternalTemplateViewActions;
@@ -70,14 +73,20 @@ action removeSelfAccessFromTemplate
 action editTemplate, removeOthersAccessToTemplate in [TemplateEditActions]
   appliesTo {
     principal: User,
-    resource: Template
-  };
+    resource: Template,
+    context: {
+        onVPN: Bool,
+    }
+};
 // granting access depends on who, or what, it is -- spec. in context
 action grantViewAccessToTemplate, grantEditAccessToTemplate
     in [TemplateEditActions]
   appliesTo {
     principal: User,
     resource: Template,
-    context: { targetMarket?: Market, targetUser?: User },
-  };
+    context: { targetMarket?: Market, targetUser?: User,
+        onVPN: Bool,
+    },
+  
+};
 

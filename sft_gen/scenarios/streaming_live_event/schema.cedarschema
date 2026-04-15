@@ -59,4 +59,10 @@ action rent, buy
 action stream_live, watch_replay appliesTo {
     principal: [Subscriber],
     resource: [LiveEvent],
+    context: {
+        now: {
+            datetime: datetime,
+            localTimeOffset: duration
+        }
+    }
 };

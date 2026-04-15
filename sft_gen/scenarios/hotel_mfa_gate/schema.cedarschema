@@ -30,11 +30,17 @@ action createReservation, viewProperty, updateProperty, grantAccessProperty
   appliesTo {
     principal: User,
     resource: Property,
-  };
+    context: {
+        mfaVerified: Bool,
+    }
+};
 
 // ACTIONS: Hotels (plus, CreateProperty for a Hotel)
 action createProperty, createHotel, viewHotel, updateHotel, grantAccessHotel
   appliesTo {
     principal: User,
     resource: Hotel,
-  };
+    context: {
+        mfaVerified: Bool,
+    }
+};

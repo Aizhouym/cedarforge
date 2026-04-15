@@ -35,6 +35,9 @@ action UpdateWorkspace in ["Role-A Actions"] appliesTo {
 action DeleteWorkspace in ["Role-A Actions"] appliesTo {
   principal: User,
   resource: Workspace,
+    context: {
+        clientIP: String,
+    }
 };
 
 action ReadWorkspace in ["Role-A Actions", "Role-B Actions"] appliesTo {

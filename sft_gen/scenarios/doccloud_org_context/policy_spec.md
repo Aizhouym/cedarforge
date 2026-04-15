@@ -56,8 +56,9 @@ unauthenticated access. The `owner` attribute is the owning User.
 ### 9. Organization Scope Gate (Deny Rule with Exception)
 - Documents have an `ownerOrg: String` attribute identifying the owning organization.
 - Context carries `userOrg: String` — the organization of the requesting user.
-- If `context.userOrg != resource.ownerOrg`, **ViewDocument** is **forbidden** UNLESS the
-  user is in the document's **manageACL** (cross-org access requires explicit elevation).
+- If `context.userOrg != resource.ownerOrg`, **ViewDocument**, **ModifyDocument**, and all
+  other Document write actions are **forbidden** UNLESS the user is in the document's
+  **manageACL** (cross-org access requires explicit elevation).
 - ModifyDocument and other write actions are also forbidden cross-org without manageACL.
 - The blocking rule applies as before.
 

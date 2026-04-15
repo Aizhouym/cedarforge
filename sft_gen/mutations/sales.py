@@ -92,7 +92,19 @@ class SalesVpnGate(Mutation):
         )
 
     def apply(self, base_schema: str) -> MutationResult:
-        schema = schema_ops.add_context_field(base_schema, "editPresentation", "onVPN", "Bool")
+        # sales base has four distinct blocks that need onVPN:
+        #   solo: editPresentation
+        #   grouped: editTemplate + removeOthersAccessToTemplate (one call covers both)
+        #   grouped: grantViewAccessToPresentation + grantEditAccessToPresentation
+        #   grouped: grantViewAccessToTemplate + grantEditAccessToTemplate
+        schema = base_schema
+        for action_name in [
+            "editPresentation",
+            "editTemplate",
+            "grantEditAccessToPresentation",
+            "grantEditAccessToTemplate",
+        ]:
+            schema = schema_ops.add_context_field(schema, action_name, "onVPN", "Bool")
         spec = _BASE_SPEC + """\
 ### 6. VPN Gate (Deny Rule)
 - **editPresentation**, **editTemplate**, **removeOthersAccessToTemplate**,
@@ -307,7 +319,8 @@ class SalesFiscalWindow(Mutation):
 
     def apply(self, base_schema: str) -> MutationResult:
         schema = schema_ops.add_attribute(base_schema, "Presentation", "fiscalYear", "Long")
-        schema = schema_ops.add_context_field(schema, "editPresentation", "currentYear", "Long")
+        for action_name in ["editPresentation", "editTemplate"]:
+            schema = schema_ops.add_context_field(schema, action_name, "currentYear", "Long")
         spec = _BASE_SPEC + """\
 ### 6. Fiscal Year Access Control (Deny Rule)
 - Presentations have a `fiscalYear: Long` attribute (e.g., `2024`, `2025`).

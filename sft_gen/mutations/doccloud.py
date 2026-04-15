@@ -97,6 +97,9 @@ entity Folder = {
 action ViewFolder, ShareFolder appliesTo {
     principal: [User, Public],
     resource: [Folder],
+    context: {
+        "is_authenticated": Bool,
+    }
 };""")
         spec = _BASE_SPEC + """\
 ### 9. Folder Entity and Permissions
@@ -170,7 +173,12 @@ class DocCloudAutoExpiry(Mutation):
 
     def apply(self, base_schema: str) -> MutationResult:
         schema = schema_ops.add_attribute(base_schema, "Document", "expiresAt", "datetime")
-        schema = schema_ops.add_context_field(schema, "ViewDocument", "now", "datetime")
+        # doccloud base has 3 distinct Document-resource action blocks:
+        #   solo: ViewDocument, ModifyDocument
+        #   grouped: AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess
+        # One call per block is enough; add_context_field matches the whole block.
+        for action_name in ["ViewDocument", "ModifyDocument", "AddToShareACL"]:
+            schema = schema_ops.add_context_field(schema, action_name, "now", "datetime")
         spec = _BASE_SPEC + """\
 ### 9. Document Auto-Expiry (Deny Rule)
 - Documents have an `expiresAt: datetime` attribute. Once the current time exceeds
@@ -204,7 +212,11 @@ class DocCloudDeviceTrust(Mutation):
         )
 
     def apply(self, base_schema: str) -> MutationResult:
-        schema = schema_ops.add_context_field(base_schema, "ModifyDocument", "deviceTrusted", "Bool")
+        # ModifyDocument is a solo block; DeleteDocument is in the grouped block with
+        # AddToShareACL/EditIsPrivate/EditPublicAccess — one call covers all four.
+        schema = base_schema
+        for action_name in ["ModifyDocument", "DeleteDocument"]:
+            schema = schema_ops.add_context_field(schema, action_name, "deviceTrusted", "Bool")
         spec = _BASE_SPEC + """\
 ### 9. Device Trust Gate (Deny Rule)
 - **ModifyDocument** and **DeleteDocument** are **forbidden** when
@@ -284,6 +296,9 @@ entity Comment = {
 action AddComment, EditComment, DeleteComment appliesTo {
     principal: [User],
     resource: [Comment],
+    context: {
+        "is_authenticated": Bool,
+    }
 };""")
         spec = _BASE_SPEC + """\
 ### 9. Comment Permissions
@@ -425,13 +440,18 @@ class DocCloudOrgContext(Mutation):
 
     def apply(self, base_schema: str) -> MutationResult:
         schema = schema_ops.add_attribute(base_schema, "Document", "ownerOrg", "String")
-        schema = schema_ops.add_context_field(schema, "ViewDocument", "userOrg", "String")
+        # Add userOrg to all Document-resource action blocks (one call per block).
+        # ViewDocument and ModifyDocument are solo blocks; AddToShareACL covers the
+        # grouped block (AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess).
+        for action_name in ["ViewDocument", "ModifyDocument", "AddToShareACL"]:
+            schema = schema_ops.add_context_field(schema, action_name, "userOrg", "String")
         spec = _BASE_SPEC + """\
 ### 9. Organization Scope Gate (Deny Rule with Exception)
 - Documents have an `ownerOrg: String` attribute identifying the owning organization.
 - Context carries `userOrg: String` — the organization of the requesting user.
-- If `context.userOrg != resource.ownerOrg`, **ViewDocument** is **forbidden** UNLESS the
-  user is in the document's **manageACL** (cross-org access requires explicit elevation).
+- If `context.userOrg != resource.ownerOrg`, **ViewDocument**, **ModifyDocument**, and all
+  other Document write actions are **forbidden** UNLESS the user is in the document's
+  **manageACL** (cross-org access requires explicit elevation).
 - ModifyDocument and other write actions are also forbidden cross-org without manageACL.
 - The blocking rule applies as before.
 

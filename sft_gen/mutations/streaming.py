@@ -125,6 +125,12 @@ entity LiveEvent = {
 action stream_live, watch_replay appliesTo {
     principal: [Subscriber],
     resource: [LiveEvent],
+    context: {
+        now: {
+            datetime: datetime,
+            localTimeOffset: duration
+        }
+    }
 };""")
         spec = _BASE_SPEC + """\
 ### 6. Live Event Permissions

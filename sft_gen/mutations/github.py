@@ -91,6 +91,8 @@ class GitHubSsoGate(Mutation):
         )
 
     def apply(self, base_schema: str) -> MutationResult:
+        # All 5 role-management actions share ONE appliesTo block in the base schema.
+        # A single add_context_field call on any of them updates the shared block.
         schema = schema_ops.add_context_field(base_schema, "add_reader", "ssoVerified", "Bool")
         spec = _BASE_SPEC + """\
 ### 7. SSO Verification Gate (Deny Rule)

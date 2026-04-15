@@ -71,8 +71,11 @@ action removeSelfAccessFromTemplate
 action editTemplate, removeOthersAccessToTemplate in [TemplateEditActions]
   appliesTo {
     principal: User,
-    resource: Template
-  };
+    resource: Template,
+    context: {
+        currentYear: Long,
+    }
+};
 // granting access depends on who, or what, it is -- spec. in context
 action grantViewAccessToTemplate, grantEditAccessToTemplate
     in [TemplateEditActions]

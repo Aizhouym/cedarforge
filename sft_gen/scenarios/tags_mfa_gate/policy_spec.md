@@ -45,4 +45,4 @@ Access is granted if, for each dimension present in both user and workspace:
 ## Notes (MFA Gate)
 - The MFA check is in addition to the tag-based access check, not a replacement.
 - Both conditions must hold for write operations: tag match AND MFA verified.
-- Forbid pattern: `forbid UpdateWorkspace ... when { !context.mfaVerified }`.
+- Forbid pattern: `forbid ... action in [UpdateWorkspace, DeleteWorkspace] ... when { !context.mfaVerified }`.

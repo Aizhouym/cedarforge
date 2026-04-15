@@ -1,0 +1,394 @@
+{
+  "model": "o4-mini",
+  "total": 77,
+  "by_status": {
+    "dry_run": 77
+  },
+  "results": [
+    {
+      "id": "github_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_base",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_add_folder",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_auto_expiry",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_classification",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_comment",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_device_trust",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_draft",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_link_share",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_org_context",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_read_only_acl",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "doccloud_viewer_cap",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_deploy_env",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_draft_pr",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_full_expansion_v2",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_issue_severity",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_public_repo",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_push_allowlist",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_release",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_remove_fork",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_repo_push_limit",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_sso_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_team_admin",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "github_watcher",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_amenity",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_blackout",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_concierge",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_guest_capacity",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_loyalty_points",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_mfa_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_partner_access",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_property_type",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_remove_viewer",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "hotel_vip_blocked",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_account_tier",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_contract",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_editor_cap",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_fiscal_window",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_market_isolation",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_remove_template",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_self_grant_forbid",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_territory",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_vpn_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "sales_watcher",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_concurrent_limit",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_content_rating",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_family_plan",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_geo_blocklist",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_live_event",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_parental_override",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_podcast",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_release_window",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_remove_freemember",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "streaming_trailer",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_environment",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_expiry",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_ip_allowlist",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_mfa_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_public_workspace",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_report",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_role_d",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tags_usage_limit",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_auditor_page_limit",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_deadline_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_document_type",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_emergency_access",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_locked_document",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_multi_professional",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_network_gate",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_org_hierarchy",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_review",
+      "status": "dry_run",
+      "iters": 0
+    },
+    {
+      "id": "tax_senior_bypass",
+      "status": "dry_run",
+      "iters": 0
+    }
+  ]
+}

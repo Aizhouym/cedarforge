@@ -141,7 +141,9 @@ class HotelMfaGate(Mutation):
         )
 
     def apply(self, base_schema: str) -> MutationResult:
-        schema = schema_ops.add_context_field(base_schema, "grantAccessReservation", "mfaVerified", "Bool")
+        schema = base_schema
+        for action_name in ["grantAccessReservation", "grantAccessProperty", "grantAccessHotel"]:
+            schema = schema_ops.add_context_field(schema, action_name, "mfaVerified", "Bool")
         spec = _BASE_SPEC + """\
 ### 5. MFA Gate for Access Grants (Deny Rule)
 - **grantAccessReservation**, **grantAccessProperty**, and **grantAccessHotel** are
