@@ -11,6 +11,11 @@ def main() -> int:
     parser.add_argument("--model", default="qwen35b", help="Served model name")
     parser.add_argument("--prompt", default="Say ping only.", help="User prompt to send")
     parser.add_argument("--max-tokens", type=int, default=64, help="Max completion tokens")
+    parser.add_argument(
+        "--omit-template-kwargs",
+        action="store_true",
+        help="Do not send chat_template_kwargs for servers that reject extra_body fields",
+    )
     args = parser.parse_args()
 
     client = OpenAI(base_url=args.base_url, api_key="EMPTY")
@@ -21,17 +26,20 @@ def main() -> int:
     models = client.models.list()
     print("available_models=", [m.id for m in models.data])
 
-    response = client.chat.completions.create(
-        model=args.model,
-        messages=[{"role": "user", "content": args.prompt}],
-        temperature=0,
-        max_tokens=args.max_tokens,
-        extra_body={
+    request_kwargs = {
+        "model": args.model,
+        "messages": [{"role": "user", "content": args.prompt}],
+        "temperature": 0,
+        "max_tokens": args.max_tokens,
+    }
+    if not args.omit_template_kwargs:
+        request_kwargs["extra_body"] = {
             "chat_template_kwargs": {
                 "enable_thinking": False,
             }
-        },
-    )
+        }
+
+    response = client.chat.completions.create(**request_kwargs)
 
     print(response.choices[0].message.content.strip())
     return 0

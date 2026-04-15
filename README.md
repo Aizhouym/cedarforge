@@ -76,7 +76,7 @@ The repository contains a working pipeline for policy-generation experiments wit
 
 - synthesis pipeline under [src/pipeline/](src/pipeline) — prompt strategies, repair loop runner, and CedarBench task discovery
 - reusable evaluation code under [src/metrics/](src/metrics)
-- prepared local datasets under [dataset/](dataset) with `references/` and `verification_plan.py` for formal semantic checks
+- benchmark scenarios under [cedarbench/](cedarbench) with policy specs, schemas, references, and verification plans for formal semantic checks
 
 The evaluation flow is:
 
@@ -92,10 +92,10 @@ When a policy fails, the repair loop feeds structured verifier feedback back int
 ## Current Layout
 
 - [docs/](docs): research documentation — design decisions, research log, repair loop evolution
-- [dataset/](dataset): benchmark task datasets with schemas, policy specs, reference policies, and verification plans
+- [cedarbench/](cedarbench): benchmark scenarios, mutation generators, and discovery utilities
 - [src/pipeline/](src/pipeline): synthesis runner, prompt strategies, repair loop, and CedarBench task discovery
 - [src/metrics/](src/metrics): reusable syntax/schema/semantic evaluation code
-- [src/test_lm.py](src/test_lm.py): quick local model endpoint test
+- [src/test_lm.py](src/test_lm.py): quick local model endpoint smoke test for a local OpenAI-compatible endpoint
 - [SETUP_COMMANDS.md](SETUP_COMMANDS.md): environment setup and verification commands
 
 ## Immediate Directions
