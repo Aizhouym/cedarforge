@@ -74,7 +74,7 @@ The parent `cedar-synthesis-engine` repo provides the verification backbone:
 
 The repository contains a working pipeline for policy-generation experiments with a verifier-guided repair loop:
 
-- synthesis pipeline under [src/pipeline/](src/pipeline) — prompt strategies, repair loop runner, and task registry
+- synthesis pipeline under [src/pipeline/](src/pipeline) — prompt strategies, repair loop runner, and CedarBench task discovery
 - reusable evaluation code under [src/metrics/](src/metrics)
 - prepared local datasets under [dataset/](dataset) with `references/` and `verification_plan.py` for formal semantic checks
 
@@ -93,7 +93,7 @@ When a policy fails, the repair loop feeds structured verifier feedback back int
 
 - [docs/](docs): research documentation — design decisions, research log, repair loop evolution
 - [dataset/](dataset): benchmark task datasets with schemas, policy specs, reference policies, and verification plans
-- [src/pipeline/](src/pipeline): synthesis runner, prompt strategies, repair loop, and task registry
+- [src/pipeline/](src/pipeline): synthesis runner, prompt strategies, repair loop, and CedarBench task discovery
 - [src/metrics/](src/metrics): reusable syntax/schema/semantic evaluation code
 - [src/test_lm.py](src/test_lm.py): quick local model endpoint test
 - [SETUP_COMMANDS.md](SETUP_COMMANDS.md): environment setup and verification commands

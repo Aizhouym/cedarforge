@@ -66,17 +66,29 @@ At the prompt-strategy summary level, the main reported metrics are:
 
 Lower-level diagnostic fields still exist in the per-run record for future error analysis, but they are not part of the main experiment table.
 
-## Initial Task Registry
+## CedarBench Tasks
 
-Currently registered tasks include:
+The pipeline now discovers tasks directly from `cedarforge/cedarbench/`:
 
-- `github`
-  backed by `/experiments/github` in the parent repo
+- mutation scenarios from `cedarbench/scenarios/manifest.json`
+- realworld scenarios from `cedarbench/scenarios/realworld/*`
 
-- `clinical_trial`
-  backed by `cedarforge/dataset/clinical_trial`
+Task ids are the CedarBench scenario ids and directory names themselves, for example:
 
-The GitHub task is a strong first benchmark because it includes:
+- `github_base`
+- `clinical_base`
+- `streaming_add_download`
+- `multi_tenant_saas`
+
+To inspect the discovered CedarBench task ids:
+
+```bash
+python cedarforge/src/pipeline/run_baseline.py --list-tasks --benchmark all
+python cedarforge/src/pipeline/run_baseline.py --list-tasks --benchmark mutations
+python cedarforge/src/pipeline/run_baseline.py --list-tasks --benchmark realworld
+```
+
+The GitHub base scenario is a strong first benchmark because it includes:
 
 - upper bounds
 - lower bounds
@@ -90,8 +102,8 @@ Activate the `vllm` environment first, then run from the repo root:
 ```bash
 conda activate vllm
 cd /home/yzhou136/cedar-synthesis-engine
-CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/experiments/single_model_baselines/run_baseline.py \
-  --task github \
+CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/pipeline/run_baseline.py \
+  --task github_base \
   --variant structured_instruction \
   --base-url http://localhost:8002/v1 \
   --model qwen35b
@@ -102,8 +114,8 @@ Run all prompt variants for one task:
 ```bash
 conda activate vllm
 cd /home/yzhou136/cedar-synthesis-engine
-CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/experiments/single_model_baselines/run_baseline.py \
-  --task github \
+CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/pipeline/run_baseline.py \
+  --task github_base \
   --all-variants \
   --base-url http://localhost:8002/v1 \
   --model qwen35b
@@ -114,8 +126,8 @@ Run a verifier-guided repair loop from the same entrypoint:
 ```bash
 conda activate vllm
 cd /home/yzhou136/cedar-synthesis-engine
-CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/experiments/single_model_baselines/run_baseline.py \
-  --task github \
+CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/pipeline/run_baseline.py \
+  --task github_base \
   --mode repair \
   --variant structured_instruction \
   --base-url http://localhost:8002/v1 \
@@ -125,7 +137,7 @@ CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/experiments/single_model_basel
 
 ## Output
 
-Each run writes to `cedarforge/src/experiments/single_model_baselines/runs/<run_id>/`.
+Each run writes to `cedarforge/src/runs/<run_id>/`.
 
 Artifacts include:
 
@@ -155,11 +167,28 @@ If you want to keep it for debugging, add:
 
 Repair loop runs write one subdirectory per iteration and add per-iteration rollups in `summary.json`.
 
+To run the full CedarBench benchmark in one command, restricted to the
+`structured_instruction` strategy and both no-repair / repair modes:
+
+```bash
+conda activate vllm
+cd /home/yzhou136/cedar-synthesis-engine
+bash cedarforge/src/pipeline/run_matrix.sh \
+  --base-url http://localhost:8002/v1 \
+  --model qwen35b \
+  --experiment cedarbench_full_qwen35b \
+  --benchmark all \
+  --modes single,repair \
+  --variants structured_instruction \
+  --repeats 1 \
+  --max-iterations 4
+```
+
 To print a prompt-strategy summary from a finished run:
 
 ```bash
 python cedarforge/src/metrics/summarize_prompt_strategies.py \
-  cedarforge/src/experiments/single_model_baselines/runs/<run_id>/summary.json
+  cedarforge/src/runs/<run_id>/summary.json
 ```
 
 To evaluate any prepared workspace directly:
@@ -168,7 +197,7 @@ To evaluate any prepared workspace directly:
 conda activate vllm
 cd /home/yzhou136/cedar-synthesis-engine
 CVC5=$CONDA_PREFIX/bin/cvc5 python cedarforge/src/metrics/evaluate_workspace.py \
-  experiments/github \
+  cedarforge/cedarbench/scenarios/github_base \
   --prompt-variant manual_check
 ```
 

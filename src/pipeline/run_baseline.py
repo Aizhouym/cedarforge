@@ -144,9 +144,46 @@ def _copy_task_workspace(task_path: Path, dest: Path) -> Path:
     return dest
 
 
+def _title_from_slug(slug: str) -> str:
+    return slug.replace("_", " ")
+
+
 def _load_task_registry() -> dict[str, dict]:
-    data = _load_json(PIPELINE_DIR / "tasks.json")
-    return {task["id"]: task for task in data["tasks"]}
+    registry: dict[str, dict] = {}
+
+    manifest_path = CEDARFORGE_DIR / "cedarbench" / "scenarios" / "manifest.json"
+    if manifest_path.exists():
+        manifest = _load_json(manifest_path)
+        for scenario in manifest.get("scenarios", []):
+            task_id = scenario["id"]
+            registry[task_id] = {
+                "id": task_id,
+                "path": f"cedarbench/{scenario['path'].rstrip('/')}",
+                "description": f"{scenario['domain'].capitalize()}: {scenario['mutation_description']}.",
+            }
+
+    realworld_root = CEDARFORGE_DIR / "cedarbench" / "scenarios" / "realworld"
+    if realworld_root.exists():
+        for scenario_dir in sorted(p for p in realworld_root.iterdir() if p.is_dir()):
+            task_id = scenario_dir.name
+            registry[task_id] = {
+                "id": task_id,
+                "path": f"cedarbench/scenarios/realworld/{task_id}",
+                "description": f"Realworld: {_title_from_slug(task_id)} scenario.",
+            }
+
+    return registry
+
+
+def _task_ids_for_benchmark(registry: dict[str, dict], benchmark: str = "all") -> list[str]:
+    realworld_prefix = "cedarbench/scenarios/realworld/"
+    if benchmark == "all":
+        return list(registry.keys())
+    if benchmark == "mutations":
+        return [task_id for task_id, task in registry.items() if not task["path"].startswith(realworld_prefix)]
+    if benchmark == "realworld":
+        return [task_id for task_id, task in registry.items() if task["path"].startswith(realworld_prefix)]
+    raise ValueError(f"Unknown benchmark selector: {benchmark}")
 
 
 def _task_abs_path(task_rel_path: str) -> Path:
@@ -872,7 +909,18 @@ def run_repair_loop(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run CedarForge single-model baseline experiments")
-    parser.add_argument("--task", required=True, help="Task id from tasks.json")
+    parser.add_argument("--task", help="Task id from the CedarForge CedarBench registry")
+    parser.add_argument(
+        "--list-tasks",
+        action="store_true",
+        help="List discovered CedarBench task ids and exit",
+    )
+    parser.add_argument(
+        "--benchmark",
+        choices=["all", "mutations", "realworld"],
+        default="all",
+        help="Task subset used by --list-tasks (default: all)",
+    )
     parser.add_argument("--mode", choices=["single", "repair"], default="single", help="Run a single baseline pass or a verifier-guided repair loop")
     parser.add_argument("--variant", choices=PROMPT_VARIANTS, help="Single prompt variant to run")
     parser.add_argument("--all-variants", action="store_true", help="Run all prompt variants")
@@ -901,6 +949,14 @@ def main() -> int:
             parser.error("--max-iterations must be at least 1")
 
     registry = _load_task_registry()
+    if args.list_tasks:
+        for task_id in _task_ids_for_benchmark(registry, args.benchmark):
+            task = registry[task_id]
+            print(f"{task_id}\t{task['path']}")
+        return 0
+
+    if not args.task:
+        parser.error("Specify --task or use --list-tasks")
     if args.task not in registry:
         raise SystemExit(f"Unknown task id: {args.task}")
 
