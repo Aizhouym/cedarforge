@@ -1,0 +1,1382 @@
+{
+  "version": "1.0",
+  "generated": "2026-04-15T18:50:36.137750+00:00",
+  "dataset": "sft_train",
+  "total_scenarios": 77,
+  "note": "Training data only \u2014 does NOT overlap with CedarBench test set.",
+  "by_difficulty": {
+    "base": 7,
+    "medium": 41,
+    "easy": 24,
+    "hard": 5
+  },
+  "by_domain": {
+    "github": 13,
+    "doccloud": 11,
+    "hotel": 11,
+    "sales": 11,
+    "streaming": 11,
+    "tags": 9,
+    "tax": 11
+  },
+  "by_operators": {
+    "S6": 16,
+    "S14": 1,
+    "S7": 16,
+    "P2": 31,
+    "P9": 12,
+    "S4": 5,
+    "S8": 19,
+    "P1": 29,
+    "S3": 15,
+    "P7": 8,
+    "P4": 10,
+    "P10": 4,
+    "S1": 6,
+    "S9": 7,
+    "S2": 10,
+    "P6": 8,
+    "S5": 8,
+    "P8": 4,
+    "S12": 2,
+    "P3": 4,
+    "S13": 1,
+    "S10": 2,
+    "S11": 2
+  },
+  "scenarios": [
+    {
+      "id": "github_base",
+      "domain": "github",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the github domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/github_base/"
+    },
+    {
+      "id": "doccloud_base",
+      "domain": "doccloud",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the doccloud domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/doccloud_base/"
+    },
+    {
+      "id": "hotel_base",
+      "domain": "hotel",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the hotel domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/hotel_base/"
+    },
+    {
+      "id": "sales_base",
+      "domain": "sales",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the sales domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/sales_base/"
+    },
+    {
+      "id": "streaming_base",
+      "domain": "streaming",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the streaming domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/streaming_base/"
+    },
+    {
+      "id": "tags_base",
+      "domain": "tags",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the tags domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/tags_base/"
+    },
+    {
+      "id": "tax_base",
+      "domain": "tax",
+      "base_scenario": null,
+      "difficulty": "base",
+      "mutation_description": "Unmodified base scenario for the tax domain",
+      "operators_applied": [],
+      "features_tested": [],
+      "path": "sft_gen/scenarios/tax_base/"
+    },
+    {
+      "id": "doccloud_add_folder",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Folder entity; Document in [Folder]; folder-level ViewFolder/ShareFolder actions",
+      "operators_applied": [
+        "S6",
+        "S14",
+        "S7",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "hierarchy_change",
+        "cascade_permit",
+        "cross_traversal"
+      ],
+      "path": "sft_gen/scenarios/doccloud_add_folder/"
+    },
+    {
+      "id": "doccloud_auto_expiry",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add expiresAt datetime to Document; all access forbidden after expiry",
+      "operators_applied": [
+        "S4",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "datetime_comparison",
+        "universal_forbid",
+        "context_field"
+      ],
+      "path": "sft_gen/scenarios/doccloud_auto_expiry/"
+    },
+    {
+      "id": "doccloud_classification",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add classification String; confidential docs: viewACL insufficient, must be in manageACL",
+      "operators_applied": [
+        "S3",
+        "P7",
+        "P4"
+      ],
+      "features_tested": [
+        "string_enum",
+        "elevated_permission",
+        "forbid_with_exception"
+      ],
+      "path": "sft_gen/scenarios/doccloud_classification/"
+    },
+    {
+      "id": "doccloud_comment",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Comment entity; document viewers can add comments; only comment author can edit/delete",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P9",
+        "P10"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "self_exclusion",
+        "author_ownership"
+      ],
+      "path": "sft_gen/scenarios/doccloud_comment/"
+    },
+    {
+      "id": "doccloud_device_trust",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "easy",
+      "mutation_description": "Add deviceTrusted Bool context; ModifyDocument and DeleteDocument forbidden on untrusted devices",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "write_protection"
+      ],
+      "path": "sft_gen/scenarios/doccloud_device_trust/"
+    },
+    {
+      "id": "doccloud_draft",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "easy",
+      "mutation_description": "Add isDraft Bool to Document; draft docs visible only to owner; manageACL can also view",
+      "operators_applied": [
+        "S1",
+        "P1",
+        "P4"
+      ],
+      "features_tested": [
+        "boolean_forbid",
+        "owner_exclusivity",
+        "unless_exception"
+      ],
+      "path": "sft_gen/scenarios/doccloud_draft/"
+    },
+    {
+      "id": "doccloud_link_share",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add shareToken String to Document; context providedToken grants ViewDocument if tokens match",
+      "operators_applied": [
+        "S3",
+        "S8",
+        "P2"
+      ],
+      "features_tested": [
+        "string_comparison",
+        "context_permit",
+        "link_based_access"
+      ],
+      "path": "sft_gen/scenarios/doccloud_link_share/"
+    },
+    {
+      "id": "doccloud_org_context",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "medium",
+      "mutation_description": "Add ownerOrg String to Document; context userOrg; cross-org ViewDocument forbidden unless manageACL",
+      "operators_applied": [
+        "S3",
+        "S8",
+        "P1",
+        "P4"
+      ],
+      "features_tested": [
+        "context_gate",
+        "org_isolation",
+        "string_comparison",
+        "unless_exception"
+      ],
+      "path": "sft_gen/scenarios/doccloud_org_context/"
+    },
+    {
+      "id": "doccloud_read_only_acl",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "easy",
+      "mutation_description": "Add readOnlyACL DocumentShare; readOnly members can view but are explicitly barred from modify",
+      "operators_applied": [
+        "S9",
+        "P2",
+        "P1"
+      ],
+      "features_tested": [
+        "new_acl_tier",
+        "explicit_forbid",
+        "acl_separation"
+      ],
+      "path": "sft_gen/scenarios/doccloud_read_only_acl/"
+    },
+    {
+      "id": "doccloud_viewer_cap",
+      "domain": "doccloud",
+      "base_scenario": "doccloud_base",
+      "difficulty": "easy",
+      "mutation_description": "Add viewerCount + maxViewers Long to Document; AddToShareACL forbidden when at cap",
+      "operators_applied": [
+        "S2",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_threshold",
+        "resource_side_limit"
+      ],
+      "path": "sft_gen/scenarios/doccloud_viewer_cap/"
+    },
+    {
+      "id": "github_deploy_env",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Deployment{env:String}; deploy action; only maintainers deploy; prod blocked on archived",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "S3",
+        "P2",
+        "P9",
+        "P1"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "string_enum",
+        "forbid"
+      ],
+      "path": "sft_gen/scenarios/github_deploy_env/"
+    },
+    {
+      "id": "github_draft_pr",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add PullRequest{isDraft:Bool}; draft PRs cannot be merged; author cannot approve own PR",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P1",
+        "P2",
+        "P9",
+        "P10"
+      ],
+      "features_tested": [
+        "new_entity",
+        "boolean_forbid",
+        "self_exclusion",
+        "cross_traversal"
+      ],
+      "path": "sft_gen/scenarios/github_draft_pr/"
+    },
+    {
+      "id": "github_full_expansion_v2",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "hard",
+      "mutation_description": "Compound: watcher role + Deployment entity + issue severity + push allowlist; 4 mutations",
+      "operators_applied": [
+        "S9",
+        "S6",
+        "S7",
+        "S3",
+        "S5",
+        "P2",
+        "P2",
+        "P7",
+        "P8",
+        "P9"
+      ],
+      "features_tested": [
+        "multi_mutation",
+        "new_entity",
+        "string_enum",
+        "set_permit",
+        "role_hierarchy"
+      ],
+      "path": "sft_gen/scenarios/github_full_expansion_v2/"
+    },
+    {
+      "id": "github_issue_severity",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add severity String to Issue; critical issues can only be deleted by maintainers, not readers",
+      "operators_applied": [
+        "S3",
+        "P7",
+        "P8"
+      ],
+      "features_tested": [
+        "string_enum",
+        "role_redistribution",
+        "conditional_permit"
+      ],
+      "path": "sft_gen/scenarios/github_issue_severity/"
+    },
+    {
+      "id": "github_public_repo",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "easy",
+      "mutation_description": "Add isPublic Bool to Repository; public repos allow any User to pull without reader membership",
+      "operators_applied": [
+        "S1",
+        "P2"
+      ],
+      "features_tested": [
+        "boolean_permit",
+        "open_access"
+      ],
+      "path": "sft_gen/scenarios/github_public_repo/"
+    },
+    {
+      "id": "github_push_allowlist",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add pushAllowlist Set<User> to Repository; allowlisted users can push even without writer role",
+      "operators_applied": [
+        "S5",
+        "P2"
+      ],
+      "features_tested": [
+        "set_membership_permit",
+        "dual_path_push"
+      ],
+      "path": "sft_gen/scenarios/github_push_allowlist/"
+    },
+    {
+      "id": "github_release",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Release entity; maintainers create; author cannot delete own release (self-exclusion)",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P9",
+        "P10"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "self_exclusion"
+      ],
+      "path": "sft_gen/scenarios/github_release/"
+    },
+    {
+      "id": "github_remove_fork",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "easy",
+      "mutation_description": "Remove fork action from schema and all permits; platform does not support forking",
+      "operators_applied": [
+        "S12",
+        "P3"
+      ],
+      "features_tested": [
+        "action_removal",
+        "simplification"
+      ],
+      "path": "sft_gen/scenarios/github_remove_fork/"
+    },
+    {
+      "id": "github_repo_push_limit",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "hard",
+      "mutation_description": "Add dailyPushCount + maxDailyPushes Long to Repository; push forbidden when count >= limit",
+      "operators_applied": [
+        "S2",
+        "S2",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_comparison",
+        "resource_side_threshold"
+      ],
+      "path": "sft_gen/scenarios/github_repo_push_limit/"
+    },
+    {
+      "id": "github_sso_gate",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "easy",
+      "mutation_description": "Add ssoVerified Bool context; all role-management (add_*) forbidden unless SSO verified",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "forbid_rule"
+      ],
+      "path": "sft_gen/scenarios/github_sso_gate/"
+    },
+    {
+      "id": "github_team_admin",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "medium",
+      "mutation_description": "Add teamAdmins UserGroup; teamAdmins can add_reader/add_writer but NOT add_maintainer/add_admin",
+      "operators_applied": [
+        "S9",
+        "P2",
+        "P4"
+      ],
+      "features_tested": [
+        "partial_admin",
+        "role_hierarchy",
+        "permit_scoping"
+      ],
+      "path": "sft_gen/scenarios/github_team_admin/"
+    },
+    {
+      "id": "github_watcher",
+      "domain": "github",
+      "base_scenario": "github_base",
+      "difficulty": "easy",
+      "mutation_description": "Add watchers UserGroup to Repository; watchers can pull but NOT fork",
+      "operators_applied": [
+        "S9",
+        "P2"
+      ],
+      "features_tested": [
+        "new_role",
+        "fine_grained_permit"
+      ],
+      "path": "sft_gen/scenarios/github_watcher/"
+    },
+    {
+      "id": "hotel_amenity",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Amenity entity in Property; members can viewAmenity; admins can bookAmenity/manageAmenity",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "resource_type_extension"
+      ],
+      "path": "sft_gen/scenarios/hotel_amenity/"
+    },
+    {
+      "id": "hotel_blackout",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add blackoutUntil datetime to Property; createReservation forbidden before blackoutUntil",
+      "operators_applied": [
+        "S4",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "datetime_comparison",
+        "forbid_rule",
+        "context_field"
+      ],
+      "path": "sft_gen/scenarios/hotel_blackout/"
+    },
+    {
+      "id": "hotel_concierge",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add conciergePermissions PermissionsMap to User; concierge can createReservation but not grantAccess",
+      "operators_applied": [
+        "S13",
+        "S9",
+        "P2",
+        "P4"
+      ],
+      "features_tested": [
+        "new_role",
+        "partial_admin",
+        "record_type"
+      ],
+      "path": "sft_gen/scenarios/hotel_concierge/"
+    },
+    {
+      "id": "hotel_guest_capacity",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "easy",
+      "mutation_description": "Add currentGuests + maxGuests Long to Property; createReservation forbidden when at capacity",
+      "operators_applied": [
+        "S2",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_threshold",
+        "capacity_limit"
+      ],
+      "path": "sft_gen/scenarios/hotel_guest_capacity/"
+    },
+    {
+      "id": "hotel_loyalty_points",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add loyaltyPoints Long to User + isPremium Bool to Property; premium requires 5000+ points",
+      "operators_applied": [
+        "S2",
+        "S1",
+        "P1",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_permit_threshold",
+        "boolean_guard",
+        "cross_attr_condition"
+      ],
+      "path": "sft_gen/scenarios/hotel_loyalty_points/"
+    },
+    {
+      "id": "hotel_mfa_gate",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "easy",
+      "mutation_description": "Add mfaVerified Bool context; all grantAccess actions forbidden without MFA",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "admin_mfa",
+        "multi_action_forbid"
+      ],
+      "path": "sft_gen/scenarios/hotel_mfa_gate/"
+    },
+    {
+      "id": "hotel_partner_access",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add partnerCode String to Property; context partnerCode grants viewProperty to external partners",
+      "operators_applied": [
+        "S3",
+        "S8",
+        "P2"
+      ],
+      "features_tested": [
+        "context_permit",
+        "string_comparison",
+        "partner_access"
+      ],
+      "path": "sft_gen/scenarios/hotel_partner_access/"
+    },
+    {
+      "id": "hotel_property_type",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Add propertyType String to Property; boutique properties require admin (not member) for grantAccess",
+      "operators_applied": [
+        "S3",
+        "P7",
+        "P4"
+      ],
+      "features_tested": [
+        "string_enum",
+        "elevated_requirement",
+        "role_scoping"
+      ],
+      "path": "sft_gen/scenarios/hotel_property_type/"
+    },
+    {
+      "id": "hotel_remove_viewer",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "medium",
+      "mutation_description": "Remove viewPermissions; view perms absorbed into memberPermissions (two-role model)",
+      "operators_applied": [
+        "S10",
+        "P3",
+        "P8"
+      ],
+      "features_tested": [
+        "role_removal",
+        "role_redistribution",
+        "simplification"
+      ],
+      "path": "sft_gen/scenarios/hotel_remove_viewer/"
+    },
+    {
+      "id": "hotel_vip_blocked",
+      "domain": "hotel",
+      "base_scenario": "hotel_base",
+      "difficulty": "easy",
+      "mutation_description": "Add blockedGuests Set<User> to Property; blocked users cannot createReservation",
+      "operators_applied": [
+        "S5",
+        "P1"
+      ],
+      "features_tested": [
+        "set_membership_forbid",
+        "explicit_blocklist"
+      ],
+      "path": "sft_gen/scenarios/hotel_vip_blocked/"
+    },
+    {
+      "id": "sales_account_tier",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "medium",
+      "mutation_description": "Add tier String to Presentation; enterprise presentations require seniorInternal job",
+      "operators_applied": [
+        "S3",
+        "S6",
+        "P7",
+        "P2"
+      ],
+      "features_tested": [
+        "string_enum",
+        "new_job_type",
+        "tiered_access"
+      ],
+      "path": "sft_gen/scenarios/sales_account_tier/"
+    },
+    {
+      "id": "sales_contract",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Contract entity linked to Presentation; internal users sign, editors view",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "job_based_permit"
+      ],
+      "path": "sft_gen/scenarios/sales_contract/"
+    },
+    {
+      "id": "sales_editor_cap",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "easy",
+      "mutation_description": "Add editorCount + maxEditors Long to Presentation; grantEditAccess blocked when at cap",
+      "operators_applied": [
+        "S2",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_threshold",
+        "cap_enforcement"
+      ],
+      "path": "sft_gen/scenarios/sales_editor_cap/"
+    },
+    {
+      "id": "sales_fiscal_window",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "medium",
+      "mutation_description": "Add fiscalYear Long to Presentation; context currentYear; cross-year edit forbidden",
+      "operators_applied": [
+        "S2",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "numeric_comparison",
+        "context_gate",
+        "temporal_restriction"
+      ],
+      "path": "sft_gen/scenarios/sales_fiscal_window/"
+    },
+    {
+      "id": "sales_market_isolation",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "medium",
+      "mutation_description": "Add ownerMarket String to Presentation; non-internal forbidden from cross-market access",
+      "operators_applied": [
+        "S3",
+        "P1",
+        "P4"
+      ],
+      "features_tested": [
+        "market_isolation",
+        "string_condition",
+        "internal_bypass"
+      ],
+      "path": "sft_gen/scenarios/sales_market_isolation/"
+    },
+    {
+      "id": "sales_remove_template",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "easy",
+      "mutation_description": "Remove Template entity and all template actions; presentation-only access model",
+      "operators_applied": [
+        "S11",
+        "S12",
+        "P3"
+      ],
+      "features_tested": [
+        "entity_removal",
+        "action_removal",
+        "simplification"
+      ],
+      "path": "sft_gen/scenarios/sales_remove_template/"
+    },
+    {
+      "id": "sales_self_grant_forbid",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "easy",
+      "mutation_description": "Forbid grantViewAccess/grantEditAccess when context.target == principal (self-grant)",
+      "operators_applied": [
+        "P10"
+      ],
+      "features_tested": [
+        "self_exclusion",
+        "grant_control"
+      ],
+      "path": "sft_gen/scenarios/sales_self_grant_forbid/"
+    },
+    {
+      "id": "sales_territory",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "medium",
+      "mutation_description": "Add territory String to Presentation; non-internal users can only access matching-market presentations",
+      "operators_applied": [
+        "S3",
+        "P1",
+        "P4"
+      ],
+      "features_tested": [
+        "string_condition",
+        "market_scoping",
+        "internal_bypass"
+      ],
+      "path": "sft_gen/scenarios/sales_territory/"
+    },
+    {
+      "id": "sales_vpn_gate",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "easy",
+      "mutation_description": "Add onVPN Bool context; editPresentation and editTemplate forbidden off-VPN",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "write_protection",
+        "multi_action_forbid"
+      ],
+      "path": "sft_gen/scenarios/sales_vpn_gate/"
+    },
+    {
+      "id": "sales_watcher",
+      "domain": "sales",
+      "base_scenario": "sales_base",
+      "difficulty": "easy",
+      "mutation_description": "Add watchers Set<User> to Presentation; watchers can viewPresentation only",
+      "operators_applied": [
+        "S5",
+        "P2"
+      ],
+      "features_tested": [
+        "set_membership_permit",
+        "view_only_role"
+      ],
+      "path": "sft_gen/scenarios/sales_watcher/"
+    },
+    {
+      "id": "streaming_concurrent_limit",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add maxStreams Long to Subscriber; context activeStreams Long; watch forbidden at limit",
+      "operators_applied": [
+        "S2",
+        "S8",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_threshold",
+        "context_gate",
+        "principal_side_limit"
+      ],
+      "path": "sft_gen/scenarios/streaming_concurrent_limit/"
+    },
+    {
+      "id": "streaming_content_rating",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add contentRating String to Movie and Show; NC-17 forbidden for kids or non-premium subscribers",
+      "operators_applied": [
+        "S3",
+        "P7",
+        "P1"
+      ],
+      "features_tested": [
+        "string_enum",
+        "multi_condition_forbid",
+        "content_gate"
+      ],
+      "path": "sft_gen/scenarios/streaming_content_rating/"
+    },
+    {
+      "id": "streaming_family_plan",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add familyMembers Set<FreeMember> to Subscriber; family members inherit subscriber watch perms",
+      "operators_applied": [
+        "S5",
+        "P2"
+      ],
+      "features_tested": [
+        "set_membership_permit",
+        "delegated_access",
+        "cross_principal"
+      ],
+      "path": "sft_gen/scenarios/streaming_family_plan/"
+    },
+    {
+      "id": "streaming_geo_blocklist",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add blockedRegions Set<String> to Movie; context userRegion; watch forbidden if in blocklist",
+      "operators_applied": [
+        "S5",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "set_containment_forbid",
+        "context_gate",
+        "geo_restriction"
+      ],
+      "path": "sft_gen/scenarios/streaming_geo_blocklist/"
+    },
+    {
+      "id": "streaming_live_event",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add LiveEvent entity; stream_live requires isLive==true; replay permitted after event ends",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P1",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "boolean_forbid",
+        "temporal_permit"
+      ],
+      "path": "sft_gen/scenarios/streaming_live_event/"
+    },
+    {
+      "id": "streaming_parental_override",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "easy",
+      "mutation_description": "Add parentalOverride Bool context; bedtime restriction bypassed when parent approves",
+      "operators_applied": [
+        "S8",
+        "P4"
+      ],
+      "features_tested": [
+        "context_exception",
+        "unless_clause",
+        "forbid_bypass"
+      ],
+      "path": "sft_gen/scenarios/streaming_parental_override/"
+    },
+    {
+      "id": "streaming_podcast",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Podcast entity; all users can listen; download requires Subscriber; no bedtime on podcasts",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2"
+      ],
+      "features_tested": [
+        "new_resource_type",
+        "tier_split",
+        "action_differentiation"
+      ],
+      "path": "sft_gen/scenarios/streaming_podcast/"
+    },
+    {
+      "id": "streaming_release_window",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "easy",
+      "mutation_description": "Add availableFrom datetime to Movie; watch forbidden before availableFrom for all users",
+      "operators_applied": [
+        "S4",
+        "P1"
+      ],
+      "features_tested": [
+        "datetime_comparison",
+        "universal_forbid",
+        "release_embargo"
+      ],
+      "path": "sft_gen/scenarios/streaming_release_window/"
+    },
+    {
+      "id": "streaming_remove_freemember",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "easy",
+      "mutation_description": "Remove FreeMember entity and isFree attribute; subscribers-only platform",
+      "operators_applied": [
+        "S11",
+        "S10",
+        "P3"
+      ],
+      "features_tested": [
+        "entity_removal",
+        "attribute_removal",
+        "simplification"
+      ],
+      "path": "sft_gen/scenarios/streaming_remove_freemember/"
+    },
+    {
+      "id": "streaming_trailer",
+      "domain": "streaming",
+      "base_scenario": "streaming_base",
+      "difficulty": "easy",
+      "mutation_description": "Add Trailer entity; any User (unauthenticated) can watch_trailer; no subscription required",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2"
+      ],
+      "features_tested": [
+        "new_entity",
+        "open_access",
+        "unauthenticated_permit"
+      ],
+      "path": "sft_gen/scenarios/streaming_trailer/"
+    },
+    {
+      "id": "tags_environment",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "medium",
+      "mutation_description": "Add environment String to Workspace; production workspaces require explicit production_status tag match",
+      "operators_applied": [
+        "S3",
+        "P7",
+        "P1"
+      ],
+      "features_tested": [
+        "string_enum",
+        "conditional_restriction",
+        "production_gate"
+      ],
+      "path": "sft_gen/scenarios/tags_environment/"
+    },
+    {
+      "id": "tags_expiry",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "medium",
+      "mutation_description": "Add expiresAt datetime to Workspace; context now; all access forbidden after expiry",
+      "operators_applied": [
+        "S4",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "datetime_comparison",
+        "universal_forbid",
+        "context_field"
+      ],
+      "path": "sft_gen/scenarios/tags_expiry/"
+    },
+    {
+      "id": "tags_ip_allowlist",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "medium",
+      "mutation_description": "Add allowedIPs Set<String> to User; context clientIP; write actions forbidden if IP not allowed",
+      "operators_applied": [
+        "S5",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "set_containment_forbid",
+        "context_gate",
+        "ip_restriction"
+      ],
+      "path": "sft_gen/scenarios/tags_ip_allowlist/"
+    },
+    {
+      "id": "tags_mfa_gate",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "easy",
+      "mutation_description": "Add mfaVerified Bool context; UpdateWorkspace and DeleteWorkspace forbidden without MFA",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "write_protection"
+      ],
+      "path": "sft_gen/scenarios/tags_mfa_gate/"
+    },
+    {
+      "id": "tags_public_workspace",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "easy",
+      "mutation_description": "Add isPublic Bool to Workspace; public workspaces allow any User to ReadWorkspace (no tag match needed)",
+      "operators_applied": [
+        "S1",
+        "P2"
+      ],
+      "features_tested": [
+        "boolean_permit",
+        "open_read_access"
+      ],
+      "path": "sft_gen/scenarios/tags_public_workspace/"
+    },
+    {
+      "id": "tags_report",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Report entity linked to Workspace; only Role-A with full tag match can generateReport",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "cross_traversal",
+        "elevated_permission"
+      ],
+      "path": "sft_gen/scenarios/tags_report/"
+    },
+    {
+      "id": "tags_role_d",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "hard",
+      "mutation_description": "Add Role-D with UpdateWorkspace permission but explicit forbid on ReadWorkspace (write-only role)",
+      "operators_applied": [
+        "S9",
+        "P2",
+        "P1"
+      ],
+      "features_tested": [
+        "unusual_permission_pattern",
+        "write_only_role",
+        "explicit_read_forbid"
+      ],
+      "path": "sft_gen/scenarios/tags_role_d/"
+    },
+    {
+      "id": "tags_usage_limit",
+      "domain": "tags",
+      "base_scenario": "tags_base",
+      "difficulty": "easy",
+      "mutation_description": "Add accessCount + maxAccess Long to Workspace; ReadWorkspace forbidden when over limit",
+      "operators_applied": [
+        "S2",
+        "P6"
+      ],
+      "features_tested": [
+        "numeric_threshold",
+        "usage_cap"
+      ],
+      "path": "sft_gen/scenarios/tags_usage_limit/"
+    },
+    {
+      "id": "tax_auditor_page_limit",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Auditor role + pageCount Long to Document; auditors cannot view documents over 100 pages",
+      "operators_applied": [
+        "S6",
+        "S2",
+        "P2",
+        "P6"
+      ],
+      "features_tested": [
+        "new_role",
+        "numeric_forbid",
+        "resource_attribute"
+      ],
+      "path": "sft_gen/scenarios/tax_auditor_page_limit/"
+    },
+    {
+      "id": "tax_deadline_gate",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add filingDeadline datetime to Document; editDocument forbidden after deadline; viewDocument unaffected",
+      "operators_applied": [
+        "S7",
+        "S4",
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "datetime_comparison",
+        "new_action",
+        "temporal_forbid"
+      ],
+      "path": "sft_gen/scenarios/tax_deadline_gate/"
+    },
+    {
+      "id": "tax_document_type",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add docType String to Document + editDocument action; amendments require Supervisor",
+      "operators_applied": [
+        "S3",
+        "S7",
+        "P7",
+        "P8"
+      ],
+      "features_tested": [
+        "string_enum",
+        "new_action",
+        "role_redistribution"
+      ],
+      "path": "sft_gen/scenarios/tax_document_type/"
+    },
+    {
+      "id": "tax_emergency_access",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "hard",
+      "mutation_description": "Add isEmergency Bool to context; emergency allows any Professional to view any Document, bypassing org-match",
+      "operators_applied": [
+        "S8",
+        "P2"
+      ],
+      "features_tested": [
+        "context_permit",
+        "org_match_bypass",
+        "emergency_override"
+      ],
+      "path": "sft_gen/scenarios/tax_emergency_access/"
+    },
+    {
+      "id": "tax_locked_document",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add isLocked Bool to Document + editDocument; locked documents cannot be edited by anyone",
+      "operators_applied": [
+        "S1",
+        "S7",
+        "P1"
+      ],
+      "features_tested": [
+        "boolean_forbid",
+        "new_action",
+        "universal_lock"
+      ],
+      "path": "sft_gen/scenarios/tax_locked_document/"
+    },
+    {
+      "id": "tax_multi_professional",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add assignedProfessionals Set<Professional> to Document; any assigned professional can viewDocument",
+      "operators_applied": [
+        "S5",
+        "P2"
+      ],
+      "features_tested": [
+        "set_membership_permit",
+        "team_access",
+        "dual_path"
+      ],
+      "path": "sft_gen/scenarios/tax_multi_professional/"
+    },
+    {
+      "id": "tax_network_gate",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "easy",
+      "mutation_description": "Add onCorporateNetwork Bool to context; viewDocument forbidden off-network",
+      "operators_applied": [
+        "S8",
+        "P1"
+      ],
+      "features_tested": [
+        "context_gate",
+        "network_restriction",
+        "compliance"
+      ],
+      "path": "sft_gen/scenarios/tax_network_gate/"
+    },
+    {
+      "id": "tax_org_hierarchy",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "hard",
+      "mutation_description": "Add parentOrg String to Client; Professional org match cascades to subsidiary orgs",
+      "operators_applied": [
+        "S3",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "org_cascade",
+        "hierarchy_access",
+        "string_comparison"
+      ],
+      "path": "sft_gen/scenarios/tax_org_hierarchy/"
+    },
+    {
+      "id": "tax_review",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add Supervisor role + Review entity; supervisors can approveDocument; approval blocks further edits",
+      "operators_applied": [
+        "S6",
+        "S7",
+        "S9",
+        "P2",
+        "P9"
+      ],
+      "features_tested": [
+        "new_entity",
+        "new_role",
+        "cross_traversal",
+        "state_machine"
+      ],
+      "path": "sft_gen/scenarios/tax_review/"
+    },
+    {
+      "id": "tax_senior_bypass",
+      "domain": "tax",
+      "base_scenario": "tax_base",
+      "difficulty": "medium",
+      "mutation_description": "Add isSensitive Bool to Document + Supervisor role; senior professionals bypass sensitivity restriction",
+      "operators_applied": [
+        "S1",
+        "S6",
+        "P1",
+        "P4"
+      ],
+      "features_tested": [
+        "boolean_forbid",
+        "unless_exception",
+        "new_role",
+        "sensitivity"
+      ],
+      "path": "sft_gen/scenarios/tax_senior_bypass/"
+    }
+  ]
+}
