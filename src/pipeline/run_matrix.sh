@@ -74,7 +74,7 @@ import pathlib
 import sys
 
 repo_root = pathlib.Path("${REPO_ROOT}")
-sys.path.insert(0, str(repo_root / "cedarforge" / "src"))
+sys.path.insert(0, str(repo_root / "src"))
 from pipeline.run_baseline import _load_task_registry, _task_ids_for_benchmark
 
 registry = _load_task_registry()

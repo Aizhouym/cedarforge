@@ -396,10 +396,11 @@ def _render_failure_feedback(bundle, task_path: Path) -> tuple[str, str]:
         lines.append(f"SEMANTIC FAILURE — {len(failed_checks)} of {len(checks)} check(s) failed.")
         lines.append("")
 
-        for check in failed_checks:
+        max_failed_checks = 3
+        for idx, check in enumerate(failed_checks[:max_failed_checks], start=1):
             ctype = check["type"]
             cname = check["name"]
-            lines.append(f"--- Check: {cname} [{ctype}] ---")
+            lines.append(f"--- Check {idx}: {cname} [{ctype}] ---")
             lines.append(f"Description: {check['description']}")
             lines.append("")
 
@@ -422,7 +423,7 @@ def _render_failure_feedback(bundle, task_path: Path) -> tuple[str, str]:
                     lines.append("")
                     lines.append(f"Reference policy ({Path(ref_path).name}):")
                     lines.append("```cedar")
-                    lines.append(ref_text)
+                    lines.append(_shorten(ref_text, 600))
                     lines.append("```")
                 except Exception:
                     pass
@@ -430,8 +431,14 @@ def _render_failure_feedback(bundle, task_path: Path) -> tuple[str, str]:
             if check.get("counterexample"):
                 lines.append("")
                 lines.append("Counterexample:")
-                lines.append(_shorten(check["counterexample"], 1000))
+                lines.append(_shorten(check["counterexample"], 400))
             lines.append("")
+
+        omitted_failed_checks = len(failed_checks) - max_failed_checks
+        if omitted_failed_checks > 0:
+            lines.append(
+                f"... {omitted_failed_checks} additional failed checks omitted to keep the repair prompt within context limits."
+            )
 
     return "\n".join(lines).strip(), failing_layer
 
