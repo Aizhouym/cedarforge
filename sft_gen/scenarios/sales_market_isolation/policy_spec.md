@@ -53,19 +53,19 @@ have `viewerMarkets` and `editorMarkets` (Set<Market>).
 - Market membership is via entity hierarchy: `User in [Market]`.
 - Cedar denies by default.
 ### 6. Market Isolation (Deny Rule)
-- Presentations have an `ownerMarket: String` attribute identifying the market where
-  the presentation was created.
+- Presentations have an `ownerMarket: Market` attribute identifying the Market entity
+  where the presentation was created.
 - Non-internal users (distributors, customers) may only access Presentations whose
-  `ownerMarket` matches a Market they are a member of.
-- Formally: if `!(principal in Market::<resource.ownerMarket>)`, forbid viewPresentation,
+  `ownerMarket` is a Market they are a member of.
+- Formally: if `!(principal in resource.ownerMarket)`, forbid viewPresentation,
   duplicatePresentation, editPresentation for non-internal users.
 - Internal users bypass market isolation — they can access across all markets.
 - Access-list membership (viewers/editors sets) does not override market isolation for
   non-internal users: both conditions must hold.
 
 ## Notes (Market Isolation)
-- Note: directly referencing `Market::<string_value>` requires the entity ID to match.
-  In practice, the host app ensures the ownerMarket string maps to a valid Market entity ID.
+- `ownerMarket` is a direct `Market` entity reference, so membership is checked via
+  `principal in resource.ownerMarket` (entity hierarchy traversal).
 - This is a stronger isolation than the base market-based template sharing (which uses
   `viewerMarkets: Set<Market>` as an allowlist). Here, market identity is enforced on
   the owning market, not just on sharing permissions.

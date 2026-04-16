@@ -53,7 +53,7 @@ have `viewerMarkets` and `editorMarkets` (Set<Market>).
 - Market membership is via entity hierarchy: `User in [Market]`.
 - Cedar denies by default.
 ### 6. Fiscal Year Access Control (Deny Rule)
-- Presentations have a `fiscalYear: Long` attribute (e.g., `2024`, `2025`).
+- Presentations and Templates have a `fiscalYear: Long` attribute (e.g., `2024`, `2025`).
 - Context carries `currentYear: Long` — the current fiscal year from the host application.
 - If `resource.fiscalYear != context.currentYear`, **editPresentation** and **editTemplate**
   are **forbidden** for non-internal users.
@@ -62,5 +62,6 @@ have `viewerMarkets` and `editorMarkets` (Set<Market>).
 
 ## Notes (Fiscal Window)
 - Numeric comparison: `resource.fiscalYear != context.currentYear`.
+- The fiscal-year comparison applies to both `Presentation` and `Template`.
 - Internal users bypass via `unless { principal.job == Job::"internal" }`.
 - This tests a "year-scoped edit" pattern common in financial sales platforms.

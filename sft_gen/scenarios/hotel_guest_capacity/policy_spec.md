@@ -42,9 +42,9 @@ Users have three permission tiers stored as attributes:
 - Admin sets cover both hotel-level and property-level scopes.
 - Cedar denies by default.
 ### 5. Guest Capacity Limit (Deny Rule)
-- Properties have `currentGuests: Long` (current occupancy) and `maxGuests: Long` (capacity).
+- In the schema, `Property` has `currentGuests: Long` (current occupancy) and `maxGuests: Long` (capacity).
 - If `resource.currentGuests >= resource.maxGuests`, **createReservation** is **forbidden**
-  for ALL principals — members and admins alike.
+  for ALL principals attempting **createReservation** on that `Property` — members and admins alike.
 - This is a hard limit: no role override exists. The host application must update
   `currentGuests` atomically when reservations are created or cancelled.
 - All other actions (viewReservation, updateReservation, grantAccess, etc.) are unaffected.

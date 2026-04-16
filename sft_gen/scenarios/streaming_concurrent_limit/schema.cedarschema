@@ -11,7 +11,7 @@ entity FreeMember;
 entity Subscriber = {
   subscription: Subscription,
   profile: Profile,
-maxStreams: Long,
+  maxStreams: Long,
 };
 entity Movie = {
   isFree: Bool,
@@ -32,12 +32,11 @@ action watch
     context: {
       now: {
         datetime: datetime,
-        localTimeOffset: duration,
-        activeStreams: Long,
+        localTimeOffset: duration
+      },
+      activeStreams: Long
     }
-    }
-  
-};
+  };
 
 // Actions for movies only
 action rent, buy

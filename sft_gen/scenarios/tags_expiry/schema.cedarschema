@@ -19,7 +19,7 @@ entity Workspace {
     country?: Set<String>,
     stage?: Set<String>,
   },
-expiresAt: datetime,
+  expiresAt?: datetime,
 };
 
 action "Role-A Actions";

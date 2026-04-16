@@ -30,21 +30,21 @@ namespace Taxpreparer {
     resource: [Document],
     context: { consent: Consent }
   };
-}
-
-entity Supervisor = {
+  
+  entity Supervisor = {
     supervised_orgs: Set<String>,
     location: String,
   };
 
-entity Review = {
+  entity Review = {
     document: Document,
     reviewer: Supervisor,
     approved: Bool,
   };
 
-action approveDocument appliesTo {
+  action approveDocument appliesTo {
     principal: [Supervisor],
     resource: [Document],
     context: { consent: Consent }
   };
+}

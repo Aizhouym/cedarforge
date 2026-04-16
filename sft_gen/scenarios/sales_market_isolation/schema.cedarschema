@@ -10,7 +10,7 @@ entity Presentation {
   owner: User,
   viewers: Set<User>,
   editors: Set<User>,
-ownerMarket: String,
+  ownerMarket: Market,
 };
 entity Template {
   owner: User,
@@ -78,4 +78,3 @@ action grantViewAccessToTemplate, grantEditAccessToTemplate
     resource: Template,
     context: { targetMarket?: Market, targetUser?: User },
   };
-

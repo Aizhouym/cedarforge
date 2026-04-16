@@ -10,9 +10,11 @@ entity User {
   hotelAdminPermissions: Set<Hotel>,
   propertyAdminPermissions: Set<Property>,
   // With unions, just have adminPermissions: Set<Hotel|Property>,
-loyaltyPoints: Long,
+  loyaltyPoints: Long,
 };
-entity Property in [Hotel];
+entity Property in [Hotel] = {
+  isPremium: Bool,
+};
 entity Hotel in [Hotel];
 entity Reservation in [Property]; // PaymentDetails, Rates, etc. similar
 
@@ -21,8 +23,7 @@ action viewReservation, updateReservation, grantAccessReservation
   appliesTo {
     principal: User,
     resource: Reservation,
-isPremium: Bool,
-};
+  };
 
 // ACTIONS: Properties (plus, CreateReservation for a Property)
 action createReservation, viewProperty, updateProperty, grantAccessProperty

@@ -17,7 +17,8 @@ entity Template {
   viewers: Set<User>,
   editors: Set<User>,
   viewerMarkets: Set<Market>,
-  editorMarkets: Set<Market>,  
+  editorMarkets: Set<Market>,
+  fiscalYear: Long,
 };
 // Actions -- Presentations
 action InternalPrezViewActions;
@@ -84,4 +85,3 @@ action grantViewAccessToTemplate, grantEditAccessToTemplate
     resource: Template,
     context: { targetMarket?: Market, targetUser?: User },
   };
-

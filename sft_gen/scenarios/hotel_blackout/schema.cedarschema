@@ -11,7 +11,9 @@ entity User {
   propertyAdminPermissions: Set<Property>,
   // With unions, just have adminPermissions: Set<Hotel|Property>
 };
-entity Property in [Hotel];
+entity Property in [Hotel] = {
+  blackoutUntil?: datetime,
+};
 entity Hotel in [Hotel];
 entity Reservation in [Property]; // PaymentDetails, Rates, etc. similar
 
@@ -20,7 +22,6 @@ action viewReservation, updateReservation, grantAccessReservation
   appliesTo {
     principal: User,
     resource: Reservation,
-blackoutUntil: datetime,
 };
 
 // ACTIONS: Properties (plus, CreateReservation for a Property)

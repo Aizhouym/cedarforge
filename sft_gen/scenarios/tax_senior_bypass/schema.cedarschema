@@ -9,13 +9,17 @@ namespace Taxpreparer {
     assigned_orgs: Set<orgInfo>,
     location: String,
   };
+  entity Supervisor = {
+    supervised_orgs: Set<String>,
+    location: String,
+  };
   // A client's tax document
   entity Document = {
     serviceline: String,
     location: String,
     owner: Client,
-isSensitive: Bool,
-};
+    isSensitive: Bool,
+  };
   // A client 
   entity Client = {
     organization: String

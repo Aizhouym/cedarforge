@@ -11,7 +11,9 @@ entity User {
   propertyAdminPermissions: Set<Property>,
   // With unions, just have adminPermissions: Set<Hotel|Property>
 };
-entity Property in [Hotel];
+entity Property in [Hotel] = {
+  partnerCode: String,
+};
 entity Hotel in [Hotel];
 entity Reservation in [Property]; // PaymentDetails, Rates, etc. similar
 
@@ -20,16 +22,22 @@ action viewReservation, updateReservation, grantAccessReservation
   appliesTo {
     principal: User,
     resource: Reservation,
-partnerCode: String,
 };
 
-// ACTIONS: Properties (plus, CreateReservation for a Property)
-action createReservation, viewProperty, updateProperty, grantAccessProperty
+// ACTIONS: Property operations without partner context
+action createReservation, updateProperty, grantAccessProperty
+  appliesTo {
+    principal: User,
+    resource: Property,
+  };
+
+// ACTIONS: Property view with partner context
+action viewProperty
   appliesTo {
     principal: User,
     resource: Property,
     context: {
-        providedPartnerCode: String,
+      providedPartnerCode: String,
     }
 };
 

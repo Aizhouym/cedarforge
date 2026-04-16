@@ -1,0 +1,10 @@
+permit (
+    principal is Taxpreparer::Supervisor,
+    action == Taxpreparer::Action::"approveDocument",
+    resource is Taxpreparer::Document
+)
+when {
+    principal.supervised_orgs.contains(resource.owner.organization)
+    && context.consent.client == resource.owner
+    && context.consent.team_region_list.contains(principal.location)
+};

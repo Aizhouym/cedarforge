@@ -39,8 +39,11 @@ Context carries `consent: Consent` where Consent = {client: Client, team_region_
 - All entities are in the `Taxpreparer` namespace.
 - Cedar denies by default.
 ### 4. Supervisor Role
-- Supervisors have `supervised_orgs: Set<String>` and may viewDocument on Documents
-  in their supervised organizations.
+- Supervisors have `supervised_orgs: Set<String>` and `location: String`, and may
+  viewDocument on Documents in their supervised organizations.
+- The same consent gate applies to supervisors too:
+  `context.consent.client == resource.owner` AND
+  `context.consent.team_region_list.contains(principal.location)`.
 
 ### 5. Sensitivity Restriction (Deny Rule with Supervisor Bypass)
 - Documents have `isSensitive: Bool`.

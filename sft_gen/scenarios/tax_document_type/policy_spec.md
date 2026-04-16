@@ -39,8 +39,10 @@ Context carries `consent: Consent` where Consent = {client: Client, team_region_
 - All entities are in the `Taxpreparer` namespace.
 - Cedar denies by default.
 ### 4. Supervisor Role
-- Supervisors have `supervised_orgs: Set<String>` and may viewDocument and editDocument
-  on Documents in their supervised organizations.
+- Supervisors have `supervised_orgs: Set<String>` and `location: String`, and may
+  viewDocument and editDocument on Documents in their supervised organizations.
+- The same consent gate applies to supervisors as well: `context.consent.client ==
+  resource.owner` AND `context.consent.team_region_list.contains(principal.location)`.
 
 ### 5. Document Type Restriction
 - Documents have `docType: String` with values: `"return"`, `"amendment"`, `"extension"`.

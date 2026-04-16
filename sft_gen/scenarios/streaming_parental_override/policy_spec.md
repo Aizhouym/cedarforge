@@ -18,7 +18,8 @@ Principal types: FreeMember and Subscriber. Resources: Movie and Show.
 Subscribers have `subscription.tier` (String) and `profile.isKid` (Bool).
 Movies have: `isFree`, `needsRentOrBuy`, `isOscarNominated` (Bool).
 Shows have: `isEarlyAccess`, `isFree` (Bool) and `releaseDate` (datetime).
-Context carries `now: datetime`.
+For `watch` requests, context carries `now: { datetime, localTimeOffset }`
+and `parentalOverride: Bool`.
 
 ## Requirements
 

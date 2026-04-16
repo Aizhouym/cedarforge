@@ -53,18 +53,17 @@ have `viewerMarkets` and `editorMarkets` (Set<Market>).
 - Market membership is via entity hierarchy: `User in [Market]`.
 - Cedar denies by default.
 ### 6. Territory Gate (Deny Rule with Internal Bypass)
-- Presentations have a `territory: String` attribute (e.g., `"APAC"`, `"EMEA"`, `"NA"`).
+- Presentations have a `territory: Market` attribute identifying the Market entity
+  that owns this presentation's territory.
 - For non-internal users (distributors, customers), **viewPresentation** and
-  **editPresentation** are **forbidden** if the Presentation's `territory` does not
-  match a Market the user belongs to.
-  - Specifically: the user must be `in` at least one Market whose name matches
-    `resource.territory`. Since Market is a Cedar entity, this requires the user
-    to be in a Market entity named the same as the territory string.
+  **editPresentation** are **forbidden** if the principal is not in the
+  Presentation's `territory` Market.
+  - Specifically: `principal in resource.territory` must hold for access to be permitted.
 - **Internal** users bypass the territory restriction — they can access any presentation
   regardless of territory.
 - This restriction is in addition to (not a replacement for) the viewer/editor set checks.
 
 ## Notes (Territory)
-- Market membership is via entity hierarchy: `principal in Market::<territory>`.
-- String equality between `resource.territory` and a market name is the check.
+- `territory` is a direct `Market` entity reference; membership is checked via
+  `principal in resource.territory` (entity hierarchy traversal).
 - Internal bypass: `unless { principal.job == Job::"internal" }`.

@@ -11,7 +11,9 @@ entity User {
   propertyAdminPermissions: Set<Property>,
   // With unions, just have adminPermissions: Set<Hotel|Property>
 };
-entity Property in [Hotel];
+entity Property in [Hotel] = {
+  blockedGuests: Set<User>,
+};
 entity Hotel in [Hotel];
 entity Reservation in [Property]; // PaymentDetails, Rates, etc. similar
 
@@ -20,8 +22,7 @@ action viewReservation, updateReservation, grantAccessReservation
   appliesTo {
     principal: User,
     resource: Reservation,
-blockedGuests: Set<User>,
-};
+  };
 
 // ACTIONS: Properties (plus, CreateReservation for a Property)
 action createReservation, viewProperty, updateProperty, grantAccessProperty

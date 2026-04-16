@@ -31,15 +31,14 @@ pageCount: Long,
     resource: [Document],
     context: { consent: Consent }
   };
-}
-
-entity Auditor = {
+  entity Auditor = {
     auditScope: Set<String>,
     location: String,
   };
 
-action auditDocument appliesTo {
+  action auditDocument appliesTo {
     principal: [Auditor],
     resource: [Document],
     context: { consent: Consent }
   };
+}

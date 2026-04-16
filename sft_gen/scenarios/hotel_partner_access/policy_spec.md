@@ -43,7 +43,7 @@ Users have three permission tiers stored as attributes:
 - Cedar denies by default.
 ### 5. Partner Company Access
 - Properties may have a `partnerCode: String` — a shared secret for authorized travel agencies.
-- Context carries `providedPartnerCode: String`.
+- The `viewProperty` action carries context `providedPartnerCode: String`.
 - If `context.providedPartnerCode == resource.partnerCode` (and the code is non-empty),
   any User may **viewProperty** without needing member or admin role.
 - Partners may ONLY **viewProperty** — they cannot viewReservation, createReservation,
@@ -52,5 +52,6 @@ Users have three permission tiers stored as attributes:
 
 ## Notes (Partner Access)
 - This is a third path for viewProperty: (member role) OR (admin role) OR (valid partner code).
+- Only `viewProperty` receives the partner-code context; the other property actions remain role-only.
 - Empty string partner codes do not grant access; the host app ensures non-empty codes.
 - Partner access is for viewProperty only — all reservation operations remain role-gated.

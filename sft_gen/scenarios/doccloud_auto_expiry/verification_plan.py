@@ -194,7 +194,7 @@ def get_checks():
             "action": "Action::\"EditIsPrivate\"",
             "resource_type": "Document",
             "floor_path": os.path.join(REFS, "floor_owner_edit_is_private.cedar"),
-        },
+      ,
         {
             "name": "floor_manage_acl_edit_is_private",
             "description": "An authenticated manageACL member must be able to edit document privacy",
@@ -207,7 +207,7 @@ def get_checks():
         {
             "name": "floor_owner_edit_public_access",
             "description": "An authenticated owner must be able to edit publicAccess",
-            "type": "floor",
+            "type": "floor",  }
             "principal_type": "User",
             "action": "Action::\"EditPublicAccess\"",
             "resource_type": "Document",

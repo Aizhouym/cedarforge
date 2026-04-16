@@ -31,12 +31,11 @@ action watch
     context: {
       now: {
         datetime: datetime,
-        localTimeOffset: duration,
-        parentalOverride: Bool,
+        localTimeOffset: duration
+      },
+      parentalOverride: Bool
     }
-    }
-  
-};
+  };
 
 // Actions for movies only
 action rent, buy

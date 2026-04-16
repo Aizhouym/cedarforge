@@ -1,0 +1,105 @@
+"""Verification plan for tags_environment."""
+import os
+
+REFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "references")
+
+
+def get_checks():
+    return [
+        {
+            "name": "ceiling_updateworkspace_role_a",
+            "description": "UpdateWorkspace is only permitted for Role-A users whose Role-A tags match, and production writes additionally require an explicit production_status entry",
+            "type": "implies",
+            "principal_type": "User",
+            "action": "Action::\"UpdateWorkspace\"",
+            "resource_type": "Workspace",
+            "reference_path": os.path.join(REFS, "ceiling_updateworkspace_role_a.cedar"),
+        },
+        {
+            "name": "ceiling_deleteworkspace_role_a",
+            "description": "DeleteWorkspace is only permitted for Role-A users whose Role-A tags match, and production writes additionally require an explicit production_status entry",
+            "type": "implies",
+            "principal_type": "User",
+            "action": "Action::\"DeleteWorkspace\"",
+            "resource_type": "Workspace",
+            "reference_path": os.path.join(REFS, "ceiling_deleteworkspace_role_a.cedar"),
+        },
+        {
+            "name": "ceiling_readworkspace_role_a_or_b",
+            "description": "ReadWorkspace is only permitted for Role-A or Role-B users whose tags match for their role",
+            "type": "implies",
+            "principal_type": "User",
+            "action": "Action::\"ReadWorkspace\"",
+            "resource_type": "Workspace",
+            "reference_path": os.path.join(REFS, "ceiling_readworkspace_role_a_or_b.cedar"),
+        },
+        {
+            "name": "floor_updateworkspace_role_a_nonprod",
+            "description": "A Role-A user with matching tags must be able to UpdateWorkspace in non-production even when production_status is absent",
+            "type": "floor",
+            "principal_type": "User",
+            "action": "Action::\"UpdateWorkspace\"",
+            "resource_type": "Workspace",
+            "floor_path": os.path.join(REFS, "floor_updateworkspace_role_a_nonprod.cedar"),
+        },
+        {
+            "name": "floor_updateworkspace_role_a_prod_explicit",
+            "description": "A Role-A user with matching tags and explicit production_status must be able to UpdateWorkspace in production",
+            "type": "floor",
+            "principal_type": "User",
+            "action": "Action::\"UpdateWorkspace\"",
+            "resource_type": "Workspace",
+            "floor_path": os.path.join(REFS, "floor_updateworkspace_role_a_prod_explicit.cedar"),
+        },
+        {
+            "name": "floor_deleteworkspace_role_a_prod_explicit",
+            "description": "A Role-A user with matching tags and explicit production_status must be able to DeleteWorkspace in production",
+            "type": "floor",
+            "principal_type": "User",
+            "action": "Action::\"DeleteWorkspace\"",
+            "resource_type": "Workspace",
+            "floor_path": os.path.join(REFS, "floor_deleteworkspace_role_a_prod_explicit.cedar"),
+        },
+        {
+            "name": "floor_readworkspace_role_a",
+            "description": "A Role-A user with matching tags must be able to ReadWorkspace",
+            "type": "floor",
+            "principal_type": "User",
+            "action": "Action::\"ReadWorkspace\"",
+            "resource_type": "Workspace",
+            "floor_path": os.path.join(REFS, "floor_readworkspace_role_a.cedar"),
+        },
+        {
+            "name": "floor_readworkspace_role_b",
+            "description": "A Role-B user with matching tags must be able to ReadWorkspace",
+            "type": "floor",
+            "principal_type": "User",
+            "action": "Action::\"ReadWorkspace\"",
+            "resource_type": "Workspace",
+            "floor_path": os.path.join(REFS, "floor_readworkspace_role_b.cedar"),
+        },
+        {
+            "name": "liveness_updateworkspace",
+            "description": "UpdateWorkspace is not trivially deny-all",
+            "type": "always-denies-liveness",
+            "principal_type": "User",
+            "action": "Action::\"UpdateWorkspace\"",
+            "resource_type": "Workspace",
+        },
+        {
+            "name": "liveness_deleteworkspace",
+            "description": "DeleteWorkspace is not trivially deny-all",
+            "type": "always-denies-liveness",
+            "principal_type": "User",
+            "action": "Action::\"DeleteWorkspace\"",
+            "resource_type": "Workspace",
+        },
+        {
+            "name": "liveness_readworkspace",
+            "description": "ReadWorkspace is not trivially deny-all",
+            "type": "always-denies-liveness",
+            "principal_type": "User",
+            "action": "Action::\"ReadWorkspace\"",
+            "resource_type": "Workspace",
+        },
+    ]

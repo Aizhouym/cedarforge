@@ -23,7 +23,7 @@ entity Show = {
 // Actions for content in general
 action watch
   appliesTo {
-    principal: [FreeMember, Subscriber],
+    principal: [Subscriber],
     resource: [Movie, Show],
     context: {
       now: {
@@ -36,7 +36,7 @@ action watch
 // Actions for movies only
 action rent, buy
   appliesTo {
-    principal: [FreeMember, Subscriber],
+    principal: [Subscriber],
     resource: Movie,
     context: {
       now: {

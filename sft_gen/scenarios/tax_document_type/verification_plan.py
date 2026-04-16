@@ -1,0 +1,113 @@
+"""Verification plan for tax_document_type."""
+import os
+
+REFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "references")
+
+
+def get_checks():
+    return [
+        {
+            "name": "professional_view_org_match_and_consent_safety",
+            "description": "Professional may viewDocument only when org match and valid consent hold",
+            "type": "implies",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "reference_path": os.path.join(REFS, "professional_view_org_match_and_consent_safety.cedar"),
+        },
+        {
+            "name": "supervisor_view_org_match_and_consent_safety",
+            "description": "Supervisor may viewDocument only when supervised organization match and valid consent hold",
+            "type": "implies",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "reference_path": os.path.join(REFS, "supervisor_view_org_match_and_consent_safety.cedar"),
+        },
+        {
+            "name": "professional_edit_non_amendment_safety",
+            "description": "Professional may editDocument only for non-amendment documents when org match and valid consent hold",
+            "type": "implies",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "reference_path": os.path.join(REFS, "professional_edit_non_amendment_safety.cedar"),
+        },
+        {
+            "name": "supervisor_edit_org_match_and_consent_safety",
+            "description": "Supervisor may editDocument only when supervised organization match and valid consent hold",
+            "type": "implies",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "reference_path": os.path.join(REFS, "supervisor_edit_org_match_and_consent_safety.cedar"),
+        },
+        {
+            "name": "professional_must_view_org_match_with_consent",
+            "description": "Professional must be permitted to viewDocument when org match and valid consent hold",
+            "type": "floor",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "floor_path": os.path.join(REFS, "professional_must_view_org_match_with_consent.cedar"),
+        },
+        {
+            "name": "supervisor_must_view_org_match_with_consent",
+            "description": "Supervisor must be permitted to viewDocument when supervised organization match and valid consent hold",
+            "type": "floor",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "floor_path": os.path.join(REFS, "supervisor_must_view_org_match_with_consent.cedar"),
+        },
+        {
+            "name": "professional_must_edit_non_amendment_with_consent",
+            "description": "Professional must be permitted to editDocument for non-amendment documents when org match and valid consent hold",
+            "type": "floor",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "floor_path": os.path.join(REFS, "professional_must_edit_non_amendment_with_consent.cedar"),
+        },
+        {
+            "name": "supervisor_must_edit_amendment_with_consent",
+            "description": "Supervisor must be permitted to edit amendment documents when supervised organization match and valid consent hold",
+            "type": "floor",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+            "floor_path": os.path.join(REFS, "supervisor_must_edit_amendment_with_consent.cedar"),
+        },
+        {
+            "name": "liveness_professional_view_document",
+            "description": "Professional plus viewDocument plus Document has at least one permitted request",
+            "type": "always-denies-liveness",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+        },
+        {
+            "name": "liveness_supervisor_view_document",
+            "description": "Supervisor plus viewDocument plus Document has at least one permitted request",
+            "type": "always-denies-liveness",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"viewDocument\"",
+            "resource_type": "Taxpreparer::Document",
+        },
+        {
+            "name": "liveness_professional_edit_document",
+            "description": "Professional plus editDocument plus Document has at least one permitted request",
+            "type": "always-denies-liveness",
+            "principal_type": "Taxpreparer::Professional",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+        },
+        {
+            "name": "liveness_supervisor_edit_document",
+            "description": "Supervisor plus editDocument plus Document has at least one permitted request",
+            "type": "always-denies-liveness",
+            "principal_type": "Taxpreparer::Supervisor",
+            "action": "Taxpreparer::Action::\"editDocument\"",
+            "resource_type": "Taxpreparer::Document",
+        },
+    ]

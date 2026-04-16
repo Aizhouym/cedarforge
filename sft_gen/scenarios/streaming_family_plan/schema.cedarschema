@@ -7,11 +7,13 @@ type Profile = {
 };
 
 // Entities
-entity FreeMember;
+entity FreeMember = {
+  profile: Profile
+};
 entity Subscriber = {
   subscription: Subscription,
   profile: Profile,
-familyMembers: Set<FreeMember>,
+  familyMembers: Set<FreeMember>,
 };
 entity Movie = {
   isFree: Bool,
@@ -33,7 +35,8 @@ action watch
       now: {
         datetime: datetime,
         localTimeOffset: duration
-      }
+      },
+      subscriberPlan?: Subscriber
     }
   };
 
