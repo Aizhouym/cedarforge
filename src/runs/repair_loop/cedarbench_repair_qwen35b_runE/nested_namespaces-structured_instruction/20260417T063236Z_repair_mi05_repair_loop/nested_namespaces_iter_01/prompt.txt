@@ -1,0 +1,343 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: multi-level namespace organization
+difficulty: medium
+features:
+  - three-level namespace (`Company::Billing::Invoice`)
+  - cross-namespace entity type references
+  - qualified principal/action/resource types in rule heads
+domain: enterprise SaaS / billing
+---
+
+# Nested Namespaces — Billing Invoice Lines
+
+## Context
+
+This scenario exercises Cedar's multi-level namespace organization. Two
+namespaces are involved:
+
+- `Company::Identity` — defines `Employee` and `Team`. Employees have
+  a `department` string and a `level` long (1 = junior, 5 = senior,
+  6+ = executive). Teams have a `manager` who is an `Employee`.
+- `Company::Billing::Invoice` — defines `Line` (an invoice line-item)
+  and three actions (`view`, `approve`, `void`). Lines reference
+  employees and teams from the other namespace: an issuer (who filed
+  the line) and an owning team.
+
+The policy controls who can act on invoice lines. Every principal is a
+`Company::Identity::Employee`; every resource is a
+`Company::Billing::Invoice::Line`. Actions are qualified
+`Company::Billing::Invoice::Action::"..."`.
+
+## Requirements
+
+### Action: view
+
+A Line may be viewed when any of the following hold:
+
+1. The principal is the issuer: `principal == resource.issuer`.
+2. The principal is the owning team's manager:
+   `principal == resource.owningTeam.manager`.
+3. The principal is in the same department as the issuer:
+   `principal.department == resource.issuer.department`.
+
+Floors:
+- The issuer MUST always be permitted to view their own line.
+- The owning team's manager MUST always be permitted to view.
+
+### Action: approve
+
+A Line may be approved when ALL of the following hold for one of the
+two approval tiers:
+
+- **Tier 1 (team-level approval, small amounts):**
+  - The principal is the owning team's manager, AND
+  - The principal's level is at least 3, AND
+  - The line total is at most 10000.
+
+- **Tier 2 (executive approval, large amounts):**
+  - The principal's level is at least 5, AND
+  - The line total is at most 100000.
+
+Floor:
+- A team manager with level 3 or higher MUST be permitted to approve a
+  line with total ≤ 10000 on their own team.
+
+### Action: void
+
+A Line may be voided when ALL of the following hold:
+
+- The principal is the owning team's manager, AND
+- The principal's level is at least 5 (senior or executive).
+
+This is an irreversible action; deliberately restrictive.
+
+Floor:
+- A level-5 or higher team manager MUST be permitted to void a line on
+  their own team.
+
+### Liveness
+
+Each of the three actions must permit at least one request. (No
+action should end up globally denied.)
+
+## Out of scope
+
+- No temporal constraints (expiry, business hours).
+- No role concept beyond the numeric `level`.
+- No cross-team delegation.
+- No global forbids.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Nested Namespaces — Company::Identity and Company::Billing::Invoice.
+//
+// Exercises Cedar's multi-level namespace support and cross-namespace
+// entity type references. Entity types declared in one namespace
+// (Company::Identity) are used as field types on entities in another
+// (Company::Billing::Invoice).
+//
+// The three-level namespace `Company::Billing::Invoice` is a realistic
+// pattern for enterprise apps where a top-level org namespace contains
+// multiple product namespaces, each of which organizes a specific
+// domain of resources and actions.
+
+namespace Company::Identity {
+    entity Employee = {
+        department: String,
+        level: Long,
+    };
+
+    entity Team = {
+        manager: Employee,
+    };
+}
+
+namespace Company::Billing::Invoice {
+    entity Line = {
+        total: Long,
+        issuer: Company::Identity::Employee,
+        owningTeam: Company::Identity::Team,
+    };
+
+    // view: anyone on the team or the issuer may view a line.
+    // approve: team-lead or sufficiently senior employee may approve.
+    // void: senior managers only (irreversible action).
+    action view, approve, void appliesTo {
+        principal: [Company::Identity::Employee],
+        resource: [Line],
+        context: {},
+    };
+}
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

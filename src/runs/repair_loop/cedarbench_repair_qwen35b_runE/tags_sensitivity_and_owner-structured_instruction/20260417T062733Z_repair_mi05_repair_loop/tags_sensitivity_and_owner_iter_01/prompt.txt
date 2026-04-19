@@ -1,0 +1,327 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "compound mutation"
+difficulty: hard
+features:
+  - tag namespaces
+  - role-scoped access
+  - wildcard matching
+  - sensitivity + owner compound
+domain: content management / tagging
+source: mutation (tags domain)
+---
+
+# Tags & Roles Workspace Permissions -- Policy Specification (Combined)
+
+## Context
+
+This policy governs access control for a workspace platform where access is
+determined by tag-based matching between Users and Workspaces, scoped by Roles.
+
+Users belong to Roles. Each User has an `allowedTagsForRole` record. Workspaces
+have tags, a `sensitivity: Long` (0-5), an `owner: User`, and an `isApproved: Bool`.
+
+Two roles: **Role-A** (Update, Delete, Read) and **Role-B** (Read only).
+
+## Requirements
+
+### 1. Role-A Permissions (Tag-Based)
+- A user in **Role-A** may perform **Role-A Actions** (UpdateWorkspace,
+  DeleteWorkspace, ReadWorkspace) on a workspace when tag-matching passes
+  for all three dimensions (production_status, country, stage):
+  - Per dimension: user's set contains `"ALL"`, OR workspace's set contains
+    `"ALL"`, OR user's set `containsAll` of workspace's set.
+  - Missing dimensions pass automatically.
+
+### 2. Role-B Permissions (Tag-Based)
+- A user in **Role-B** may perform **Role-B Actions** (ReadWorkspace) using
+  the same tag-matching logic, checking `allowedTagsForRole["Role-B"]`.
+
+### 3. Owner Bypass for Read Access
+- The **owner** of a workspace may always **ReadWorkspace** on that workspace,
+  regardless of role membership or tag matching.
+- The owner bypass applies ONLY to ReadWorkspace. The owner must still qualify
+  via Role-A tag matching for UpdateWorkspace and DeleteWorkspace.
+- The owner bypass also ignores sensitivity restrictions for read access.
+
+### 4. Sensitivity Level Restriction (Deny Rules)
+- For **Role-A** actions: if `resource.sensitivity > 3`, all Role-A actions
+  are **forbidden** for users acting in Role-A.
+- For **Role-B** actions: if `resource.sensitivity > 1`, all Role-B actions
+  are **forbidden** for users acting in Role-B.
+- **Exception**: The owner bypass for ReadWorkspace is NOT subject to sensitivity
+  restrictions. If `principal == resource.owner`, ReadWorkspace is always allowed.
+
+### 5. Approval Gate (Deny Rule)
+- If `resource.isApproved == false`, **UpdateWorkspace** and **DeleteWorkspace**
+  are **forbidden** for ALL users, including owners.
+- **ReadWorkspace** is still allowed on unapproved workspaces.
+
+## Notes
+- Three independent forbid rules exist: Role-A sensitivity, Role-B sensitivity,
+  and approval gate. They operate independently.
+- The owner bypass creates a separate permit path for ReadWorkspace that is
+  immune to sensitivity forbids (the forbid must use `unless { principal == resource.owner }`).
+- The approval gate has no owner exception -- even workspace owners cannot
+  update or delete unapproved workspaces.
+- This is a complex scenario with tag matching, numeric thresholds, owner bypass,
+  and boolean gates all interacting.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Tags & Roles -- Cedar Schema (Sensitivity + Owner + Approval)
+
+entity Role;
+entity User in [Role] {
+  allowedTagsForRole: {
+    "Role-A"?: {
+        production_status?: Set<String>,
+        country?: Set<String>,
+        stage?: Set<String>,
+    },
+    "Role-B"?: {
+        production_status?: Set<String>,
+        country?: Set<String>,
+        stage?: Set<String>,
+    },
+  },
+};
+entity Workspace {
+  tags: {
+    production_status?: Set<String>,
+    country?: Set<String>,
+    stage?: Set<String>,
+  },
+  sensitivity: Long,
+  owner: User,
+  isApproved: Bool,
+};
+
+action "Role-A Actions";
+action "Role-B Actions";
+action UpdateWorkspace in ["Role-A Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+
+action DeleteWorkspace in ["Role-A Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+
+action ReadWorkspace in ["Role-A Actions", "Role-B Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

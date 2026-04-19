@@ -1,0 +1,425 @@
+========================================================================
+ITERATION START
+task:       backup_restore_asymmetric
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: backup/restore asymmetric permissions
+difficulty: medium
+features:
+  - asymmetric action permissions (backup easy, restore restricted)
+  - role + boolean flag for restore authorization
+  - environment-based restriction (production vs staging)
+domain: infrastructure / DevOps
+---
+
+# Backup/Restore Asymmetric — Policy Specification
+
+## Context
+
+A backup management system where `Operator` principals manage
+`System` resources. Backup and restore have deliberately asymmetric
+permission models: creating backups is routine, but restoring from a
+backup is a high-risk operation that requires additional authorization.
+
+Each System has an `environment` attribute (`"production"` or
+`"staging"`). Each Operator has a `role` (`"engineer"`, `"sre"`,
+`"admin"`) and an `isOnCall` boolean.
+
+## Requirements
+
+### 1. Backup — Engineers and Above
+An Operator may `backup` a System when:
+- The operator's role is `"engineer"`, `"sre"`, or `"admin"`.
+
+Any authorized operator can create backups regardless of environment.
+
+### 2. Restore to Staging — SRE and Admin
+An Operator may `restore` a System when:
+- The system's environment is `"staging"`, AND
+- The operator's role is `"sre"` or `"admin"`.
+
+### 3. Restore to Production — Admin or On-Call SRE
+An Operator may `restore` a System when:
+- The system's environment is `"production"`, AND
+- The operator's role is `"admin"`, OR
+- The operator's role is `"sre"` AND `principal.isOnCall == true`.
+
+Production restores require either admin privilege or active on-call
+status. An off-call SRE cannot restore to production.
+
+### 4. Verify — Any Operator
+An Operator may `verify` a System's backup integrity when:
+- The operator's role is `"engineer"`, `"sre"`, or `"admin"`.
+
+### 5. Default Deny
+All other requests are denied. Notably, engineers cannot restore
+to any environment.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Backup/Restore Asymmetric — different permission levels for
+// backup vs restore, with environment-based restriction.
+
+entity Operator = {
+    role: String,       // "engineer" | "sre" | "admin"
+    isOnCall: Bool,
+};
+
+entity System = {
+    environment: String,   // "production" | "staging"
+};
+
+action backup, restore, verify appliesTo {
+    principal: [Operator],
+    resource: [System],
+    context: {},
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is Operator,
+    action == Action::"backup",
+    resource is System
+) when {
+    principal.role == "engineer" ||
+    principal.role == "sre" ||
+    principal.role == "admin"
+};
+
+permit (
+    principal is Operator,
+    action == Action::"restore",
+    resource is System
+) when {
+    resource.environment == "staging" &&
+    (principal.role == "sre" || principal.role == "admin")
+};
+
+permit (
+    principal is Operator,
+    action == Action::"restore",
+    resource is System
+) when {
+    resource.environment == "production" &&
+    (principal.role == "admin" ||
+     (principal.role == "sre" && principal.isOnCall))
+};
+
+permit (
+    principal is Operator,
+    action == Action::"verify",
+    resource is System
+) when {
+    principal.role == "engineer" ||
+    principal.role == "sre" ||
+    principal.role == "admin"
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is Operator,
+    action == Action::"backup",
+    resource is System
+) when {
+    principal.role == "engineer" ||
+    principal.role == "sre" ||
+    principal.role == "admin"
+};
+
+permit (
+    principal is Operator,
+    action == Action::"restore",
+    resource is System
+) when {
+    resource.environment == "staging" &&
+    (principal.role == "sre" || principal.role == "admin")
+};
+
+permit (
+    principal is Operator,
+    action == Action::"restore",
+    resource is System
+) when {
+    resource.environment == "production" &&
+    (principal.role == "admin" ||
+     (principal.role == "sre" && principal.isOnCall))
+};
+
+permit (
+    principal is Operator,
+    action == Action::"verify",
+    resource is System
+) when {
+    principal.role == "engineer" ||
+    principal.role == "sre" ||
+    principal.role == "admin"
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 10
+solver_time_s: 0.404
+
+semantic check results:
+  - backup_safety [implies] PASS
+    description: backup only when engineer/sre/admin
+  - restore_safety [implies] PASS
+    description: restore only when sre/admin with env gate
+  - verify_safety [implies] PASS
+    description: verify only when engineer/sre/admin
+  - floor_engineer_backup [implies] PASS
+    description: engineer MUST backup
+  - floor_sre_restore_staging [implies] PASS
+    description: sre MUST restore staging
+  - floor_oncall_sre_restore_prod [implies] PASS
+    description: on-call sre MUST restore production
+  - floor_admin_restore_prod [implies] PASS
+    description: admin MUST restore production
+  - liveness_backup [always-denies (liveness)] PASS
+    description: at least one backup permitted
+  - liveness_restore [always-denies (liveness)] PASS
+    description: at least one restore permitted
+  - liveness_verify [always-denies (liveness)] PASS
+    description: at least one verify permitted
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       2.081
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/run.log

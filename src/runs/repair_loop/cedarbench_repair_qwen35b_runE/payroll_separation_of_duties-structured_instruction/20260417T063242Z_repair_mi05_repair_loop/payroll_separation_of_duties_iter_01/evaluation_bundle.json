@@ -1,0 +1,404 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 15,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 15,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.775,
+    "checks": [
+      {
+        "name": "initiate_safety",
+        "description": "initiate permitted only when (clerk AND draft)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"initiate\"",
+        "resource_type": "PayrollEntry",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/initiate_safety.cedar"
+      },
+      {
+        "name": "approve_safety",
+        "description": "approve permitted only when (manager/cfo AND pending_approval AND != initiator AND (amount<50k OR cfo))",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"approve\"",
+        "resource_type": "PayrollEntry",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/approve_safety.cedar"
+      },
+      {
+        "name": "release_safety",
+        "description": "release permitted only when (cfo AND approved)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"release\"",
+        "resource_type": "PayrollEntry",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/release_safety.cedar"
+      },
+      {
+        "name": "reject_safety",
+        "description": "reject permitted only when (manager/cfo AND pending_approval)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"reject\"",
+        "resource_type": "PayrollEntry",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/reject_safety.cedar"
+      },
+      {
+        "name": "read_safety",
+        "description": "read permitted unconditionally",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "PayrollEntry",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/read_safety.cedar"
+      },
+      {
+        "name": "clerk_must_initiate_draft",
+        "description": "Clerk MUST initiate a draft entry",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"initiate\"",
+        "resource_type": "PayrollEntry",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/clerk_must_initiate_draft.cedar"
+      },
+      {
+        "name": "manager_non_initiator_must_approve_small",
+        "description": "Manager (not initiator) MUST approve a small pending entry",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"approve\"",
+        "resource_type": "PayrollEntry",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/manager_non_initiator_must_approve_small.cedar"
+      },
+      {
+        "name": "cfo_non_initiator_must_approve_large",
+        "description": "CFO (not initiator) MUST approve a large pending entry",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"approve\"",
+        "resource_type": "PayrollEntry",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/cfo_non_initiator_must_approve_large.cedar"
+      },
+      {
+        "name": "cfo_must_release_approved",
+        "description": "CFO MUST release an approved entry",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"release\"",
+        "resource_type": "PayrollEntry",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/cfo_must_release_approved.cedar"
+      },
+      {
+        "name": "any_user_must_read",
+        "description": "Any user MUST read any entry",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "PayrollEntry",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/payroll_separation_of_duties-structured_instruction/20260417T063242Z_repair_mi05_repair_loop/payroll_separation_of_duties_iter_01/_eval_workspace/references/any_user_must_read.cedar"
+      },
+      {
+        "name": "liveness_initiate",
+        "description": "User+initiate+PayrollEntry liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"initiate\"",
+        "resource_type": "PayrollEntry"
+      },
+      {
+        "name": "liveness_approve",
+        "description": "User+approve+PayrollEntry liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"approve\"",
+        "resource_type": "PayrollEntry"
+      },
+      {
+        "name": "liveness_release",
+        "description": "User+release+PayrollEntry liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"release\"",
+        "resource_type": "PayrollEntry"
+      },
+      {
+        "name": "liveness_reject",
+        "description": "User+reject+PayrollEntry liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"reject\"",
+        "resource_type": "PayrollEntry"
+      },
+      {
+        "name": "liveness_read",
+        "description": "User+read+PayrollEntry liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "PayrollEntry"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "initiate_safety",
+        "check_type": "implies",
+        "description": "initiate permitted only when (clerk AND draft)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "approve_safety",
+        "check_type": "implies",
+        "description": "approve permitted only when (manager/cfo AND pending_approval AND != initiator AND (amount<50k OR cfo))",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "release_safety",
+        "check_type": "implies",
+        "description": "release permitted only when (cfo AND approved)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "reject_safety",
+        "check_type": "implies",
+        "description": "reject permitted only when (manager/cfo AND pending_approval)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "read_safety",
+        "check_type": "implies",
+        "description": "read permitted unconditionally",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "clerk_must_initiate_draft",
+        "check_type": "implies",
+        "description": "Clerk MUST initiate a draft entry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manager_non_initiator_must_approve_small",
+        "check_type": "implies",
+        "description": "Manager (not initiator) MUST approve a small pending entry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "cfo_non_initiator_must_approve_large",
+        "check_type": "implies",
+        "description": "CFO (not initiator) MUST approve a large pending entry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "cfo_must_release_approved",
+        "check_type": "implies",
+        "description": "CFO MUST release an approved entry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "any_user_must_read",
+        "check_type": "implies",
+        "description": "Any user MUST read any entry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_initiate",
+        "check_type": "always-denies (liveness)",
+        "description": "User+initiate+PayrollEntry liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_approve",
+        "check_type": "always-denies (liveness)",
+        "description": "User+approve+PayrollEntry liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_release",
+        "check_type": "always-denies (liveness)",
+        "description": "User+release+PayrollEntry liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_reject",
+        "check_type": "always-denies (liveness)",
+        "description": "User+reject+PayrollEntry liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read",
+        "check_type": "always-denies (liveness)",
+        "description": "User+read+PayrollEntry liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 15,
+        "solver_time_s": 0.775,
+        "checks": [
+          {
+            "name": "initiate_safety",
+            "type": "implies",
+            "description": "initiate permitted only when (clerk AND draft)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "approve_safety",
+            "type": "implies",
+            "description": "approve permitted only when (manager/cfo AND pending_approval AND != initiator AND (amount<50k OR cfo))",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "release_safety",
+            "type": "implies",
+            "description": "release permitted only when (cfo AND approved)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "reject_safety",
+            "type": "implies",
+            "description": "reject permitted only when (manager/cfo AND pending_approval)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "read_safety",
+            "type": "implies",
+            "description": "read permitted unconditionally",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "clerk_must_initiate_draft",
+            "type": "implies",
+            "description": "Clerk MUST initiate a draft entry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manager_non_initiator_must_approve_small",
+            "type": "implies",
+            "description": "Manager (not initiator) MUST approve a small pending entry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "cfo_non_initiator_must_approve_large",
+            "type": "implies",
+            "description": "CFO (not initiator) MUST approve a large pending entry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "cfo_must_release_approved",
+            "type": "implies",
+            "description": "CFO MUST release an approved entry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "any_user_must_read",
+            "type": "implies",
+            "description": "Any user MUST read any entry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_initiate",
+            "type": "always-denies (liveness)",
+            "description": "User+initiate+PayrollEntry liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_approve",
+            "type": "always-denies (liveness)",
+            "description": "User+approve+PayrollEntry liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_release",
+            "type": "always-denies (liveness)",
+            "description": "User+release+PayrollEntry liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_reject",
+            "type": "always-denies (liveness)",
+            "description": "User+reject+PayrollEntry liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read",
+            "type": "always-denies (liveness)",
+            "description": "User+read+PayrollEntry liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

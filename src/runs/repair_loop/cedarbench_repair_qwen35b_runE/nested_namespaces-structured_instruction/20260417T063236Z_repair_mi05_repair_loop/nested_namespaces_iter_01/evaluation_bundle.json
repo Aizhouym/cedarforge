@@ -1,0 +1,291 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 10,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 10,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.487,
+    "checks": [
+      {
+        "name": "view_safety",
+        "description": "view permitted only when (issuer OR owning-team manager OR same dept as issuer)",
+        "type": "implies",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"view\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/view_safety.cedar"
+      },
+      {
+        "name": "approve_safety",
+        "description": "approve permitted only under Tier 1 (team manager L3, <=10k) or Tier 2 (L5, <=100k)",
+        "type": "implies",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"approve\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/approve_safety.cedar"
+      },
+      {
+        "name": "void_safety",
+        "description": "void permitted only when team manager AND level >= 5",
+        "type": "implies",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"void\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/void_safety.cedar"
+      },
+      {
+        "name": "issuer_must_view",
+        "description": "Issuer MUST be permitted to view their own line",
+        "type": "floor",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"view\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/issuer_must_view.cedar"
+      },
+      {
+        "name": "manager_must_view",
+        "description": "Owning-team manager MUST be permitted to view",
+        "type": "floor",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"view\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/manager_must_view.cedar"
+      },
+      {
+        "name": "manager_tier1_must_approve",
+        "description": "Team manager L3+ MUST be permitted to approve lines <= 10000",
+        "type": "floor",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"approve\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/manager_tier1_must_approve.cedar"
+      },
+      {
+        "name": "senior_manager_must_void",
+        "description": "Level-5+ team manager MUST be permitted to void a line on their own team",
+        "type": "floor",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"void\"",
+        "resource_type": "Company::Billing::Invoice::Line",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/nested_namespaces-structured_instruction/20260417T063236Z_repair_mi05_repair_loop/nested_namespaces_iter_01/_eval_workspace/references/senior_manager_must_void.cedar"
+      },
+      {
+        "name": "liveness_view",
+        "description": "Employee+view+Line liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"view\"",
+        "resource_type": "Company::Billing::Invoice::Line"
+      },
+      {
+        "name": "liveness_approve",
+        "description": "Employee+approve+Line liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"approve\"",
+        "resource_type": "Company::Billing::Invoice::Line"
+      },
+      {
+        "name": "liveness_void",
+        "description": "Employee+void+Line liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Company::Identity::Employee",
+        "action": "Company::Billing::Invoice::Action::\"void\"",
+        "resource_type": "Company::Billing::Invoice::Line"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "view_safety",
+        "check_type": "implies",
+        "description": "view permitted only when (issuer OR owning-team manager OR same dept as issuer)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "approve_safety",
+        "check_type": "implies",
+        "description": "approve permitted only under Tier 1 (team manager L3, <=10k) or Tier 2 (L5, <=100k)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "void_safety",
+        "check_type": "implies",
+        "description": "void permitted only when team manager AND level >= 5",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "issuer_must_view",
+        "check_type": "implies",
+        "description": "Issuer MUST be permitted to view their own line",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manager_must_view",
+        "check_type": "implies",
+        "description": "Owning-team manager MUST be permitted to view",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manager_tier1_must_approve",
+        "check_type": "implies",
+        "description": "Team manager L3+ MUST be permitted to approve lines <= 10000",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "senior_manager_must_void",
+        "check_type": "implies",
+        "description": "Level-5+ team manager MUST be permitted to void a line on their own team",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view",
+        "check_type": "always-denies (liveness)",
+        "description": "Employee+view+Line liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_approve",
+        "check_type": "always-denies (liveness)",
+        "description": "Employee+approve+Line liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_void",
+        "check_type": "always-denies (liveness)",
+        "description": "Employee+void+Line liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 10,
+        "solver_time_s": 0.487,
+        "checks": [
+          {
+            "name": "view_safety",
+            "type": "implies",
+            "description": "view permitted only when (issuer OR owning-team manager OR same dept as issuer)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "approve_safety",
+            "type": "implies",
+            "description": "approve permitted only under Tier 1 (team manager L3, <=10k) or Tier 2 (L5, <=100k)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "void_safety",
+            "type": "implies",
+            "description": "void permitted only when team manager AND level >= 5",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "issuer_must_view",
+            "type": "implies",
+            "description": "Issuer MUST be permitted to view their own line",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manager_must_view",
+            "type": "implies",
+            "description": "Owning-team manager MUST be permitted to view",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manager_tier1_must_approve",
+            "type": "implies",
+            "description": "Team manager L3+ MUST be permitted to approve lines <= 10000",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "senior_manager_must_void",
+            "type": "implies",
+            "description": "Level-5+ team manager MUST be permitted to void a line on their own team",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view",
+            "type": "always-denies (liveness)",
+            "description": "Employee+view+Line liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_approve",
+            "type": "always-denies (liveness)",
+            "description": "Employee+approve+Line liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_void",
+            "type": "always-denies (liveness)",
+            "description": "Employee+void+Line liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

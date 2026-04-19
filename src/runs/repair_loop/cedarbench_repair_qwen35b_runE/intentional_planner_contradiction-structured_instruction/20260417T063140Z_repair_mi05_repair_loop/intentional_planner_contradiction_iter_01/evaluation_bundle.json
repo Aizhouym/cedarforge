@@ -1,0 +1,155 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/intentional_planner_contradiction-structured_instruction/20260417T063140Z_repair_mi05_repair_loop/intentional_planner_contradiction_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 4,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 4,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.122,
+    "checks": [
+      {
+        "name": "read_safety",
+        "description": "readPost permitted only when neither direction of the mutual-block holds",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"readPost\"",
+        "resource_type": "Post",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/intentional_planner_contradiction-structured_instruction/20260417T063140Z_repair_mi05_repair_loop/intentional_planner_contradiction_iter_01/_eval_workspace/references/read_safety.cedar"
+      },
+      {
+        "name": "author_must_read_not_self_blocked",
+        "description": "Author MUST read their own post UNLESS self-blocked (\u00a78.8 exclusion)",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readPost\"",
+        "resource_type": "Post",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/intentional_planner_contradiction-structured_instruction/20260417T063140Z_repair_mi05_repair_loop/intentional_planner_contradiction_iter_01/_eval_workspace/references/author_must_read_not_self_blocked.cedar"
+      },
+      {
+        "name": "non_blocked_reader_must_read",
+        "description": "Any non-blocked User MUST read any Post",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readPost\"",
+        "resource_type": "Post",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/intentional_planner_contradiction-structured_instruction/20260417T063140Z_repair_mi05_repair_loop/intentional_planner_contradiction_iter_01/_eval_workspace/references/non_blocked_reader_must_read.cedar"
+      },
+      {
+        "name": "liveness_read_post",
+        "description": "User+readPost+Post liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"readPost\"",
+        "resource_type": "Post"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "read_safety",
+        "check_type": "implies",
+        "description": "readPost permitted only when neither direction of the mutual-block holds",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "author_must_read_not_self_blocked",
+        "check_type": "implies",
+        "description": "Author MUST read their own post UNLESS self-blocked (\u00a78.8 exclusion)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "non_blocked_reader_must_read",
+        "check_type": "implies",
+        "description": "Any non-blocked User MUST read any Post",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read_post",
+        "check_type": "always-denies (liveness)",
+        "description": "User+readPost+Post liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 4,
+        "solver_time_s": 0.122,
+        "checks": [
+          {
+            "name": "read_safety",
+            "type": "implies",
+            "description": "readPost permitted only when neither direction of the mutual-block holds",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "author_must_read_not_self_blocked",
+            "type": "implies",
+            "description": "Author MUST read their own post UNLESS self-blocked (\u00a78.8 exclusion)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "non_blocked_reader_must_read",
+            "type": "implies",
+            "description": "Any non-blocked User MUST read any Post",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read_post",
+            "type": "always-denies (liveness)",
+            "description": "User+readPost+Post liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

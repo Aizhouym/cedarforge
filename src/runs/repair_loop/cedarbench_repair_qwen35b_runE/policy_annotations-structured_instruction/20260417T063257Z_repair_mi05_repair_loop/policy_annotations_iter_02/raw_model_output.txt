@@ -1,0 +1,61 @@
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"read",
+    resource is Article
+) when {
+    principal.role == "viewer" && resource.isPublished
+}
+@id("viewer-read-published")
+@description("A viewer may read an article only if it is published.");
+
+permit (
+    principal is User,
+    action == Action::"read",
+    resource is Article
+) when {
+    principal.role == "editor"
+}
+@id("editor-read-any")
+@description("An editor may read any article regardless of publication status.");
+
+permit (
+    principal is User,
+    action == Action::"write",
+    resource is Article
+) when {
+    principal.role == "editor"
+}
+@id("editor-write-any")
+@description("An editor may write any article regardless of publication status.");
+
+permit (
+    principal is User,
+    action == Action::"read",
+    resource is Article
+) when {
+    principal.role == "admin"
+}
+@id("admin-read-any")
+@description("An admin may read any article.");
+
+permit (
+    principal is User,
+    action == Action::"write",
+    resource is Article
+) when {
+    principal.role == "admin"
+}
+@id("admin-write-any")
+@description("An admin may write any article.");
+
+permit (
+    principal is User,
+    action == Action::"delete",
+    resource is Article
+) when {
+    principal.role == "admin"
+}
+@id("admin-delete-any")
+@description("An admin may delete any article.");
+</cedar_policy>

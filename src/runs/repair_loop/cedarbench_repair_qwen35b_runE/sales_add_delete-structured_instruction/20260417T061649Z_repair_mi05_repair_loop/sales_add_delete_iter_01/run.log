@@ -1,0 +1,840 @@
+========================================================================
+ITERATION START
+task:       sales_add_delete
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "add action"
+difficulty: easy
+features:
+  - job-level hierarchy
+  - regional segmentation
+  - customer restrictions
+  - delete action
+domain: enterprise sales / CRM
+source: mutation (sales domain)
+---
+
+# Sales Organization Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a sales organization platform with
+Users, Markets, Presentations, Templates, and Jobs.
+
+Users belong to Markets (via `User in [Market]`) and have a `job: Job` attribute
+(with entity values like `Job::"internal"`, `Job::"distributor"`, `Job::"customer"`)
+and a `customerId: String`.
+
+Presentations have `owner: User`, `viewers: Set<User>`, and `editors: Set<User>`.
+Templates have `owner: User`, `viewers: Set<User>`, `editors: Set<User>`,
+`viewerMarkets: Set<Market>`, and `editorMarkets: Set<Market>`.
+
+Actions are organized into action groups:
+- Presentation actions: InternalPrezViewActions, ExternalPrezViewActions, PrezEditActions
+- Template actions: InternalTemplateViewActions, MarketTemplateViewActions, TemplateEditActions
+
+## Requirements
+
+### 1. External Presentation View
+- A user may perform **ExternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation) if `principal in resource.viewers`.
+
+### 2. Internal Presentation View
+- A user may perform **InternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation, duplicatePresentation) if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 3. Presentation Edit
+- A user may perform **PrezEditActions** (viewPresentation,
+  removeSelfAccessFromPresentation, duplicatePresentation, editPresentation,
+  grantViewAccessToPresentation, grantEditAccessToPresentation) if
+  `resource.owner == principal` OR `principal in resource.editors`.
+
+### 4. Customer Sharing Restriction (Deny Rule)
+- When granting view access to a presentation, the action
+  **grantViewAccessToPresentation** is **forbidden** unless:
+  - `context.target.job != Job::"customer"`, OR
+  - (`principal.job == Job::"distributor"` AND
+     `principal.customerId == context.target.customerId`).
+- In other words: you cannot share view access with a customer user UNLESS
+  you are a distributor sharing with your own customer (same customerId).
+
+### 5. Internal-Only Edit Sharing (Deny Rule)
+- **grantEditAccessToPresentation** is **forbidden** when
+  `context.target.job != Job::"internal"`.
+- Only internal users can receive edit access to presentations.
+
+### 6. Market Template View
+- A user may perform **MarketTemplateViewActions** (viewTemplate,
+  duplicateTemplate) if `principal in resource.viewerMarkets`.
+
+### 7. Internal Template View
+- A user may perform **InternalTemplateViewActions** (viewTemplate,
+  duplicateTemplate, removeSelfAccessFromTemplate) if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 8. Template Edit
+- A user may perform **TemplateEditActions** (viewTemplate, duplicateTemplate,
+  removeSelfAccessFromTemplate, editTemplate, removeOthersAccessToTemplate,
+  grantViewAccessToTemplate, grantEditAccessToTemplate) if
+  `resource.owner == principal` OR `principal in resource.editors` OR
+  `principal in resource.editorMarkets`.
+
+### 9. Template View Grant Restriction (Deny Rule)
+- **grantViewAccessToTemplate** is **forbidden** when the context specifies
+  a `targetUser` AND that user is a customer AND the granting user is not
+  a distributor sharing with their own customer:
+  `context has targetUser && context.targetUser.job == Job::"customer" && (principal.job != Job::"distributor" || principal.customerId != context.targetUser.customerId)`.
+- Market-targeted grants (`context has targetMarket`) are always allowed.
+
+### 10. Template Edit Grant Restriction (Deny Rule)
+- **grantEditAccessToTemplate** is **forbidden** when
+  `context has targetUser && context.targetUser.job != Job::"internal"`.
+- Market-targeted grants are always allowed.
+
+## Notes
+- Job types are entity references: `Job::"internal"`, `Job::"distributor"`,
+  `Job::"customer"`, `Job::"other"`.
+- The grant actions use context to specify the target of the grant.
+- Market membership is checked via `principal in resource.viewerMarkets`
+  because User is `in [Market]`.
+- Cedar denies by default; the forbid rules are additional restrictions.
+### 11. Delete Presentation
+- A new **deletePresentation** action is available on Presentations.
+- ONLY the **owner** of a presentation may delete it:
+  `permit (principal, action == Action::"deletePresentation", resource) when { resource.owner == principal }`.
+- Editors do NOT have delete permission, even though they have other edit actions.
+- The customer sharing and internal-only edit restrictions do not apply to
+  deletePresentation since it has no context/target.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Sales Organization Permissions -- Cedar Schema
+
+// Entities
+entity Job;
+entity User in [Market] {
+  job: Job,
+  customerId: String,
+};
+entity Market;
+entity Presentation {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+};
+entity Template {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+  viewerMarkets: Set<Market>,
+  editorMarkets: Set<Market>,
+};
+// Actions -- Presentations
+action InternalPrezViewActions;
+action ExternalPrezViewActions;
+action PrezEditActions;
+action viewPresentation, removeSelfAccessFromPresentation
+    in [InternalPrezViewActions, ExternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action duplicatePresentation in [InternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action editPresentation in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action grantViewAccessToPresentation, grantEditAccessToPresentation
+    in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+    context: { target: User, },
+  };
+
+// Actions -- Templates
+action InternalTemplateViewActions;
+action MarketTemplateViewActions;
+action TemplateEditActions;
+action viewTemplate, duplicateTemplate
+   in [InternalTemplateViewActions, TemplateEditActions,
+       MarketTemplateViewActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+  };
+action removeSelfAccessFromTemplate
+   in [InternalTemplateViewActions, TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action editTemplate, removeOthersAccessToTemplate in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action grantViewAccessToTemplate, grantEditAccessToTemplate
+    in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+    context: { targetMarket?: Market, targetUser?: User },
+  };
+
+// Delete action -- owner only
+action deletePresentation appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"viewPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicatePresentation",
+    resource is Presentation
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    context.target.job == Job::"customer" &&
+    (principal.job != Job::"distributor" ||
+     principal.customerId != context.target.customerId)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    context has target &&
+    context.target.job != Job::"internal"
+};
+
+permit (
+    principal is User,
+    action == Action::"viewTemplate",
+    resource is Template
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicateTemplate",
+    resource is Template
+) when {
+    (principal.job == Job::"internal" &&
+     principal in resource.viewers) ||
+    principal in resource.viewerMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromTemplate",
+    resource is Template
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"removeOthersAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job == Job::"customer" &&
+    (principal.job != Job::"distributor" ||
+     principal.customerId != context.targetUser.customerId)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job != Job::"internal"
+};
+
+permit (
+    principal is User,
+    action == Action::"deletePresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is User,
+    action == Action::"viewPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicatePresentation",
+    resource is Presentation
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    context.target.job == Job::"customer" &&
+    (principal.job != Job::"distributor" ||
+     principal.customerId != context.target.customerId)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    context has target &&
+    context.target.job != Job::"internal"
+};
+
+permit (
+    principal is User,
+    action == Action::"viewTemplate",
+    resource is Template
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicateTemplate",
+    resource is Template
+) when {
+    (principal.job == Job::"internal" &&
+     principal in resource.viewers) ||
+    principal in resource.viewerMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromTemplate",
+    resource is Template
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"removeOthersAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job == Job::"customer" &&
+    (principal.job != Job::"distributor" ||
+     principal.customerId != context.targetUser.customerId)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job != Job::"internal"
+};
+
+permit (
+    principal is User,
+    action == Action::"deletePresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=fail passed=False
+message: One or more semantic checks failed.
+total_checks: 19
+solver_time_s: 2.102
+
+semantic check results:
+  - external_prez_view_safety [implies] PASS
+    description: ExternalPrezViewActions (viewPresentation) only permitted if principal in resource.viewers OR resource.owner == principal OR principal in resource.editors
+  - duplicate_presentation_safety [implies] PASS
+    description: duplicatePresentation only permitted if (principal.job == Job::"internal" AND principal in resource.viewers) OR resource.owner == principal OR principal in resource.editors
+  - edit_presentation_safety [implies] PASS
+    description: editPresentation only permitted if resource.owner == principal OR principal in resource.editors
+  - grant_view_prez_safety [implies] PASS
+    description: grantViewAccessToPresentation only if editor/owner AND customer sharing restriction respected
+  - grant_edit_prez_safety [implies] PASS
+    description: grantEditAccessToPresentation only if editor/owner AND target is internal
+  - delete_presentation_safety [implies] PASS
+    description: deletePresentation only permitted if resource.owner == principal
+  - view_template_safety [implies] PASS
+    description: viewTemplate only if (internal AND in viewers) OR (in viewerMarkets) OR owner OR in editors OR in editorMarkets
+  - edit_template_safety [implies] PASS
+    description: editTemplate only if owner OR in editors OR in editorMarkets
+  - grant_view_template_safety [implies] PASS
+    description: grantViewAccessToTemplate only if editor/owner/editorMarket AND customer restriction respected
+  - grant_edit_template_safety [implies] PASS
+    description: grantEditAccessToTemplate only if editor/owner/editorMarket AND targetUser (if present) is internal
+  - floor_owner_edit_presentation [implies] PASS
+    description: Owner MUST be able to edit their own presentation
+  - floor_viewer_view_presentation [implies] PASS
+    description: A viewer MUST be able to view a presentation
+  - floor_delete_presentation_owner [implies] PASS
+    description: Owner MUST be able to delete their own presentation
+  - floor_market_view_template [implies] FAIL
+    description: User in viewerMarkets MUST be able to view template
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"viewTemplate", resource: Template::""
+context: {}
+entities: [
+  Job::"internal",
+  Action::"grantViewAccessToTemplate" in [Action::"TemplateEditActions"],
+  Action::"InternalPrezViewActions",
+  Action::"TemplateEditActions",
+  Market::"",
+  Job::"",
+  User::"" in [Market::""] {
+    customerId: "A",
+    job: Job::"",
+  },
+  Action::"InternalTemplateViewActions",
+  Action::"PrezEditActions",
+  Action::"viewPresentation" in [Action::"PrezEditActions", Action::"ExternalPrezViewActions", Action::"InternalPrezViewActions"],
+  Action::"duplicatePresentation" in [Action::"InternalPrezView
+...[truncated]...
+  - floor_owner_edit_template [implies] PASS
+    description: Owner MUST be able to edit their own template
+  - liveness_view_presentation [always-denies (liveness)] PASS
+    description: viewPresentation is not trivially deny-all
+  - liveness_delete_presentation [always-denies (liveness)] PASS
+    description: deletePresentation is not trivially deny-all
+  - liveness_edit_template [always-denies (liveness)] PASS
+    description: editTemplate is not trivially deny-all
+  - liveness_grant_view_prez [always-denies (liveness)] PASS
+    description: grantViewAccessToPresentation is not trivially deny-all
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  0.9474
+VerificationPass:  False
+Loss:              1
+FailedChecks:      floor_market_view_template
+DurationSec:       6.307
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/run.log

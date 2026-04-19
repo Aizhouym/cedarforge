@@ -1,0 +1,165 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.365,
+  "checks": [
+    {
+      "name": "use_safety",
+      "description": "use permitted only when isEnabled AND (role == beta_tester OR role == admin OR rolloutBucket < rolloutPercentage)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"use\"",
+      "resource_type": "Feature",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/use_safety.cedar"
+    },
+    {
+      "name": "preview_safety",
+      "description": "preview permitted only when role is beta_tester or admin",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"preview\"",
+      "resource_type": "Feature",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/preview_safety.cedar"
+    },
+    {
+      "name": "configure_safety",
+      "description": "configure permitted only when role is admin",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"configure\"",
+      "resource_type": "Feature",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/configure_safety.cedar"
+    },
+    {
+      "name": "beta_tester_must_use",
+      "description": "Beta tester MUST be permitted to use an enabled feature",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"use\"",
+      "resource_type": "Feature",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/beta_tester_must_use.cedar"
+    },
+    {
+      "name": "rolled_in_user_must_use",
+      "description": "User with rolloutBucket < rolloutPercentage MUST be permitted to use an enabled feature",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"use\"",
+      "resource_type": "Feature",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/rolled_in_user_must_use.cedar"
+    },
+    {
+      "name": "beta_tester_must_preview",
+      "description": "Beta tester MUST be permitted to preview any feature",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"preview\"",
+      "resource_type": "Feature",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/beta_tester_must_preview.cedar"
+    },
+    {
+      "name": "admin_must_configure",
+      "description": "Admin MUST be permitted to configure any feature",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"configure\"",
+      "resource_type": "Feature",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/feature_flag_rollout-structured_instruction/20260417T063055Z_repair_mi05_repair_loop/feature_flag_rollout_iter_01/_eval_workspace/references/admin_must_configure.cedar"
+    },
+    {
+      "name": "liveness_use",
+      "description": "User+use+Feature liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"use\"",
+      "resource_type": "Feature"
+    },
+    {
+      "name": "liveness_preview",
+      "description": "User+preview+Feature liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"preview\"",
+      "resource_type": "Feature"
+    },
+    {
+      "name": "liveness_configure",
+      "description": "User+configure+Feature liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"configure\"",
+      "resource_type": "Feature"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "use_safety",
+      "check_type": "implies",
+      "description": "use permitted only when isEnabled AND (role == beta_tester OR role == admin OR rolloutBucket < rolloutPercentage)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "preview_safety",
+      "check_type": "implies",
+      "description": "preview permitted only when role is beta_tester or admin",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "configure_safety",
+      "check_type": "implies",
+      "description": "configure permitted only when role is admin",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "beta_tester_must_use",
+      "check_type": "implies",
+      "description": "Beta tester MUST be permitted to use an enabled feature",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "rolled_in_user_must_use",
+      "check_type": "implies",
+      "description": "User with rolloutBucket < rolloutPercentage MUST be permitted to use an enabled feature",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "beta_tester_must_preview",
+      "check_type": "implies",
+      "description": "Beta tester MUST be permitted to preview any feature",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "admin_must_configure",
+      "check_type": "implies",
+      "description": "Admin MUST be permitted to configure any feature",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_use",
+      "check_type": "always-denies (liveness)",
+      "description": "User+use+Feature liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_preview",
+      "check_type": "always-denies (liveness)",
+      "description": "User+preview+Feature liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_configure",
+      "check_type": "always-denies (liveness)",
+      "description": "User+configure+Feature liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

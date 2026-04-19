@@ -1,0 +1,311 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: time-of-day business hours
+difficulty: medium
+features:
+  - duration comparison for time-of-day
+  - role-based override
+domain: enterprise / HR
+---
+
+# Time-of-Day Business Hours -- Policy Specification
+
+## Context
+
+This policy governs access to an enterprise system based on the time of
+day and the user's role. The system models a common enterprise pattern:
+ordinary employees can only work during business hours, while managers
+and admins have extended access. A separate maintenance action is
+restricted to admins during off-hours only.
+
+Entities: `User` (with `role: String`) and `System`. The context carries
+`currentHour: Long` representing the current hour (0-23) in 24-hour
+format. Business hours are defined as 9:00 through 16:59 (i.e.,
+`currentHour >= 9` AND `currentHour < 17`).
+
+Two actions: `access` (general system access) and `maintenance`
+(system maintenance tasks).
+
+## Requirements
+
+### 1. Employee Business-Hours Access (Permit)
+- A User whose `role` is `"employee"` may perform the `access` action
+  on a System resource ONLY during business hours: `context.currentHour
+  >= 9` AND `context.currentHour < 17`.
+- Employees may NOT access the system outside of business hours.
+
+### 2. Manager and Admin Anytime Access (Permit)
+- A User whose `role` is `"manager"` or `"admin"` may perform the
+  `access` action on a System resource at any hour, with no time-of-day
+  restriction.
+
+### 3. Admin Off-Hours Maintenance (Permit)
+- A User whose `role` is `"admin"` may perform the `maintenance` action
+  on a System resource ONLY outside of business hours: `context.currentHour
+  < 9` OR `context.currentHour >= 17`.
+- Only admins may perform maintenance. Employees and managers are never
+  permitted to perform maintenance regardless of the time.
+
+### 4. Maintenance During Business Hours -- Forbidden
+- No user, regardless of role, may perform the `maintenance` action
+  during business hours (when `context.currentHour >= 9` AND
+  `context.currentHour < 17`). This prevents maintenance windows from
+  disrupting active users.
+
+## Notes
+- `currentHour` is a Long in the range 0-23. The host application is
+  responsible for populating this value from the server clock.
+- Business hours are defined as hours 9 through 16 inclusive (i.e.,
+  9:00 AM to 4:59 PM). Hour 17 (5:00 PM) is outside business hours.
+- Cedar denies by default, so the absence of a permit for employees
+  outside business hours or for non-admin maintenance is sufficient.
+  An explicit forbid for maintenance during business hours provides
+  defense-in-depth.
+- The role values are exactly `"employee"`, `"manager"`, and `"admin"`.
+  No other roles exist in this system.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Time-of-Day Business Hours -- enterprise access control based on the
+// current hour of day and the user's role.
+
+entity User = {
+    // One of "employee", "manager", or "admin".
+    role: String,
+};
+
+entity System;
+
+// General system access. Employees are restricted to business hours;
+// managers and admins may access at any time.
+action access appliesTo {
+    principal: [User],
+    resource: [System],
+    context: {
+        // The current hour of day (0-23, 24-hour clock). Populated by
+        // the host application from the server clock.
+        currentHour: Long,
+    },
+};
+
+// System maintenance tasks. Restricted to admins only and only outside
+// business hours (before 9 or at/after 17).
+action maintenance appliesTo {
+    principal: [User],
+    resource: [System],
+    context: {
+        currentHour: Long,
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

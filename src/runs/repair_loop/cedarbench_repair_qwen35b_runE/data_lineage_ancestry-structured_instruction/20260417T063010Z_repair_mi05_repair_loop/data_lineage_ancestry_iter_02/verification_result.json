@@ -1,0 +1,196 @@
+{
+  "loss": 3,
+  "solver_time_s": 0.602,
+  "checks": [
+    {
+      "name": "query_safety",
+      "description": "query permitted only when clearance dominates classification",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"query\"",
+      "resource_type": "Dataset",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/query_safety.cedar"
+    },
+    {
+      "name": "derive_safety",
+      "description": "derive permitted only when clearance dominates classification AND department matches",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"derive\"",
+      "resource_type": "Dataset",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/derive_safety.cedar"
+    },
+    {
+      "name": "export_safety",
+      "description": "export permitted only when clearance dominates classification AND dataset has no personal data",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "Dataset",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/export_safety.cedar"
+    },
+    {
+      "name": "delete_safety",
+      "description": "delete permitted only when clearance is restricted AND department matches",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"delete\"",
+      "resource_type": "Dataset",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/delete_safety.cedar"
+    },
+    {
+      "name": "floor_query_public",
+      "description": "any user MUST be able to query a public dataset",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"query\"",
+      "resource_type": "Dataset",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/floor_query_public.cedar"
+    },
+    {
+      "name": "floor_derive_internal",
+      "description": "internal-or-higher user in matching department MUST derive from internal dataset",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"derive\"",
+      "resource_type": "Dataset",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/floor_derive_internal.cedar"
+    },
+    {
+      "name": "floor_export_internal",
+      "description": "internal-or-higher user MUST export internal non-personal-data dataset",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "Dataset",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/floor_export_internal.cedar"
+    },
+    {
+      "name": "floor_delete",
+      "description": "restricted-clearance user in matching department MUST delete a dataset",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"delete\"",
+      "resource_type": "Dataset",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/data_lineage_ancestry-structured_instruction/20260417T063010Z_repair_mi05_repair_loop/data_lineage_ancestry_iter_02/_eval_workspace/references/floor_delete.cedar"
+    },
+    {
+      "name": "liveness_query",
+      "description": "User+query+Dataset liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"query\"",
+      "resource_type": "Dataset"
+    },
+    {
+      "name": "liveness_derive",
+      "description": "User+derive+Dataset liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"derive\"",
+      "resource_type": "Dataset"
+    },
+    {
+      "name": "liveness_export",
+      "description": "User+export+Dataset liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "Dataset"
+    },
+    {
+      "name": "liveness_delete",
+      "description": "User+delete+Dataset liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"delete\"",
+      "resource_type": "Dataset"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "query_safety",
+      "check_type": "implies",
+      "description": "query permitted only when clearance dominates classification",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "derive_safety",
+      "check_type": "implies",
+      "description": "derive permitted only when clearance dominates classification AND department matches",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"derive\", resource: Dataset::\"\"\ncontext: {}\nentities: [\n  Action::\"delete\",\n  Action::\"export\",\n  Action::\"query\",\n  Dataset::\"\" {\n    classification: \"public\",\n    hasPersonalData: true,\n    sourceDepartment: \"\",\n  },\n  User::\"\" {\n    clearance: \"public\",\n    department: \"public\",\n  },\n  Action::\"derive\",\n]"
+    },
+    {
+      "check_name": "export_safety",
+      "check_type": "implies",
+      "description": "export permitted only when clearance dominates classification AND dataset has no personal data",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"export\", resource: Dataset::\"\"\ncontext: {}\nentities: [\n  Dataset::\"\" {\n    classification: \"public\",\n    hasPersonalData: true,\n    sourceDepartment: \"B\",\n  },\n  Action::\"export\",\n  Action::\"delete\",\n  Action::\"query\",\n  User::\"\" {\n    clearance: \"public\",\n    department: \"A\",\n  },\n  Action::\"derive\",\n]"
+    },
+    {
+      "check_name": "delete_safety",
+      "check_type": "implies",
+      "description": "delete permitted only when clearance is restricted AND department matches",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_query_public",
+      "check_type": "implies",
+      "description": "any user MUST be able to query a public dataset",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"query\", resource: Dataset::\"\"\ncontext: {}\nentities: [\n  User::\"\" {\n    clearance: \"\",\n    department: \"B\",\n  },\n  Action::\"delete\",\n  Action::\"derive\",\n  Action::\"export\",\n  Action::\"query\",\n  Dataset::\"\" {\n    classification: \"public\",\n    hasPersonalData: true,\n    sourceDepartment: \"A\",\n  },\n]"
+    },
+    {
+      "check_name": "floor_derive_internal",
+      "check_type": "implies",
+      "description": "internal-or-higher user in matching department MUST derive from internal dataset",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_export_internal",
+      "check_type": "implies",
+      "description": "internal-or-higher user MUST export internal non-personal-data dataset",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_delete",
+      "check_type": "implies",
+      "description": "restricted-clearance user in matching department MUST delete a dataset",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_query",
+      "check_type": "always-denies (liveness)",
+      "description": "User+query+Dataset liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_derive",
+      "check_type": "always-denies (liveness)",
+      "description": "User+derive+Dataset liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_export",
+      "check_type": "always-denies (liveness)",
+      "description": "User+export+Dataset liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete",
+      "check_type": "always-denies (liveness)",
+      "description": "User+delete+Dataset liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

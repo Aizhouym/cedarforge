@@ -1,0 +1,351 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+# Approval Chain Workflow — Policy Specification
+
+## Context
+
+This policy governs a compliance/legal document approval workflow. A
+Document transitions through states `"draft"` → `"in_review"` →
+`"approved"` or `"rejected"`, and transitions are gated on the set of
+required approvers having signed off.
+
+Principal is `User`; resource is `Document`. There are five actions:
+`submit`, `approve`, `finalize`, `reject`, and `read`.
+
+## Entity Model
+
+- **User**: the principal. Represents any user in the system.
+- **Document**: the resource. Each Document has:
+  - `owner: User` — the document's creator.
+  - `requiredApprovers: Set<User>` — the exact set of users whose
+    approval is required before the document can be finalized. This set
+    is set at document-creation time and does not change.
+  - `currentApprovals: Set<User>` — the set of users who have signed off
+    so far. This set grows monotonically as approvals come in.
+  - `status: String` — one of `"draft"`, `"in_review"`, `"approved"`,
+    `"rejected"`.
+
+## Requirements
+
+### 1. Submit (Draft → In Review)
+- The document **owner** may submit the document for review. This
+  transitions the status from `"draft"` to `"in_review"`.
+- Concretely: permit `submit` when `principal == resource.owner` AND
+  `resource.status == "draft"`.
+- Only the owner may submit. No other user, including required
+  approvers, may perform this action.
+
+### 2. Approve (Record Approval)
+- A user may `approve` a document if they are a member of the
+  document's `requiredApprovers` set AND the document is currently
+  `"in_review"`. Concretely: permit `approve` when `principal in
+  resource.requiredApprovers` AND `resource.status == "in_review"`.
+- The approve action records the user in `currentApprovals`; the
+  policy does not enforce monotonicity (the host application handles
+  set-addition).
+- Users who are not in the required-approvers set cannot approve,
+  regardless of any other role.
+
+### 3. Finalize (In Review → Approved)
+- Any user in the required-approvers set may `finalize` the document,
+  transitioning the status to `"approved"`, provided ALL required
+  approvers have already signed off:
+  `resource.currentApprovals.containsAll(resource.requiredApprovers)`.
+- Concretely: permit `finalize` when all THREE of:
+  - `principal in resource.requiredApprovers`, AND
+  - `resource.status == "in_review"`, AND
+  - `resource.currentApprovals.containsAll(resource.requiredApprovers)`.
+- The `containsAll` check is the core requirement — a document cannot
+  be finalized until every required approver has signed off.
+
+### 4. Reject (In Review → Rejected)
+- Any user in the required-approvers set may `reject` a document during
+  review, regardless of whether others have approved. A single rejection
+  is sufficient to block finalization.
+- Concretely: permit `reject` when `principal in
+  resource.requiredApprovers` AND `resource.status == "in_review"`.
+
+### 5. Read (Any Time)
+- The document's owner may always `read` the document regardless of
+  state. Required approvers may always `read`. Other users may NOT
+  read the document.
+- Concretely: permit `read` when either `principal == resource.owner`
+  OR `principal in resource.requiredApprovers`.
+
+### 6. No Write Actions on Terminal States (Forbid)
+- Once a document is in `"approved"` or `"rejected"` state, no further
+  `submit`, `approve`, `finalize`, or `reject` actions may be performed
+  on it. The terminal states are immutable.
+- Concretely: **forbid** `submit`, `approve`, `finalize`, `reject` when
+  `resource.status == "approved"` OR `resource.status == "rejected"`.
+- Reading terminal-state documents is still allowed per §5.
+
+## Notes
+- The `containsAll` requirement on finalize is the central safety
+  property. Any candidate policy that permits finalize without it is
+  incorrect.
+- The reject-from-any-approver rule means a single negative vote
+  blocks the document; this models a "unanimous consent" workflow.
+- The terminal-state forbid should override all four action permits
+  (submit, approve, finalize, reject). Read is unaffected.
+- Cedar denies by default; the terminal-state forbid is an explicit
+  override on top of the permit rules.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Approval Chain Workflow — a document moves through a state machine and
+// requires N specific approvers to sign off before it can be finalized.
+//
+// Use case: legal / financial / compliance documents where every named
+// approver must sign off before the document is considered approved.
+
+entity User;
+
+// A compliance document that must be approved by a specific set of
+// reviewers before it can be finalized.
+entity Document = {
+    owner: User,
+    // The exact set of users whose approval is required. Drawn from a
+    // template at document-creation time.
+    requiredApprovers: Set<User>,
+    // The set of users who have signed off so far. This grows
+    // monotonically as approvals come in.
+    currentApprovals: Set<User>,
+    // The document's workflow state.
+    status: String,   // "draft" | "in_review" | "approved" | "rejected"
+};
+
+// Actions on the workflow:
+//   submit       — move draft → in_review (owner only)
+//   approve      — add the current principal to currentApprovals
+//                  (principal must be a member of requiredApprovers)
+//   finalize     — move in_review → approved
+//                  (only allowed when currentApprovals ⊇ requiredApprovers)
+//   reject       — move in_review → rejected (any required approver)
+//   read         — view the document
+
+action submit, finalize, reject appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+
+action approve appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+
+action read appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

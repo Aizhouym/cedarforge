@@ -1,0 +1,196 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.427,
+  "checks": [
+    {
+      "name": "review_safety",
+      "description": "review only when trust level meets severity threshold",
+      "type": "implies",
+      "principal_type": "Moderator",
+      "action": "Action::\"review\"",
+      "resource_type": "ContentReport",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/review_safety.cedar"
+    },
+    {
+      "name": "resolve_safety",
+      "description": "resolve under same threshold as review",
+      "type": "implies",
+      "principal_type": "Moderator",
+      "action": "Action::\"resolve\"",
+      "resource_type": "ContentReport",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/resolve_safety.cedar"
+    },
+    {
+      "name": "escalate_safety",
+      "description": "any moderator can escalate",
+      "type": "implies",
+      "principal_type": "Moderator",
+      "action": "Action::\"escalate\"",
+      "resource_type": "ContentReport",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/escalate_safety.cedar"
+    },
+    {
+      "name": "override_safety",
+      "description": "override only when lead (trustLevel >= 3)",
+      "type": "implies",
+      "principal_type": "Moderator",
+      "action": "Action::\"override\"",
+      "resource_type": "ContentReport",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/override_safety.cedar"
+    },
+    {
+      "name": "floor_junior_review_low",
+      "description": "junior mod MUST review severity <= 2",
+      "type": "floor",
+      "principal_type": "Moderator",
+      "action": "Action::\"review\"",
+      "resource_type": "ContentReport",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/floor_junior_review_low.cedar"
+    },
+    {
+      "name": "floor_senior_review_medium",
+      "description": "senior mod MUST review severity <= 4",
+      "type": "floor",
+      "principal_type": "Moderator",
+      "action": "Action::\"review\"",
+      "resource_type": "ContentReport",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/floor_senior_review_medium.cedar"
+    },
+    {
+      "name": "floor_any_escalate",
+      "description": "any mod MUST escalate",
+      "type": "floor",
+      "principal_type": "Moderator",
+      "action": "Action::\"escalate\"",
+      "resource_type": "ContentReport",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/floor_any_escalate.cedar"
+    },
+    {
+      "name": "floor_lead_override",
+      "description": "lead mod MUST override",
+      "type": "floor",
+      "principal_type": "Moderator",
+      "action": "Action::\"override\"",
+      "resource_type": "ContentReport",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/content_moderation_escalation-structured_instruction/20260417T062949Z_repair_mi05_repair_loop/content_moderation_escalation_iter_01/_eval_workspace/references/floor_lead_override.cedar"
+    },
+    {
+      "name": "liveness_review",
+      "description": "at least one review permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "Moderator",
+      "action": "Action::\"review\"",
+      "resource_type": "ContentReport"
+    },
+    {
+      "name": "liveness_resolve",
+      "description": "at least one resolve permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "Moderator",
+      "action": "Action::\"resolve\"",
+      "resource_type": "ContentReport"
+    },
+    {
+      "name": "liveness_escalate",
+      "description": "at least one escalate permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "Moderator",
+      "action": "Action::\"escalate\"",
+      "resource_type": "ContentReport"
+    },
+    {
+      "name": "liveness_override",
+      "description": "at least one override permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "Moderator",
+      "action": "Action::\"override\"",
+      "resource_type": "ContentReport"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "review_safety",
+      "check_type": "implies",
+      "description": "review only when trust level meets severity threshold",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "resolve_safety",
+      "check_type": "implies",
+      "description": "resolve under same threshold as review",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "escalate_safety",
+      "check_type": "implies",
+      "description": "any moderator can escalate",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "override_safety",
+      "check_type": "implies",
+      "description": "override only when lead (trustLevel >= 3)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_junior_review_low",
+      "check_type": "implies",
+      "description": "junior mod MUST review severity <= 2",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_senior_review_medium",
+      "check_type": "implies",
+      "description": "senior mod MUST review severity <= 4",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_any_escalate",
+      "check_type": "implies",
+      "description": "any mod MUST escalate",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_lead_override",
+      "check_type": "implies",
+      "description": "lead mod MUST override",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_review",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one review permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_resolve",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one resolve permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_escalate",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one escalate permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_override",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one override permitted",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

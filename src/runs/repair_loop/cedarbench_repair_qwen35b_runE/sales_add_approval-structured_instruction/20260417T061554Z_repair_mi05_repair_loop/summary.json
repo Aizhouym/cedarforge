@@ -1,0 +1,332 @@
+{
+  "mode": "repair",
+  "run_id": "20260417T061554Z_repair_mi05_repair_loop",
+  "task_id": "sales_add_approval",
+  "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/sales_add_approval",
+  "model": "qwen35b",
+  "base_url": "http://g002:8002/v1",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "max_iterations": 5,
+  "stop_reason": "verification_pass",
+  "completed_iterations": 3,
+  "final_verification_pass": true,
+  "best_semantic_accuracy": 1.0,
+  "first_success_iteration": 3,
+  "results": [
+    {
+      "iteration": 1,
+      "is_repair_iteration": false,
+      "prompt_variant": "structured_instruction",
+      "syntax_pass": true,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1,
+      "failed_checks": [
+        "syntax"
+      ],
+      "failed_check_types": [
+        "syntax"
+      ],
+      "duration_s": 5.307,
+      "metrics": {
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": true,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "syntax_error": false,
+        "schema_error": true,
+        "semantic_error": false,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 1.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 0,
+        "primary_error_type": "schema",
+        "validation_message": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy0`, unable to find an applicable action given the policy scope constraints\n   \u256d\u2500[1:1]\n 1 \u2502 \u256d\u2500\u25b6 permit (\n 2 \u2502 \u2502       principal is User,\n 3 \u2502 \u2502       action == Action::\"ExternalPrezViewActions\",\n 4 \u2502 \u2502       resource is Presentation\n 5 \u2502 \u2502   ) when {\n 6 \u2502 \u2502       principal in resource.viewers\n 7 \u2502 \u2570\u2500\u25b6 };\n 8 \u2502     \n   \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy1`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[9:1]\n  8 \u2502     \n  9 \u2502 \u256d\u2500\u25b6 permit (\n 10 \u2502 \u2502       principal is User,\n 11 \u2502 \u2502       action == Action::\"InternalPrezViewActions\",\n 12 \u2502 \u2502       resource is Presentation\n 13 \u2502 \u2502   ) when {\n 14 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 15 \u2502 \u2502       principal in resource.viewers\n 16 \u2502 \u2570\u2500\u25b6 };\n 17 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy2`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[18:1]\n 17 \u2502     \n 18 \u2502 \u256d\u2500\u25b6 permit (\n 19 \u2502 \u2502       principal is User,\n 20 \u2502 \u2502       action == Action::\"PrezEditActions\",\n 21 \u2502 \u2502       resource is Presentation\n 22 \u2502 \u2502   ) when {\n 23 \u2502 \u2502       resource.owner == principal ||\n 24 \u2502 \u2502       principal in resource.editors\n 25 \u2502 \u2570\u2500\u25b6 };\n 26 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy5`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[47:1]\n 46 \u2502     \n 47 \u2502 \u256d\u2500\u25b6 permit (\n 48 \u2502 \u2502       principal is User,\n 49 \u2502 \u2502       action == Action::\"MarketTemplateViewActions\",\n 50 \u2502 \u2502       resource is Template\n 51 \u2502 \u2502   ) when {\n 52 \u2502 \u2502       principal in resource.viewerMarkets\n 53 \u2502 \u2570\u2500\u25b6 };\n 54 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy6`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[55:1]\n 54 \u2502     \n 55 \u2502 \u256d\u2500\u25b6 permit (\n 56 \u2502 \u2502       principal is User,\n 57 \u2502 \u2502       action == Action::\"InternalTemplateViewActions\",\n 58 \u2502 \u2502       resource is Template\n 59 \u2502 \u2502   ) when {\n 60 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 61 \u2502 \u2502       principal in resource.viewers\n 62 \u2502 \u2570\u2500\u25b6 };\n 63 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy7`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[64:1]\n 63 \u2502     \n 64 \u2502 \u256d\u2500\u25b6 permit (\n 65 \u2502 \u2502       principal is User,\n 66 \u2502 \u2502       action == Action::\"TemplateEditActions\",\n 67 \u2502 \u2502       resource is Template\n 68 \u2502 \u2502   ) when {\n 69 \u2502 \u2502       resource.owner == principal ||\n 70 \u2502 \u2502       principal in resource.editors ||\n 71 \u2502 \u2502       principal in resource.editorMarkets\n 72 \u2502 \u2570\u2500\u25b6 };\n 73 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy0`, policy is impossible: the policy expression evaluates to false for all valid requests\n   \u256d\u2500[1:1]\n 1 \u2502 \u256d\u2500\u25b6 permit (\n 2 \u2502 \u2502       principal is User,\n 3 \u2502 \u2502       action == Action::\"ExternalPrezViewActions\",\n 4 \u2502 \u2502       resource is Presentation\n 5 \u2502 \u2502   ) when {\n 6 \u2502 \u2502       principal in resource.viewers\n 7 \u2502 \u2570\u2500\u25b6 };\n 8 \u2502     \n   \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy1`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[9:1]\n  8 \u2502     \n  9 \u2502 \u256d\u2500\u25b6 permit (\n 10 \u2502 \u2502       principal is User,\n 11 \u2502 \u2502       action == Action::\"InternalPrezViewActions\",\n 12 \u2502 \u2502       resource is Presentation\n 13 \u2502 \u2502   ) when {\n 14 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 15 \u2502 \u2502       principal in resource.viewers\n 16 \u2502 \u2570\u2500\u25b6 };\n 17 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy2`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[18:1]\n 17 \u2502     \n 18 \u2502 \u256d\u2500\u25b6 permit (\n 19 \u2502 \u2502       principal is User,\n 20 \u2502 \u2502       action == Action::\"PrezEditActions\",\n 21 \u2502 \u2502       resource is Presentation\n 22 \u2502 \u2502   ) when {\n 23 \u2502 \u2502       resource.owner == principal ||\n 24 \u2502 \u2502       principal in resource.editors\n 25 \u2502 \u2570\u2500\u25b6 };\n 26 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy5`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[47:1]\n 46 \u2502     \n 47 \u2502 \u256d\u2500\u25b6 permit (\n 48 \u2502 \u2502       principal is User,\n 49 \u2502 \u2502       action == Action::\"MarketTemplateViewActions\",\n 50 \u2502 \u2502       resource is Template\n 51 \u2502 \u2502   ) when {\n 52 \u2502 \u2502       principal in resource.viewerMarkets\n 53 \u2502 \u2570\u2500\u25b6 };\n 54 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy6`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[55:1]\n 54 \u2502     \n 55 \u2502 \u256d\u2500\u25b6 permit (\n 56 \u2502 \u2502       principal is User,\n 57 \u2502 \u2502       action == Action::\"InternalTemplateViewActions\",\n 58 \u2502 \u2502       resource is Template\n 59 \u2502 \u2502   ) when {\n 60 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 61 \u2502 \u2502       principal in resource.viewers\n 62 \u2502 \u2570\u2500\u25b6 };\n 63 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy7`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[64:1]\n 63 \u2502     \n 64 \u2502 \u256d\u2500\u25b6 permit (\n 65 \u2502 \u2502       principal is User,\n 66 \u2502 \u2502       action == Action::\"TemplateEditActions\",\n 67 \u2502 \u2502       resource is Template\n 68 \u2502 \u2502   ) when {\n 69 \u2502 \u2502       resource.owner == principal ||\n 70 \u2502 \u2502       principal in resource.editors ||\n 71 \u2502 \u2502       principal in resource.editorMarkets\n 72 \u2502 \u2570\u2500\u25b6 };\n 73 \u2502     \n    \u2570\u2500\u2500\u2500\u2500"
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/run.log"
+    },
+    {
+      "iteration": 2,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_schema",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.9643,
+      "verification_pass": false,
+      "loss": 1,
+      "failed_checks": [
+        "floor_owner_view_template_approved"
+      ],
+      "failed_check_types": [
+        "implies"
+      ],
+      "duration_s": 5.128,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_schema",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.9643,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": true,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 1,
+        "total_check_count": 28,
+        "primary_error_type": "semantic",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/run.log"
+    },
+    {
+      "iteration": 3,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0,
+      "failed_checks": [],
+      "failed_check_types": [],
+      "duration_s": 5.148,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 28,
+        "primary_error_type": "none",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/run.log"
+    }
+  ],
+  "metrics_by_prompt_variant": [
+    {
+      "prompt_variant": "structured_instruction",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 0.0,
+      "semantic_accuracy": 0.0
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_schema",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 0.9643
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 1.0
+    }
+  ],
+  "metrics_by_iteration": [
+    {
+      "iteration": 1,
+      "syntax_pass": true,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1
+    },
+    {
+      "iteration": 2,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.9643,
+      "verification_pass": false,
+      "loss": 1
+    },
+    {
+      "iteration": 3,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0
+    }
+  ],
+  "repair_loop_record": {
+    "run_id": "20260417T061554Z_repair_mi05_repair_loop",
+    "task_id": "sales_add_approval",
+    "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/sales_add_approval",
+    "initial_prompt_variant": "structured_instruction",
+    "model": "qwen35b",
+    "base_url": "http://g002:8002/v1",
+    "max_iterations": 5,
+    "completed_iterations": 3,
+    "stop_reason": "verification_pass",
+    "final_syntax_pass": true,
+    "final_schema_pass": true,
+    "final_semantic_accuracy": 1.0,
+    "final_verification_pass": true,
+    "final_loss": 0,
+    "best_semantic_accuracy": 1.0,
+    "best_candidate_iteration": 3,
+    "first_success_iteration": 3,
+    "oscillation_count": 0,
+    "failure_layer_sequence": [
+      "schema",
+      "semantic",
+      "pass"
+    ],
+    "iterations": [
+      {
+        "iteration": 1,
+        "is_repair_iteration": false,
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": true,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "verification_pass": false,
+        "loss": 1,
+        "failed_checks": [
+          "syntax"
+        ],
+        "failed_check_types": [
+          "syntax"
+        ],
+        "duration_s": 5.307,
+        "metrics": {
+          "prompt_variant": "structured_instruction",
+          "syntax_pass": true,
+          "schema_pass": false,
+          "semantic_accuracy": 0.0,
+          "syntax_error": false,
+          "schema_error": true,
+          "semantic_error": false,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 1.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 0,
+          "primary_error_type": "schema",
+          "validation_message": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy0`, unable to find an applicable action given the policy scope constraints\n   \u256d\u2500[1:1]\n 1 \u2502 \u256d\u2500\u25b6 permit (\n 2 \u2502 \u2502       principal is User,\n 3 \u2502 \u2502       action == Action::\"ExternalPrezViewActions\",\n 4 \u2502 \u2502       resource is Presentation\n 5 \u2502 \u2502   ) when {\n 6 \u2502 \u2502       principal in resource.viewers\n 7 \u2502 \u2570\u2500\u25b6 };\n 8 \u2502     \n   \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy1`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[9:1]\n  8 \u2502     \n  9 \u2502 \u256d\u2500\u25b6 permit (\n 10 \u2502 \u2502       principal is User,\n 11 \u2502 \u2502       action == Action::\"InternalPrezViewActions\",\n 12 \u2502 \u2502       resource is Presentation\n 13 \u2502 \u2502   ) when {\n 14 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 15 \u2502 \u2502       principal in resource.viewers\n 16 \u2502 \u2570\u2500\u25b6 };\n 17 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy2`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[18:1]\n 17 \u2502     \n 18 \u2502 \u256d\u2500\u25b6 permit (\n 19 \u2502 \u2502       principal is User,\n 20 \u2502 \u2502       action == Action::\"PrezEditActions\",\n 21 \u2502 \u2502       resource is Presentation\n 22 \u2502 \u2502   ) when {\n 23 \u2502 \u2502       resource.owner == principal ||\n 24 \u2502 \u2502       principal in resource.editors\n 25 \u2502 \u2570\u2500\u25b6 };\n 26 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy5`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[47:1]\n 46 \u2502     \n 47 \u2502 \u256d\u2500\u25b6 permit (\n 48 \u2502 \u2502       principal is User,\n 49 \u2502 \u2502       action == Action::\"MarketTemplateViewActions\",\n 50 \u2502 \u2502       resource is Template\n 51 \u2502 \u2502   ) when {\n 52 \u2502 \u2502       principal in resource.viewerMarkets\n 53 \u2502 \u2570\u2500\u25b6 };\n 54 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy6`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[55:1]\n 54 \u2502     \n 55 \u2502 \u256d\u2500\u25b6 permit (\n 56 \u2502 \u2502       principal is User,\n 57 \u2502 \u2502       action == Action::\"InternalTemplateViewActions\",\n 58 \u2502 \u2502       resource is Template\n 59 \u2502 \u2502   ) when {\n 60 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 61 \u2502 \u2502       principal in resource.viewers\n 62 \u2502 \u2570\u2500\u25b6 };\n 63 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 for policy `policy7`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[64:1]\n 63 \u2502     \n 64 \u2502 \u256d\u2500\u25b6 permit (\n 65 \u2502 \u2502       principal is User,\n 66 \u2502 \u2502       action == Action::\"TemplateEditActions\",\n 67 \u2502 \u2502       resource is Template\n 68 \u2502 \u2502   ) when {\n 69 \u2502 \u2502       resource.owner == principal ||\n 70 \u2502 \u2502       principal in resource.editors ||\n 71 \u2502 \u2502       principal in resource.editorMarkets\n 72 \u2502 \u2570\u2500\u25b6 };\n 73 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy0`, policy is impossible: the policy expression evaluates to false for all valid requests\n   \u256d\u2500[1:1]\n 1 \u2502 \u256d\u2500\u25b6 permit (\n 2 \u2502 \u2502       principal is User,\n 3 \u2502 \u2502       action == Action::\"ExternalPrezViewActions\",\n 4 \u2502 \u2502       resource is Presentation\n 5 \u2502 \u2502   ) when {\n 6 \u2502 \u2502       principal in resource.viewers\n 7 \u2502 \u2570\u2500\u25b6 };\n 8 \u2502     \n   \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy1`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[9:1]\n  8 \u2502     \n  9 \u2502 \u256d\u2500\u25b6 permit (\n 10 \u2502 \u2502       principal is User,\n 11 \u2502 \u2502       action == Action::\"InternalPrezViewActions\",\n 12 \u2502 \u2502       resource is Presentation\n 13 \u2502 \u2502   ) when {\n 14 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 15 \u2502 \u2502       principal in resource.viewers\n 16 \u2502 \u2570\u2500\u25b6 };\n 17 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy2`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[18:1]\n 17 \u2502     \n 18 \u2502 \u256d\u2500\u25b6 permit (\n 19 \u2502 \u2502       principal is User,\n 20 \u2502 \u2502       action == Action::\"PrezEditActions\",\n 21 \u2502 \u2502       resource is Presentation\n 22 \u2502 \u2502   ) when {\n 23 \u2502 \u2502       resource.owner == principal ||\n 24 \u2502 \u2502       principal in resource.editors\n 25 \u2502 \u2570\u2500\u25b6 };\n 26 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy5`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[47:1]\n 46 \u2502     \n 47 \u2502 \u256d\u2500\u25b6 permit (\n 48 \u2502 \u2502       principal is User,\n 49 \u2502 \u2502       action == Action::\"MarketTemplateViewActions\",\n 50 \u2502 \u2502       resource is Template\n 51 \u2502 \u2502   ) when {\n 52 \u2502 \u2502       principal in resource.viewerMarkets\n 53 \u2502 \u2570\u2500\u25b6 };\n 54 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy6`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[55:1]\n 54 \u2502     \n 55 \u2502 \u256d\u2500\u25b6 permit (\n 56 \u2502 \u2502       principal is User,\n 57 \u2502 \u2502       action == Action::\"InternalTemplateViewActions\",\n 58 \u2502 \u2502       resource is Template\n 59 \u2502 \u2502   ) when {\n 60 \u2502 \u2502       principal.job == Job::\"internal\" &&\n 61 \u2502 \u2502       principal in resource.viewers\n 62 \u2502 \u2570\u2500\u25b6 };\n 63 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy7`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[64:1]\n 63 \u2502     \n 64 \u2502 \u256d\u2500\u25b6 permit (\n 65 \u2502 \u2502       principal is User,\n 66 \u2502 \u2502       action == Action::\"TemplateEditActions\",\n 67 \u2502 \u2502       resource is Template\n 68 \u2502 \u2502   ) when {\n 69 \u2502 \u2502       resource.owner == principal ||\n 70 \u2502 \u2502       principal in resource.editors ||\n 71 \u2502 \u2502       principal in resource.editorMarkets\n 72 \u2502 \u2570\u2500\u25b6 };\n 73 \u2502     \n    \u2570\u2500\u2500\u2500\u2500"
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_01/run.log"
+      },
+      {
+        "iteration": 2,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_schema",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.9643,
+        "verification_pass": false,
+        "loss": 1,
+        "failed_checks": [
+          "floor_owner_view_template_approved"
+        ],
+        "failed_check_types": [
+          "implies"
+        ],
+        "duration_s": 5.128,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_schema",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 0.9643,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": true,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 1,
+          "total_check_count": 28,
+          "primary_error_type": "semantic",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_02/run.log"
+      },
+      {
+        "iteration": 3,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "verification_pass": true,
+        "loss": 0,
+        "failed_checks": [],
+        "failed_check_types": [],
+        "duration_s": 5.148,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_semantic",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 1.0,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 28,
+          "primary_error_type": "none",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_approval-structured_instruction/20260417T061554Z_repair_mi05_repair_loop/sales_add_approval_iter_03/run.log"
+      }
+    ]
+  }
+}

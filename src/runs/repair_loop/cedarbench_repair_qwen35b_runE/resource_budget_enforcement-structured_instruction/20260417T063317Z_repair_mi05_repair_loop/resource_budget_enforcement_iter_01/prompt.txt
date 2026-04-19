@@ -1,0 +1,279 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: resource budget enforcement (quota-based access)
+difficulty: medium
+features:
+  - numeric comparison for budget/quota checks
+  - context-provided usage counters
+  - tier-based resource limits
+domain: cloud platform / SaaS billing
+---
+
+# Resource Budget Enforcement — Policy Specification
+
+## Context
+
+A cloud platform where `Tenant` principals provision `Resource`
+instances. Each tenant has a `tier` (`"free"`, `"pro"`, `"enterprise"`)
+and the host application passes the current `usageCount` (how many
+resources the tenant currently has) in the request context.
+
+This scenario tests the pattern where the authorization decision
+depends on a numeric comparison between a context-provided counter
+and a tier-derived limit.
+
+## Requirements
+
+### 1. Create — Within Budget
+A Tenant may `create` a Resource when:
+- Tier `"free"`: `context.usageCount < 5` (max 5 resources)
+- Tier `"pro"`: `context.usageCount < 50` (max 50 resources)
+- Tier `"enterprise"`: always permitted (unlimited)
+
+### 2. Read — Always Permitted
+A Tenant may `read` any of their own Resources. Since the schema
+doesn't model ownership (to keep the focus on quota logic), read
+is permitted for any Tenant on any Resource.
+
+### 3. Delete — Always Permitted
+A Tenant may `delete` any Resource (deleting frees quota).
+
+### 4. Upgrade — Enterprise Only
+A Tenant may `upgrade` a Resource (e.g. increase compute) when:
+- The tenant's tier is `"pro"` or `"enterprise"`.
+
+Free-tier tenants cannot upgrade resources.
+
+### 5. Default Deny
+All other requests are denied.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Resource Budget Enforcement — quota-based provisioning.
+// Tests numeric comparison for tier-derived resource limits.
+
+entity Tenant = {
+    tier: String,   // "free" | "pro" | "enterprise"
+};
+
+entity Resource;
+
+action create, read, delete, upgrade appliesTo {
+    principal: [Tenant],
+    resource: [Resource],
+    context: {
+        usageCount: Long,   // current number of resources the tenant has
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

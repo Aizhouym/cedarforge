@@ -1,0 +1,184 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_archive-structured_instruction/20260417T061623Z_repair_mi05_repair_loop/sales_add_archive_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.8,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 5,
+  "failed_checks": [
+    "floor_view_archived"
+  ],
+  "failed_check_types": [
+    "implies"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_schema",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.8,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 1,
+    "total_check_count": 5,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 0.509,
+    "checks": [
+      {
+        "name": "ceiling_edit_presentation",
+        "description": "editPresentation only if owner or editor AND not archived",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"editPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_archive-structured_instruction/20260417T061623Z_repair_mi05_repair_loop/sales_add_archive_iter_02/_eval_workspace/references/ceiling_edit_presentation.cedar"
+      },
+      {
+        "name": "ceiling_grant_view",
+        "description": "grantViewAccessToPresentation only if owner or editor AND not archived",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantViewAccessToPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_archive-structured_instruction/20260417T061623Z_repair_mi05_repair_loop/sales_add_archive_iter_02/_eval_workspace/references/ceiling_grant_view.cedar"
+      },
+      {
+        "name": "floor_view_archived",
+        "description": "Viewers MUST still be able to view archived presentations",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"viewPresentation\"",
+        "resource_type": "Presentation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_archive-structured_instruction/20260417T061623Z_repair_mi05_repair_loop/sales_add_archive_iter_02/_eval_workspace/references/floor_view_archived.cedar"
+      },
+      {
+        "name": "liveness_edit",
+        "description": "editPresentation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"editPresentation\"",
+        "resource_type": "Presentation"
+      },
+      {
+        "name": "liveness_view",
+        "description": "viewPresentation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"viewPresentation\"",
+        "resource_type": "Presentation"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "ceiling_edit_presentation",
+        "check_type": "implies",
+        "description": "editPresentation only if owner or editor AND not archived",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "ceiling_grant_view",
+        "check_type": "implies",
+        "description": "grantViewAccessToPresentation only if owner or editor AND not archived",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_view_archived",
+        "check_type": "implies",
+        "description": "Viewers MUST still be able to view archived presentations",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"viewPresentation\", resource: Presentation::\"\"\ncontext: {}\nentities: [\n  Action::\"viewTemplate\" in [Action::\"MarketTemplateViewActions\", Action::\"InternalTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"InternalTemplateViewActions\",\n  Action::\"MarketTemplateViewActions\",\n  Action::\"editTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"ExternalPrezViewActions\",\n  Action::\"editPresentation\" in [Action::\"PrezEditActions\"],\n  User::\"A\" {\n    customerId: \"\",\n    job: Job::\"\",\n  },\n  Action::\"grantEditAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"InternalPrezViewActions\",\n  Action::\"grantViewAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  User::\"\" {\n    customerId: \"\",\n    job: Job::\"\",\n  },\n  Job::\"\",\n  Action::\"grantViewAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"removeSelfAccessFromTemplate\" in [Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  Action::\"viewPresentation\" in [Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\", Action::\"PrezEditActions\"],\n  Action::\"TemplateEditActions\",\n  Action::\"removeSelfAccessFromPresentation\" in [Action::\"PrezEditActions\", Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\"],\n  Presentation::\"\" {\n    editors: [],\n    isArchived: true,\n    owner: User::\"A\",\n    viewers: [User::\"\"],\n  },\n  Action::\"duplicateTemplate\" in [Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  Action::\"removeOthersAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Job::\"internal\",\n  Action::\"grantEditAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"duplicatePresentation\" in [Action::\"PrezEditActions\", Action::\"InternalPrezViewActions\"],\n  Action::\"PrezEditActions\",\n]"
+      },
+      {
+        "check_name": "liveness_edit",
+        "check_type": "always-denies (liveness)",
+        "description": "editPresentation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view",
+        "check_type": "always-denies (liveness)",
+        "description": "viewPresentation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 5,
+        "failed_checks": [
+          "floor_view_archived"
+        ],
+        "solver_time_s": 0.509,
+        "checks": [
+          {
+            "name": "ceiling_edit_presentation",
+            "type": "implies",
+            "description": "editPresentation only if owner or editor AND not archived",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "ceiling_grant_view",
+            "type": "implies",
+            "description": "grantViewAccessToPresentation only if owner or editor AND not archived",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_view_archived",
+            "type": "implies",
+            "description": "Viewers MUST still be able to view archived presentations",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"viewPresentation\", resource: Presentation::\"\"\ncontext: {}\nentities: [\n  Action::\"viewTemplate\" in [Action::\"MarketTemplateViewActions\", Action::\"InternalTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"InternalTemplateViewActions\",\n  Action::\"MarketTemplateViewActions\",\n  Action::\"editTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"ExternalPrezViewActions\",\n  Action::\"editPresentation\" in [Action::\"PrezEditActions\"],\n  User::\"A\" {\n    customerId: \"\",\n    job: Job::\"\",\n  },\n  Action::\"grantEditAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"InternalPrezViewActions\",\n  Action::\"grantViewAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  User::\"\" {\n    customerId: \"\",\n    job: Job::\"\",\n  },\n  Job::\"\",\n  Action::\"grantViewAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"removeSelfAccessFromTemplate\" in [Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  Action::\"viewPresentation\" in [Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\", Action::\"PrezEditActions\"],\n  Action::\"TemplateEditActions\",\n  Action::\"removeSelfAccessFromPresentation\" in [Action::\"PrezEditActions\", Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\"],\n  Presentation::\"\" {\n    editors: [],\n    isArchived: true,\n    owner: User::\"A\",\n    viewers: [User::\"\"],\n  },\n  Action::\"duplicateTemplate\" in [Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  Action::\"removeOthersAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Job::\"internal\",\n  Action::\"grantEditAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"duplicatePresentation\" in [Action::\"PrezEditActions\", Action::\"InternalPrezViewActions\"],\n  Action::\"PrezEditActions\",\n]"
+          },
+          {
+            "name": "liveness_edit",
+            "type": "always-denies (liveness)",
+            "description": "editPresentation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view",
+            "type": "always-denies (liveness)",
+            "description": "viewPresentation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

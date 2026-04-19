@@ -1,0 +1,212 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.508,
+  "checks": [
+    {
+      "name": "viewDetails_safety",
+      "description": "viewDetails permitted only on active incidents",
+      "type": "implies",
+      "principal_type": "Responder",
+      "action": "Action::\"viewDetails\"",
+      "resource_type": "Incident",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/viewDetails_safety.cedar"
+    },
+    {
+      "name": "updateStatus_safety",
+      "description": "updateStatus permitted only on active incidents with matching clearance-severity threshold",
+      "type": "implies",
+      "principal_type": "Responder",
+      "action": "Action::\"updateStatus\"",
+      "resource_type": "Incident",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/updateStatus_safety.cedar"
+    },
+    {
+      "name": "accessLogs_safety",
+      "description": "accessLogs permitted only for leads and commanders (any incident state)",
+      "type": "implies",
+      "principal_type": "Responder",
+      "action": "Action::\"accessLogs\"",
+      "resource_type": "Incident",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/accessLogs_safety.cedar"
+    },
+    {
+      "name": "declareResolved_safety",
+      "description": "declareResolved permitted only for commanders on active incidents",
+      "type": "implies",
+      "principal_type": "Responder",
+      "action": "Action::\"declareResolved\"",
+      "resource_type": "Incident",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/declareResolved_safety.cedar"
+    },
+    {
+      "name": "floor_viewDetails_active",
+      "description": "Any responder MUST be permitted to view an active incident",
+      "type": "floor",
+      "principal_type": "Responder",
+      "action": "Action::\"viewDetails\"",
+      "resource_type": "Incident",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/floor_viewDetails_active.cedar"
+    },
+    {
+      "name": "floor_updateStatus_sev1",
+      "description": "Responder with clearanceLevel >= 3 MUST be permitted to updateStatus on active sev1",
+      "type": "floor",
+      "principal_type": "Responder",
+      "action": "Action::\"updateStatus\"",
+      "resource_type": "Incident",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/floor_updateStatus_sev1.cedar"
+    },
+    {
+      "name": "floor_updateStatus_sev2",
+      "description": "Responder with clearanceLevel >= 2 MUST be permitted to updateStatus on active sev2",
+      "type": "floor",
+      "principal_type": "Responder",
+      "action": "Action::\"updateStatus\"",
+      "resource_type": "Incident",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/floor_updateStatus_sev2.cedar"
+    },
+    {
+      "name": "floor_accessLogs_lead",
+      "description": "Lead MUST be permitted to access logs on any incident",
+      "type": "floor",
+      "principal_type": "Responder",
+      "action": "Action::\"accessLogs\"",
+      "resource_type": "Incident",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/floor_accessLogs_lead.cedar"
+    },
+    {
+      "name": "floor_declareResolved_commander",
+      "description": "Commander MUST be permitted to declareResolved on an active incident",
+      "type": "floor",
+      "principal_type": "Responder",
+      "action": "Action::\"declareResolved\"",
+      "resource_type": "Incident",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/incident_response_war_room-structured_instruction/20260417T063134Z_repair_mi05_repair_loop/incident_response_war_room_iter_01/_eval_workspace/references/floor_declareResolved_commander.cedar"
+    },
+    {
+      "name": "liveness_viewDetails",
+      "description": "Responder+viewDetails+Incident liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Responder",
+      "action": "Action::\"viewDetails\"",
+      "resource_type": "Incident"
+    },
+    {
+      "name": "liveness_updateStatus",
+      "description": "Responder+updateStatus+Incident liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Responder",
+      "action": "Action::\"updateStatus\"",
+      "resource_type": "Incident"
+    },
+    {
+      "name": "liveness_accessLogs",
+      "description": "Responder+accessLogs+Incident liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Responder",
+      "action": "Action::\"accessLogs\"",
+      "resource_type": "Incident"
+    },
+    {
+      "name": "liveness_declareResolved",
+      "description": "Responder+declareResolved+Incident liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Responder",
+      "action": "Action::\"declareResolved\"",
+      "resource_type": "Incident"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "viewDetails_safety",
+      "check_type": "implies",
+      "description": "viewDetails permitted only on active incidents",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "updateStatus_safety",
+      "check_type": "implies",
+      "description": "updateStatus permitted only on active incidents with matching clearance-severity threshold",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "accessLogs_safety",
+      "check_type": "implies",
+      "description": "accessLogs permitted only for leads and commanders (any incident state)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "declareResolved_safety",
+      "check_type": "implies",
+      "description": "declareResolved permitted only for commanders on active incidents",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_viewDetails_active",
+      "check_type": "implies",
+      "description": "Any responder MUST be permitted to view an active incident",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_updateStatus_sev1",
+      "check_type": "implies",
+      "description": "Responder with clearanceLevel >= 3 MUST be permitted to updateStatus on active sev1",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_updateStatus_sev2",
+      "check_type": "implies",
+      "description": "Responder with clearanceLevel >= 2 MUST be permitted to updateStatus on active sev2",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_accessLogs_lead",
+      "check_type": "implies",
+      "description": "Lead MUST be permitted to access logs on any incident",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_declareResolved_commander",
+      "check_type": "implies",
+      "description": "Commander MUST be permitted to declareResolved on an active incident",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_viewDetails",
+      "check_type": "always-denies (liveness)",
+      "description": "Responder+viewDetails+Incident liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_updateStatus",
+      "check_type": "always-denies (liveness)",
+      "description": "Responder+updateStatus+Incident liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_accessLogs",
+      "check_type": "always-denies (liveness)",
+      "description": "Responder+accessLogs+Incident liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_declareResolved",
+      "check_type": "always-denies (liveness)",
+      "description": "Responder+declareResolved+Incident liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.775,
+  "checks": [
+    {
+      "name": "submit_safety",
+      "description": "submit permitted only when (principal == owner AND status == draft)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"submit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/submit_safety.cedar"
+    },
+    {
+      "name": "approve_safety",
+      "description": "approve permitted only when (principal in requiredApprovers AND status == in_review)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"approve\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/approve_safety.cedar"
+    },
+    {
+      "name": "finalize_safety",
+      "description": "finalize permitted only when (principal in requiredApprovers AND status == in_review AND currentApprovals.containsAll(requiredApprovers))",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"finalize\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/finalize_safety.cedar"
+    },
+    {
+      "name": "reject_safety",
+      "description": "reject permitted only when (principal in requiredApprovers AND status == in_review)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"reject\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/reject_safety.cedar"
+    },
+    {
+      "name": "read_safety",
+      "description": "read permitted only when (principal == owner OR principal in requiredApprovers)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "owner_must_submit_draft",
+      "description": "Owner MUST be permitted to submit when status is draft",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"submit\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/owner_must_submit_draft.cedar"
+    },
+    {
+      "name": "approver_must_approve_in_review",
+      "description": "Required approver MUST be permitted to approve when in_review",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"approve\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/approver_must_approve_in_review.cedar"
+    },
+    {
+      "name": "approver_must_finalize_when_all_approved",
+      "description": "Required approver MUST be permitted to finalize when ALL required approvers have signed off AND in_review",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"finalize\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/approver_must_finalize_when_all_approved.cedar"
+    },
+    {
+      "name": "approver_must_reject_in_review",
+      "description": "Required approver MUST be permitted to reject when in_review",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"reject\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/approver_must_reject_in_review.cedar"
+    },
+    {
+      "name": "owner_must_read_any_state",
+      "description": "Owner MUST be permitted to read in any state",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/owner_must_read_any_state.cedar"
+    },
+    {
+      "name": "approver_must_read_any_state",
+      "description": "Required approver MUST be permitted to read in any state",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/approval_chain_workflow-structured_instruction/20260417T062912Z_repair_mi05_repair_loop/approval_chain_workflow_iter_01/_eval_workspace/references/approver_must_read_any_state.cedar"
+    },
+    {
+      "name": "liveness_submit",
+      "description": "User+submit+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"submit\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_approve",
+      "description": "User+approve+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"approve\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_finalize",
+      "description": "User+finalize+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"finalize\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_reject",
+      "description": "User+reject+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"reject\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_read",
+      "description": "User+read+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "submit_safety",
+      "check_type": "implies",
+      "description": "submit permitted only when (principal == owner AND status == draft)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approve_safety",
+      "check_type": "implies",
+      "description": "approve permitted only when (principal in requiredApprovers AND status == in_review)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "finalize_safety",
+      "check_type": "implies",
+      "description": "finalize permitted only when (principal in requiredApprovers AND status == in_review AND currentApprovals.containsAll(requiredApprovers))",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reject_safety",
+      "check_type": "implies",
+      "description": "reject permitted only when (principal in requiredApprovers AND status == in_review)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "read permitted only when (principal == owner OR principal in requiredApprovers)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_must_submit_draft",
+      "check_type": "implies",
+      "description": "Owner MUST be permitted to submit when status is draft",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approver_must_approve_in_review",
+      "check_type": "implies",
+      "description": "Required approver MUST be permitted to approve when in_review",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approver_must_finalize_when_all_approved",
+      "check_type": "implies",
+      "description": "Required approver MUST be permitted to finalize when ALL required approvers have signed off AND in_review",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approver_must_reject_in_review",
+      "check_type": "implies",
+      "description": "Required approver MUST be permitted to reject when in_review",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_must_read_any_state",
+      "check_type": "implies",
+      "description": "Owner MUST be permitted to read in any state",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approver_must_read_any_state",
+      "check_type": "implies",
+      "description": "Required approver MUST be permitted to read in any state",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_submit",
+      "check_type": "always-denies (liveness)",
+      "description": "User+submit+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_approve",
+      "check_type": "always-denies (liveness)",
+      "description": "User+approve+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_finalize",
+      "check_type": "always-denies (liveness)",
+      "description": "User+finalize+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_reject",
+      "check_type": "always-denies (liveness)",
+      "description": "User+reject+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_read",
+      "check_type": "always-denies (liveness)",
+      "description": "User+read+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

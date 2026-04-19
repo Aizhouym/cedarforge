@@ -1,0 +1,238 @@
+{
+  "mode": "repair",
+  "run_id": "20260417T060938Z_repair_mi05_repair_loop",
+  "task_id": "github_add_pullrequest",
+  "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/github_add_pullrequest",
+  "model": "qwen35b",
+  "base_url": "http://g002:8002/v1",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "max_iterations": 5,
+  "stop_reason": "verification_pass",
+  "completed_iterations": 2,
+  "final_verification_pass": true,
+  "best_semantic_accuracy": 1.0,
+  "first_success_iteration": 2,
+  "results": [
+    {
+      "iteration": 1,
+      "is_repair_iteration": false,
+      "prompt_variant": "structured_instruction",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.9412,
+      "verification_pass": false,
+      "loss": 2,
+      "failed_checks": [
+        "edit_issue_safety",
+        "delete_issue_safety"
+      ],
+      "failed_check_types": [
+        "implies",
+        "implies"
+      ],
+      "duration_s": 4.572,
+      "metrics": {
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.9412,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": true,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 2,
+        "total_check_count": 34,
+        "primary_error_type": "semantic",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/run.log"
+    },
+    {
+      "iteration": 2,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0,
+      "failed_checks": [],
+      "failed_check_types": [],
+      "duration_s": 3.118,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 34,
+        "primary_error_type": "none",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/run.log"
+    }
+  ],
+  "metrics_by_prompt_variant": [
+    {
+      "prompt_variant": "structured_instruction",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 0.9412
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 1.0
+    }
+  ],
+  "metrics_by_iteration": [
+    {
+      "iteration": 1,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.9412,
+      "verification_pass": false,
+      "loss": 2
+    },
+    {
+      "iteration": 2,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0
+    }
+  ],
+  "repair_loop_record": {
+    "run_id": "20260417T060938Z_repair_mi05_repair_loop",
+    "task_id": "github_add_pullrequest",
+    "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/github_add_pullrequest",
+    "initial_prompt_variant": "structured_instruction",
+    "model": "qwen35b",
+    "base_url": "http://g002:8002/v1",
+    "max_iterations": 5,
+    "completed_iterations": 2,
+    "stop_reason": "verification_pass",
+    "final_syntax_pass": true,
+    "final_schema_pass": true,
+    "final_semantic_accuracy": 1.0,
+    "final_verification_pass": true,
+    "final_loss": 0,
+    "best_semantic_accuracy": 1.0,
+    "best_candidate_iteration": 2,
+    "first_success_iteration": 2,
+    "oscillation_count": 0,
+    "failure_layer_sequence": [
+      "semantic",
+      "pass"
+    ],
+    "iterations": [
+      {
+        "iteration": 1,
+        "is_repair_iteration": false,
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.9412,
+        "verification_pass": false,
+        "loss": 2,
+        "failed_checks": [
+          "edit_issue_safety",
+          "delete_issue_safety"
+        ],
+        "failed_check_types": [
+          "implies",
+          "implies"
+        ],
+        "duration_s": 4.572,
+        "metrics": {
+          "prompt_variant": "structured_instruction",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 0.9412,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": true,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 2,
+          "total_check_count": 34,
+          "primary_error_type": "semantic",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_01/run.log"
+      },
+      {
+        "iteration": 2,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "verification_pass": true,
+        "loss": 0,
+        "failed_checks": [],
+        "failed_check_types": [],
+        "duration_s": 3.118,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_semantic",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 1.0,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 34,
+          "primary_error_type": "none",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_pullrequest-structured_instruction/20260417T060938Z_repair_mi05_repair_loop/github_add_pullrequest_iter_02/run.log"
+      }
+    ]
+  }
+}

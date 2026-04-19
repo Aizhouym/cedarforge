@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `time` is not a valid method\n    \u256d\u2500[82:9]\n 81 \u2502     (\n 82 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 83 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[83:9]\n 82 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time().hour() < 6 ||\n 83 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 84 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?"
+    }
+  ]
+}

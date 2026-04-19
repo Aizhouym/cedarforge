@@ -1,0 +1,87 @@
+{
+  "loss": 3,
+  "solver_time_s": 0.256,
+  "checks": [
+    {
+      "name": "ceiling_comment",
+      "description": "CommentOnDocument only if owner or in commentACL (authenticated)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"CommentOnDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_01/_eval_workspace/references/ceiling_comment.cedar"
+    },
+    {
+      "name": "ceiling_view",
+      "description": "ViewDocument only if owner or in viewACL (authenticated User)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_01/_eval_workspace/references/ceiling_view.cedar"
+    },
+    {
+      "name": "ceiling_modify",
+      "description": "ModifyDocument only if owner or in modifyACL (authenticated)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_01/_eval_workspace/references/ceiling_modify.cedar"
+    },
+    {
+      "name": "floor_comment_acl",
+      "description": "Users in commentACL MUST be able to CommentOnDocument",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"CommentOnDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_01/_eval_workspace/references/floor_comment_acl.cedar"
+    },
+    {
+      "name": "liveness_comment",
+      "description": "CommentOnDocument is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"CommentOnDocument\"",
+      "resource_type": "Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "ceiling_comment",
+      "check_type": "implies",
+      "description": "CommentOnDocument only if owner or in commentACL (authenticated)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"CommentOnDocument\", resource: Document::\"\"\ncontext: {is_authenticated: false}\nentities: [\n  Action::\"AddToShareACL\",\n  Action::\"CreateDocument\",\n  Action::\"EditIsPrivate\",\n  Action::\"DeleteGroup\",\n  Action::\"ModifyDocument\",\n  Action::\"EditPublicAccess\",\n  DocumentShare::\"B\",\n  Action::\"ViewDocument\",\n  Action::\"CommentOnDocument\",\n  Action::\"ModifyGroup\",\n  DocumentShare::\"A\",\n  Action::\"CreateGroup\",\n  DocumentShare::\"C\",\n  DocumentShare::\"\",\n  Action::\"DeleteDocument\",\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Document::\"\" {\n    commentACL: DocumentShare::\"\",\n    isPrivate: true,\n    manageACL: DocumentShare::\"A\",\n    modifyACL: DocumentShare::\"B\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"C\",\n  },\n  Group::\"\" {\n    owner: User::\"\",\n  },\n]"
+    },
+    {
+      "check_name": "ceiling_view",
+      "check_type": "implies",
+      "description": "ViewDocument only if owner or in viewACL (authenticated User)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"ViewDocument\", resource: Document::\"\"\ncontext: {is_authenticated: false}\nentities: [\n  Action::\"ViewDocument\",\n  DocumentShare::\"C\",\n  Action::\"DeleteDocument\",\n  DocumentShare::\"\",\n  Action::\"CreateDocument\",\n  DocumentShare::\"A\",\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"ModifyGroup\",\n  DocumentShare::\"B\",\n  Action::\"AddToShareACL\",\n  Document::\"\" {\n    commentACL: DocumentShare::\"A\",\n    isPrivate: true,\n    manageACL: DocumentShare::\"B\",\n    modifyACL: DocumentShare::\"C\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"\",\n  },\n  Action::\"CommentOnDocument\",\n  Action::\"ModifyDocument\",\n  Action::\"EditIsPrivate\",\n  Action::\"EditPublicAccess\",\n  Action::\"CreateGroup\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"DeleteGroup\",\n]"
+    },
+    {
+      "check_name": "ceiling_modify",
+      "check_type": "implies",
+      "description": "ModifyDocument only if owner or in modifyACL (authenticated)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"ModifyDocument\", resource: Document::\"\"\ncontext: {is_authenticated: false}\nentities: [\n  DocumentShare::\"\",\n  DocumentShare::\"B\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"ModifyGroup\",\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"DeleteDocument\",\n  Action::\"DeleteGroup\",\n  Action::\"EditPublicAccess\",\n  Action::\"CreateDocument\",\n  Action::\"CommentOnDocument\",\n  DocumentShare::\"C\",\n  Action::\"AddToShareACL\",\n  Action::\"ModifyDocument\",\n  Action::\"EditIsPrivate\",\n  DocumentShare::\"A\",\n  Action::\"ViewDocument\",\n  Document::\"\" {\n    commentACL: DocumentShare::\"A\",\n    isPrivate: true,\n    manageACL: DocumentShare::\"B\",\n    modifyACL: DocumentShare::\"\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"C\",\n  },\n  Action::\"CreateGroup\",\n]"
+    },
+    {
+      "check_name": "floor_comment_acl",
+      "check_type": "implies",
+      "description": "Users in commentACL MUST be able to CommentOnDocument",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_comment",
+      "check_type": "always-denies (liveness)",
+      "description": "CommentOnDocument is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.741,
+  "checks": [
+    {
+      "name": "respond_safety",
+      "description": "respond permitted only when agent maxPriority >= ticket priority",
+      "type": "implies",
+      "principal_type": "Agent",
+      "action": "Action::\"respond\"",
+      "resource_type": "Ticket",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/respond_safety.cedar"
+    },
+    {
+      "name": "escalate_safety",
+      "description": "escalate permitted unconditionally (any agent, any ticket)",
+      "type": "implies",
+      "principal_type": "Agent",
+      "action": "Action::\"escalate\"",
+      "resource_type": "Ticket",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/escalate_safety.cedar"
+    },
+    {
+      "name": "close_safety",
+      "description": "close permitted only when maxPriority >= priority AND (not escalated OR manager)",
+      "type": "implies",
+      "principal_type": "Agent",
+      "action": "Action::\"close\"",
+      "resource_type": "Ticket",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/close_safety.cedar"
+    },
+    {
+      "name": "reassign_safety",
+      "description": "reassign permitted only when agent role is manager",
+      "type": "implies",
+      "principal_type": "Agent",
+      "action": "Action::\"reassign\"",
+      "resource_type": "Ticket",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/reassign_safety.cedar"
+    },
+    {
+      "name": "floor_respond",
+      "description": "agent with sufficient maxPriority MUST respond to matching ticket",
+      "type": "floor",
+      "principal_type": "Agent",
+      "action": "Action::\"respond\"",
+      "resource_type": "Ticket",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/floor_respond.cedar"
+    },
+    {
+      "name": "floor_escalate",
+      "description": "any agent MUST be permitted to escalate any ticket",
+      "type": "floor",
+      "principal_type": "Agent",
+      "action": "Action::\"escalate\"",
+      "resource_type": "Ticket",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/floor_escalate.cedar"
+    },
+    {
+      "name": "floor_close_non_escalated",
+      "description": "agent with sufficient maxPriority MUST close non-escalated ticket (\u00a78.8: includes !isEscalated)",
+      "type": "floor",
+      "principal_type": "Agent",
+      "action": "Action::\"close\"",
+      "resource_type": "Ticket",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/floor_close_non_escalated.cedar"
+    },
+    {
+      "name": "floor_manager_close_escalated",
+      "description": "manager with sufficient maxPriority MUST close escalated ticket",
+      "type": "floor",
+      "principal_type": "Agent",
+      "action": "Action::\"close\"",
+      "resource_type": "Ticket",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/floor_manager_close_escalated.cedar"
+    },
+    {
+      "name": "floor_manager_reassign",
+      "description": "manager MUST be permitted to reassign any ticket",
+      "type": "floor",
+      "principal_type": "Agent",
+      "action": "Action::\"reassign\"",
+      "resource_type": "Ticket",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/customer_support_ticket_escalation-structured_instruction/20260417T063002Z_repair_mi05_repair_loop/customer_support_ticket_escalation_iter_01/_eval_workspace/references/floor_manager_reassign.cedar"
+    },
+    {
+      "name": "liveness_respond",
+      "description": "Agent+respond+Ticket liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Agent",
+      "action": "Action::\"respond\"",
+      "resource_type": "Ticket"
+    },
+    {
+      "name": "liveness_escalate",
+      "description": "Agent+escalate+Ticket liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Agent",
+      "action": "Action::\"escalate\"",
+      "resource_type": "Ticket"
+    },
+    {
+      "name": "liveness_close",
+      "description": "Agent+close+Ticket liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Agent",
+      "action": "Action::\"close\"",
+      "resource_type": "Ticket"
+    },
+    {
+      "name": "liveness_reassign",
+      "description": "Agent+reassign+Ticket liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Agent",
+      "action": "Action::\"reassign\"",
+      "resource_type": "Ticket"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "respond_safety",
+      "check_type": "implies",
+      "description": "respond permitted only when agent maxPriority >= ticket priority",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "escalate_safety",
+      "check_type": "implies",
+      "description": "escalate permitted unconditionally (any agent, any ticket)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "close_safety",
+      "check_type": "implies",
+      "description": "close permitted only when maxPriority >= priority AND (not escalated OR manager)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reassign_safety",
+      "check_type": "implies",
+      "description": "reassign permitted only when agent role is manager",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_respond",
+      "check_type": "implies",
+      "description": "agent with sufficient maxPriority MUST respond to matching ticket",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_escalate",
+      "check_type": "implies",
+      "description": "any agent MUST be permitted to escalate any ticket",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_close_non_escalated",
+      "check_type": "implies",
+      "description": "agent with sufficient maxPriority MUST close non-escalated ticket (\u00a78.8: includes !isEscalated)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_manager_close_escalated",
+      "check_type": "implies",
+      "description": "manager with sufficient maxPriority MUST close escalated ticket",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Agent::\"\", action: Action::\"close\", resource: Ticket::\"\"\ncontext: {}\nentities: [\n  Action::\"close\",\n  Action::\"reassign\",\n  Agent::\"\" {\n    maxPriority: 1,\n    role: \"manager\",\n  },\n  Action::\"respond\",\n  Action::\"escalate\",\n  Ticket::\"\" {\n    isEscalated: true,\n    priority: -1,\n  },\n]"
+    },
+    {
+      "check_name": "floor_manager_reassign",
+      "check_type": "implies",
+      "description": "manager MUST be permitted to reassign any ticket",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_respond",
+      "check_type": "always-denies (liveness)",
+      "description": "Agent+respond+Ticket liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_escalate",
+      "check_type": "always-denies (liveness)",
+      "description": "Agent+escalate+Ticket liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_close",
+      "check_type": "always-denies (liveness)",
+      "description": "Agent+close+Ticket liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_reassign",
+      "check_type": "always-denies (liveness)",
+      "description": "Agent+reassign+Ticket liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

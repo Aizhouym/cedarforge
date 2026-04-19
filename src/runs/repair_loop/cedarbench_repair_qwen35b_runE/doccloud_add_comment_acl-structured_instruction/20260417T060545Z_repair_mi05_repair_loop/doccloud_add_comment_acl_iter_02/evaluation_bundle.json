@@ -1,0 +1,178 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 5,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 5,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.502,
+    "checks": [
+      {
+        "name": "ceiling_comment",
+        "description": "CommentOnDocument only if owner or in commentACL (authenticated)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"CommentOnDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_02/_eval_workspace/references/ceiling_comment.cedar"
+      },
+      {
+        "name": "ceiling_view",
+        "description": "ViewDocument only if owner or in viewACL (authenticated User)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_02/_eval_workspace/references/ceiling_view.cedar"
+      },
+      {
+        "name": "ceiling_modify",
+        "description": "ModifyDocument only if owner or in modifyACL (authenticated)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_02/_eval_workspace/references/ceiling_modify.cedar"
+      },
+      {
+        "name": "floor_comment_acl",
+        "description": "Users in commentACL MUST be able to CommentOnDocument",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"CommentOnDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_comment_acl-structured_instruction/20260417T060545Z_repair_mi05_repair_loop/doccloud_add_comment_acl_iter_02/_eval_workspace/references/floor_comment_acl.cedar"
+      },
+      {
+        "name": "liveness_comment",
+        "description": "CommentOnDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"CommentOnDocument\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "ceiling_comment",
+        "check_type": "implies",
+        "description": "CommentOnDocument only if owner or in commentACL (authenticated)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "ceiling_view",
+        "check_type": "implies",
+        "description": "ViewDocument only if owner or in viewACL (authenticated User)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "ceiling_modify",
+        "check_type": "implies",
+        "description": "ModifyDocument only if owner or in modifyACL (authenticated)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_comment_acl",
+        "check_type": "implies",
+        "description": "Users in commentACL MUST be able to CommentOnDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_comment",
+        "check_type": "always-denies (liveness)",
+        "description": "CommentOnDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 5,
+        "solver_time_s": 0.502,
+        "checks": [
+          {
+            "name": "ceiling_comment",
+            "type": "implies",
+            "description": "CommentOnDocument only if owner or in commentACL (authenticated)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "ceiling_view",
+            "type": "implies",
+            "description": "ViewDocument only if owner or in viewACL (authenticated User)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "ceiling_modify",
+            "type": "implies",
+            "description": "ModifyDocument only if owner or in modifyACL (authenticated)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_comment_acl",
+            "type": "implies",
+            "description": "Users in commentACL MUST be able to CommentOnDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_comment",
+            "type": "always-denies (liveness)",
+            "description": "CommentOnDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

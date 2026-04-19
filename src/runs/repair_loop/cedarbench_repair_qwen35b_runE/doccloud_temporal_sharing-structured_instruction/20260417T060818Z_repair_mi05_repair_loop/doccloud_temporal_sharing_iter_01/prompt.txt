@@ -1,0 +1,359 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "add temporal"
+difficulty: hard
+features:
+  - ACL-based sharing
+  - owner/viewer/editor roles
+  - blocking semantics
+  - time-bounded sharing
+domain: document management
+source: mutation (doccloud domain)
+---
+
+# Document Cloud Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a document management platform with
+Documents, Users, Groups, Drives, and sharing ACLs (DocumentShare).
+
+Documents have three ACL attributes (viewACL, modifyACL, manageACL), each
+referencing a DocumentShare entity that Groups and Public can be members of.
+Documents also have a publicAccess string attribute and an owner reference.
+
+## Requirements
+
+### 1. Owner Permissions
+- The **owner** of a document may perform ALL actions on that document:
+  ViewDocument, ModifyDocument, DeleteDocument, EditIsPrivate, EditPublicAccess,
+  AddToShareACL.
+
+### 2. View ACL Permissions
+- A user who is in a document's **viewACL** may **ViewDocument**.
+
+### 3. Modify ACL Permissions
+- A user who is in a document's **modifyACL** may **ModifyDocument**.
+
+### 4. Manage ACL Permissions
+- A user who is in a document's **manageACL** may perform:
+  **AddToShareACL**, **DeleteDocument**, **EditIsPrivate**, **EditPublicAccess**.
+
+### 5. Public Access Rules
+- If a document's `publicAccess == "view"`, then **Public** principals (or any
+  authenticated user) may **ViewDocument**.
+- If a document's `publicAccess == "edit"`, then **Public** principals may
+  **ViewDocument** and **ModifyDocument**.
+
+### 6. Blocking Rules (Deny Rules -- Bidirectional)
+- If the **principal** is in the document owner's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- If the document **owner** is in the principal's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- Blocking is bidirectional: either direction triggers the deny.
+
+### 7. Authentication Requirement (Deny Rule)
+- For **User** principals, all actions are forbidden unless
+  `context.is_authenticated == true`.
+
+### 8. Group Owner Permissions
+- The **owner** of a Group may **DeleteGroup** and **ModifyGroup** on that Group.
+
+## Notes
+- ACL membership is checked via `principal in resource.viewACL` (etc.).
+- The Public entity type is a separate principal type, not a User.
+- Cedar denies by default -- no explicit deny-by-default policy is needed.
+- Blocking forbid rules use `when` conditions on entity attribute sets.
+### 9. Temporal Sharing (Deny Rule with Owner Exception)
+- Documents have a `shareExpiry` attribute (Long, epoch timestamp).
+- The context includes `requestTime` (Long, epoch timestamp) for document actions.
+- If `context.requestTime > resource.shareExpiry`, ACL-based access is revoked:
+  forbid **ViewDocument**, **ModifyDocument**, **AddToShareACL**,
+  **EditIsPrivate**, **EditPublicAccess** for users accessing via ACLs.
+- **Exception**: The document **owner** is NOT affected by share expiry.
+  The owner retains full access (all actions) regardless of shareExpiry.
+- **Exception**: **DeleteDocument** by the owner is always allowed.
+- Public access rules are also affected by share expiry -- if shares have
+  expired, public access is revoked.
+
+### 10. Version Lock (Deny Rule)
+- Documents have an `isLocked` boolean attribute.
+- If `resource.isLocked == true`, forbid **ModifyDocument** for ALL users
+  (including the owner and users in modifyACL).
+- **DeleteDocument** is still allowed on locked documents.
+- **ViewDocument** and management actions (AddToShareACL, EditIsPrivate,
+  EditPublicAccess) are still allowed on locked documents.
+
+## Notes (Temporal Sharing + Version Lock)
+- Two independent forbid rules interact: share expiry and version lock.
+- The share expiry forbid must use `unless { principal == resource.owner }`.
+- The version lock forbid applies universally with no exceptions.
+- A locked, expired document: owner can view/delete but not modify;
+  non-owners cannot access at all.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Document Cloud Permissions -- Cedar Schema
+
+entity DocumentShare, Drive;
+entity Document = {
+    "isPrivate": Bool,
+    "manageACL": DocumentShare,
+    "modifyACL": DocumentShare,
+    "owner": User,
+    "publicAccess": String,
+    "viewACL": DocumentShare,
+    "shareExpiry": Long,
+    "isLocked": Bool,
+};
+entity Group in [DocumentShare] = {
+    "owner": User,
+};
+entity Public in [DocumentShare];
+entity User in [Group] = {
+    "blocked": Set<User>,
+    "personalGroup": Group,
+};
+
+action DeleteGroup, ModifyGroup appliesTo {
+    principal: [User],
+    resource: [Group],
+    context: { "is_authenticated": Bool }
+};
+action CreateGroup appliesTo {
+    principal: [User],
+    resource: [Drive],
+    context: { "is_authenticated": Bool }
+};
+action ViewDocument appliesTo {
+    principal: [User, Public],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "requestTime": Long }
+};
+action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "requestTime": Long }
+};
+action ModifyDocument appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "requestTime": Long }
+};
+action CreateDocument appliesTo {
+    principal: [User],
+    resource: [Drive],
+    context: { "is_authenticated": Bool }
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

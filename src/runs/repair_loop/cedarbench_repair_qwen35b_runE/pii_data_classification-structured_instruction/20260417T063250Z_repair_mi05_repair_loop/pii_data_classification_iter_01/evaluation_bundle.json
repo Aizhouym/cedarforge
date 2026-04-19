@@ -1,0 +1,246 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 8,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 8,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.469,
+    "checks": [
+      {
+        "name": "read_safety",
+        "description": "readDocument permitted only when clearance dominates classification AND PII gate AND need-to-know (for Restricted)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/read_safety.cedar"
+      },
+      {
+        "name": "download_safety",
+        "description": "downloadDocument permitted only when clearance is one level higher than classification AND classification != Restricted AND PII gate",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"downloadDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/download_safety.cedar"
+      },
+      {
+        "name": "l1_must_read_public_no_pii",
+        "description": "L1 user MUST read a Public non-PII document",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/l1_must_read_public_no_pii.cedar"
+      },
+      {
+        "name": "l3_must_read_confidential_no_pii",
+        "description": "L3 user MUST read a Confidential non-PII document",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/l3_must_read_confidential_no_pii.cedar"
+      },
+      {
+        "name": "l4_ntk_must_read_restricted",
+        "description": "L4 user in needToKnow MUST read a Restricted non-PII document",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/l4_ntk_must_read_restricted.cedar"
+      },
+      {
+        "name": "l4_must_download_confidential_no_pii",
+        "description": "L4 user MUST download a Confidential non-PII document",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"downloadDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/pii_data_classification-structured_instruction/20260417T063250Z_repair_mi05_repair_loop/pii_data_classification_iter_01/_eval_workspace/references/l4_must_download_confidential_no_pii.cedar"
+      },
+      {
+        "name": "liveness_read",
+        "description": "User+readDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_download",
+        "description": "User+downloadDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"downloadDocument\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "read_safety",
+        "check_type": "implies",
+        "description": "readDocument permitted only when clearance dominates classification AND PII gate AND need-to-know (for Restricted)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "download_safety",
+        "check_type": "implies",
+        "description": "downloadDocument permitted only when clearance is one level higher than classification AND classification != Restricted AND PII gate",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "l1_must_read_public_no_pii",
+        "check_type": "implies",
+        "description": "L1 user MUST read a Public non-PII document",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "l3_must_read_confidential_no_pii",
+        "check_type": "implies",
+        "description": "L3 user MUST read a Confidential non-PII document",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "l4_ntk_must_read_restricted",
+        "check_type": "implies",
+        "description": "L4 user in needToKnow MUST read a Restricted non-PII document",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "l4_must_download_confidential_no_pii",
+        "check_type": "implies",
+        "description": "L4 user MUST download a Confidential non-PII document",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read",
+        "check_type": "always-denies (liveness)",
+        "description": "User+readDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_download",
+        "check_type": "always-denies (liveness)",
+        "description": "User+downloadDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 8,
+        "solver_time_s": 0.469,
+        "checks": [
+          {
+            "name": "read_safety",
+            "type": "implies",
+            "description": "readDocument permitted only when clearance dominates classification AND PII gate AND need-to-know (for Restricted)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "download_safety",
+            "type": "implies",
+            "description": "downloadDocument permitted only when clearance is one level higher than classification AND classification != Restricted AND PII gate",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "l1_must_read_public_no_pii",
+            "type": "implies",
+            "description": "L1 user MUST read a Public non-PII document",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "l3_must_read_confidential_no_pii",
+            "type": "implies",
+            "description": "L3 user MUST read a Confidential non-PII document",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "l4_ntk_must_read_restricted",
+            "type": "implies",
+            "description": "L4 user in needToKnow MUST read a Restricted non-PII document",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "l4_must_download_confidential_no_pii",
+            "type": "implies",
+            "description": "L4 user MUST download a Confidential non-PII document",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read",
+            "type": "always-denies (liveness)",
+            "description": "User+readDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_download",
+            "type": "always-denies (liveness)",
+            "description": "User+downloadDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

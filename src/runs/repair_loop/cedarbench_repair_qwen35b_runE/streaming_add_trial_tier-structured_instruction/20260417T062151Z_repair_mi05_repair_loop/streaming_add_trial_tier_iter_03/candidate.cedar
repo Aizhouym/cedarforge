@@ -1,0 +1,85 @@
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is TrialMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree ||
+    (!resource.isFree && !resource.needsRentOrBuy &&
+     context.now.datetime < principal.trialExpiry)
+};
+
+permit (
+    principal is TrialMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree ||
+    (!resource.isFree && !resource.isEarlyAccess &&
+     context.now.datetime < principal.trialExpiry)
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !resource.isEarlyAccess ||
+    (resource.isEarlyAccess &&
+     context.now.datetime >= resource.releaseDate.offset(duration("-24h")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21
+    )
+};

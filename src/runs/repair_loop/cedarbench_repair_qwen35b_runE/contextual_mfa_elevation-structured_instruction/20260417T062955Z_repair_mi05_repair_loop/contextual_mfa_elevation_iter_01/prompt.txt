@@ -1,0 +1,339 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+# Contextual MFA Elevation — Policy Specification
+
+## Context
+
+This policy implements **step-up authentication** for sensitive
+operations. Low-risk actions (read, comment, write) do not require a
+recent MFA verification, but sensitive actions (deleteDocument,
+adminOperation) require that the principal's MFA challenge was
+completed within the last 15 minutes of the current request time.
+
+Principal is `User`; resources are `Document` and `Workspace`. Every
+User, Document, and Workspace belongs to a common Workspace scope
+(users can only act within their home workspace).
+
+## Requirements
+
+### 1. Workspace Isolation (Baseline)
+- A User may act on a Document only when the Document's `workspace`
+  matches the User's `workspace`:
+  `principal.workspace == resource.workspace`.
+- A User may act on a Workspace resource only when it is their own
+  workspace: `principal.workspace == resource`.
+- This applies to all five actions. Cross-workspace access is never
+  permitted.
+
+### 2. Low-Risk Action Access (Permit)
+- A User in their own workspace may `read`, `comment`, or `write` any
+  Document in that workspace. No MFA freshness check required.
+- Specifically: for `read`, `comment`, `write` on a Document, permit
+  when `principal.workspace == resource.workspace`.
+
+### 3. Delete Document (MFA-Gated)
+- A User may `deleteDocument` on a Document in their workspace ONLY
+  when their MFA was verified within the last 15 minutes:
+  `context.now.datetime.durationSince(principal.mfaVerifiedAt) <
+  duration("15m")`.
+- The MFA freshness check is in addition to the workspace isolation
+  check.
+
+### 4. Admin Operation (Admin + MFA-Gated)
+- A User may `adminOperation` on a Workspace ONLY when ALL of:
+  - It is their own workspace: `principal.workspace == resource`, AND
+  - They have the admin role: `principal.isAdmin == true`, AND
+  - Their MFA was verified within the last 15 minutes:
+    `context.now.datetime.durationSince(principal.mfaVerifiedAt) <
+    duration("15m")`.
+- Non-admin users cannot perform adminOperation under any circumstance,
+  regardless of MFA freshness.
+
+## Notes
+- Cedar's `datetime.durationSince(other)` method returns the duration
+  from `other` to `self`. If `self` is the current request time and
+  `other` is the MFA verification time, the result is the elapsed time
+  since MFA, which must be less than 15 minutes for sensitive actions.
+- The 15-minute window must be expressed as `duration("15m")` — Cedar
+  uses Go-style duration strings, not ISO 8601.
+- Common failure modes to avoid: (a) forgetting the MFA check on
+  delete/admin, (b) using ISO 8601 duration syntax (`PT15M`), (c)
+  applying the MFA check to low-risk actions unnecessarily.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Contextual MFA Elevation — sensitive actions require a recent MFA
+// verification, computed as a time-window check between the request's
+// `now.datetime` and the principal's `mfaVerifiedAt` timestamp.
+
+entity Workspace;
+
+entity User = {
+    workspace: Workspace,
+    // The most recent MFA verification time for this user. Updated by
+    // the auth system whenever the user completes an MFA challenge.
+    mfaVerifiedAt: datetime,
+    // Whether this user has admin role in the workspace.
+    isAdmin: Bool,
+};
+
+entity Document = {
+    workspace: Workspace,
+};
+
+// Low-risk actions — no MFA freshness check required.
+action read, comment appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+
+// Write actions — no MFA freshness check.
+action write appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+
+// Sensitive actions — REQUIRE that the principal's MFA verification is
+// fresh (within 15 minutes of the request's `now.datetime`). Deleting
+// a document or performing admin operations on a workspace falls in
+// this category.
+action deleteDocument appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+
+action adminOperation appliesTo {
+    principal: [User],
+    resource: [Workspace],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

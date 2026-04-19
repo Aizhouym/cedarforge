@@ -1,0 +1,268 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 9,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 9,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.5,
+    "checks": [
+      {
+        "name": "deliver_safety",
+        "description": "deliver permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+        "type": "implies",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"deliver\"",
+        "resource_type": "Event",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/deliver_safety.cedar"
+      },
+      {
+        "name": "retry_safety",
+        "description": "retry permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+        "type": "implies",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"retry\"",
+        "resource_type": "Event",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/retry_safety.cedar"
+      },
+      {
+        "name": "inspect_safety",
+        "description": "inspect permitted for any endpoint on any event (no restrictions)",
+        "type": "implies",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"inspect\"",
+        "resource_type": "Event",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/inspect_safety.cedar"
+      },
+      {
+        "name": "verified_endpoint_must_deliver",
+        "description": "Verified endpoint with matching allowedEvents MUST deliver non-internal event",
+        "type": "floor",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"deliver\"",
+        "resource_type": "Event",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/verified_endpoint_must_deliver.cedar"
+      },
+      {
+        "name": "verified_endpoint_must_retry",
+        "description": "Verified endpoint with matching allowedEvents MUST retry non-internal event",
+        "type": "floor",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"retry\"",
+        "resource_type": "Event",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/verified_endpoint_must_retry.cedar"
+      },
+      {
+        "name": "any_endpoint_must_inspect",
+        "description": "Any endpoint MUST be permitted to inspect any event",
+        "type": "floor",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"inspect\"",
+        "resource_type": "Event",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/webhook_signature_verification-structured_instruction/20260417T063405Z_repair_mi05_repair_loop/webhook_signature_verification_iter_01/_eval_workspace/references/any_endpoint_must_inspect.cedar"
+      },
+      {
+        "name": "liveness_deliver",
+        "description": "WebhookEndpoint+deliver+Event liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"deliver\"",
+        "resource_type": "Event"
+      },
+      {
+        "name": "liveness_retry",
+        "description": "WebhookEndpoint+retry+Event liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"retry\"",
+        "resource_type": "Event"
+      },
+      {
+        "name": "liveness_inspect",
+        "description": "WebhookEndpoint+inspect+Event liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "WebhookEndpoint",
+        "action": "Action::\"inspect\"",
+        "resource_type": "Event"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "deliver_safety",
+        "check_type": "implies",
+        "description": "deliver permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "retry_safety",
+        "check_type": "implies",
+        "description": "retry permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "inspect_safety",
+        "check_type": "implies",
+        "description": "inspect permitted for any endpoint on any event (no restrictions)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "verified_endpoint_must_deliver",
+        "check_type": "implies",
+        "description": "Verified endpoint with matching allowedEvents MUST deliver non-internal event",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "verified_endpoint_must_retry",
+        "check_type": "implies",
+        "description": "Verified endpoint with matching allowedEvents MUST retry non-internal event",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "any_endpoint_must_inspect",
+        "check_type": "implies",
+        "description": "Any endpoint MUST be permitted to inspect any event",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_deliver",
+        "check_type": "always-denies (liveness)",
+        "description": "WebhookEndpoint+deliver+Event liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_retry",
+        "check_type": "always-denies (liveness)",
+        "description": "WebhookEndpoint+retry+Event liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_inspect",
+        "check_type": "always-denies (liveness)",
+        "description": "WebhookEndpoint+inspect+Event liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 9,
+        "solver_time_s": 0.5,
+        "checks": [
+          {
+            "name": "deliver_safety",
+            "type": "implies",
+            "description": "deliver permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "retry_safety",
+            "type": "implies",
+            "description": "retry permitted only when (verified, allowedEvents contains eventType, NOT internal)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "inspect_safety",
+            "type": "implies",
+            "description": "inspect permitted for any endpoint on any event (no restrictions)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "verified_endpoint_must_deliver",
+            "type": "implies",
+            "description": "Verified endpoint with matching allowedEvents MUST deliver non-internal event",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "verified_endpoint_must_retry",
+            "type": "implies",
+            "description": "Verified endpoint with matching allowedEvents MUST retry non-internal event",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "any_endpoint_must_inspect",
+            "type": "implies",
+            "description": "Any endpoint MUST be permitted to inspect any event",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_deliver",
+            "type": "always-denies (liveness)",
+            "description": "WebhookEndpoint+deliver+Event liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_retry",
+            "type": "always-denies (liveness)",
+            "description": "WebhookEndpoint+retry+Event liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_inspect",
+            "type": "always-denies (liveness)",
+            "description": "WebhookEndpoint+inspect+Event liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

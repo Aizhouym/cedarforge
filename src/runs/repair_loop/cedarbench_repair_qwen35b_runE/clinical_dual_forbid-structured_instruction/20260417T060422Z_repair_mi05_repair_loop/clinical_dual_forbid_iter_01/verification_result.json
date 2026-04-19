@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 expected an entity uid, found literal `\"Edit\"`\n    \u256d\u2500[14:15]\n 13 \u2502     principal is User,\n 14 \u2502     action == \"Edit\",\n    \u00b7               \u2500\u2500\u2500\u2500\u2500\u2500\n 15 \u2502     resource is Document\n    \u2570\u2500\u2500\u2500\u2500\n  help: try including the entity type if you intended this string to be an entity uid"
+    }
+  ]
+}

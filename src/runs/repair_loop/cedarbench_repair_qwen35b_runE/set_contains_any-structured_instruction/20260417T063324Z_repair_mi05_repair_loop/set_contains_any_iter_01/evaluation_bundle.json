@@ -1,0 +1,268 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 9,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 9,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.571,
+    "checks": [
+      {
+        "name": "read_safety",
+        "description": "read permitted only when interest tags overlap AND clearance sufficient",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/read_safety.cedar"
+      },
+      {
+        "name": "write_safety",
+        "description": "write permitted only when interest tags contain ALL topic tags AND clearance sufficient",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"write\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/write_safety.cedar"
+      },
+      {
+        "name": "manage_tags_safety",
+        "description": "manageTags permitted only when owner",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"manageTags\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/manage_tags_safety.cedar"
+      },
+      {
+        "name": "floor_read_overlap",
+        "description": "user with overlapping interests AND clearance MUST read",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/floor_read_overlap.cedar"
+      },
+      {
+        "name": "floor_write_expert",
+        "description": "user with all topic tags AND clearance MUST write",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"write\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/floor_write_expert.cedar"
+      },
+      {
+        "name": "floor_owner_manage",
+        "description": "owner MUST manage tags",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"manageTags\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/set_contains_any-structured_instruction/20260417T063324Z_repair_mi05_repair_loop/set_contains_any_iter_01/_eval_workspace/references/floor_owner_manage.cedar"
+      },
+      {
+        "name": "liveness_read",
+        "description": "at least one read must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"read\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_write",
+        "description": "at least one write must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"write\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_manage",
+        "description": "at least one manageTags must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"manageTags\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "read_safety",
+        "check_type": "implies",
+        "description": "read permitted only when interest tags overlap AND clearance sufficient",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "write_safety",
+        "check_type": "implies",
+        "description": "write permitted only when interest tags contain ALL topic tags AND clearance sufficient",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manage_tags_safety",
+        "check_type": "implies",
+        "description": "manageTags permitted only when owner",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_read_overlap",
+        "check_type": "implies",
+        "description": "user with overlapping interests AND clearance MUST read",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_write_expert",
+        "check_type": "implies",
+        "description": "user with all topic tags AND clearance MUST write",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_owner_manage",
+        "check_type": "implies",
+        "description": "owner MUST manage tags",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one read must be permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_write",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one write must be permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_manage",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one manageTags must be permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 9,
+        "solver_time_s": 0.571,
+        "checks": [
+          {
+            "name": "read_safety",
+            "type": "implies",
+            "description": "read permitted only when interest tags overlap AND clearance sufficient",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "write_safety",
+            "type": "implies",
+            "description": "write permitted only when interest tags contain ALL topic tags AND clearance sufficient",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manage_tags_safety",
+            "type": "implies",
+            "description": "manageTags permitted only when owner",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_read_overlap",
+            "type": "implies",
+            "description": "user with overlapping interests AND clearance MUST read",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_write_expert",
+            "type": "implies",
+            "description": "user with all topic tags AND clearance MUST write",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_owner_manage",
+            "type": "implies",
+            "description": "owner MUST manage tags",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read",
+            "type": "always-denies (liveness)",
+            "description": "at least one read must be permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_write",
+            "type": "always-denies (liveness)",
+            "description": "at least one write must be permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_manage",
+            "type": "always-denies (liveness)",
+            "description": "at least one manageTags must be permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: self-referential corner case / §8.8 regression test
+difficulty: hard (for bound consistency)
+features:
+  - owner baseline permit
+  - global blocking forbid (Set<User> containment)
+  - self-blocking corner case
+domain: social platforms with "quiet mode"
+---
+
+# Self-Reference Corner Case — Policy Specification
+
+## Context
+
+This policy governs access to Posts on a social platform. The core
+rules are simple on their surface:
+
+- **Authors can always read their own posts.**
+- **Blocked users cannot read posts by the person who blocked them.**
+
+The subtlety is that the platform supports "quiet mode" — a user can
+add themselves to their own `blocked` set to stop seeing their own
+posts in their feed. This is a real feature on some messaging
+platforms. The interaction between the owner-can-read rule and the
+blocked-users-cannot-read rule creates a corner case: what happens
+when the author has self-blocked?
+
+The intended semantics: **the blocking forbid wins**. A user who has
+quieted themselves cannot read their own posts. This is what the
+author opted into by self-blocking.
+
+## Requirements
+
+### 1. Author Read Access
+- The author of a Post may `readPost` their own post, subject to the
+  global blocking forbid in §3.
+- Concretely: permit `readPost` when `principal == resource.author`.
+
+### 2. Public Read Access
+- Any User may `readPost` any Post authored by someone who has not
+  blocked them, subject to the global blocking forbid in §3.
+- Concretely: permit `readPost` for `principal is User`
+  unconditionally (any User can read any Post, filtered by the
+  forbid).
+
+### 3. Mutual Blocking (Forbid)
+- **Forbid** `readPost` when EITHER:
+  - the post's author has blocked the principal
+    (`principal in resource.author.blocked`), OR
+  - the principal has blocked the post's author
+    (`resource.author in principal.blocked`).
+- This forbid applies to EVERY principal, including the author
+  themselves. A self-blocked author is blocked from reading their
+  own posts — this is intentional and is the "quiet mode" semantics.
+
+## Notes
+- This spec is deliberately constructed to exercise the §8.8
+  floor-bound consistency rule. A naive Phase 1 planner would write:
+  - Floor: "author MUST be permitted to read their own post"
+    (`permit when principal == resource.author`)
+  - Ceiling: "reader must not be blocked"
+    (`permit unless blocking conditions`)
+  These contradict in the self-block corner case. Per §8.8, the
+  correct floor must include the blocking exclusion:
+  `permit when principal == resource.author AND NOT (principal in
+  resource.author.blocked) AND NOT (resource.author in principal.blocked)`
+  — i.e., the floor must explicitly acknowledge that self-blocked
+  authors are not guaranteed read access.
+- The interaction of the `principal` self-blocking and
+  `resource.author` self-blocking is the same condition because of
+  the `principal == resource.author` premise — both reduce to "is the
+  principal in their own blocked set?".
+- Cedar's `Set<User>.contains()` / `in` operator handles self-reference
+  without any special-case handling; no type error occurs.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Self-Reference Corner Case — a scenario deliberately constructed to
+// test whether the harness's §8.8 floor-bound consistency rule is
+// necessary. The spec has a subtle corner case (owner-self-blocking)
+// that, if handled naively by the planner, would produce jointly
+// unsatisfiable bounds. This scenario acts as a regression test for
+// §8.8.
+
+entity User = {
+    // The set of users this user has personally blocked. Users may
+    // block themselves (a "quiet mode" feature — some messaging
+    // platforms actually support this, and it creates the corner case
+    // that §8.8 catches).
+    blocked: Set<User>,
+};
+
+entity Post = {
+    author: User,
+};
+
+action readPost appliesTo {
+    principal: [User],
+    resource: [Post],
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

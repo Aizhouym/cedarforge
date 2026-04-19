@@ -1,0 +1,29 @@
+permit (
+    principal is Clinician,
+    action == Action::"viewRecord",
+    resource is Record
+) when {
+    principal.hospital == resource.hospital &&
+    resource.patient in principal.careTeamPatients
+};
+
+permit (
+    principal is Clinician,
+    action == Action::"viewRecord",
+    resource is Record
+) when {
+    principal.hospital == resource.hospital &&
+    !resource.patient in principal.careTeamPatients &&
+    principal.isOnCall &&
+    context.emergencyActive &&
+    context.emergencyReason != ""
+};
+
+permit (
+    principal is Clinician,
+    action == Action::"editRecord",
+    resource is Record
+) when {
+    principal.hospital == resource.hospital &&
+    resource.patient in principal.careTeamPatients
+};

@@ -1,0 +1,162 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_sensitivity-structured_instruction/20260417T062825Z_repair_mi05_repair_loop/tax_add_sensitivity_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.75,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 4,
+  "failed_checks": [
+    "org_match_consent_and_sensitivity_safety"
+  ],
+  "failed_check_types": [
+    "implies"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_schema",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.75,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 1,
+    "total_check_count": 4,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 0.201,
+    "checks": [
+      {
+        "name": "org_match_consent_and_sensitivity_safety",
+        "description": "Professional may viewDocument only when (org match AND valid consent AND (!sensitive OR HQ in team_region_list))",
+        "type": "implies",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_sensitivity-structured_instruction/20260417T062825Z_repair_mi05_repair_loop/tax_add_sensitivity_iter_02/_eval_workspace/references/org_match_consent_and_sensitivity_safety.cedar"
+      },
+      {
+        "name": "must_view_non_sensitive_with_consent",
+        "description": "Professional MUST viewDocument for a NON-sensitive doc with org match + valid consent",
+        "type": "floor",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_sensitivity-structured_instruction/20260417T062825Z_repair_mi05_repair_loop/tax_add_sensitivity_iter_02/_eval_workspace/references/must_view_non_sensitive_with_consent.cedar"
+      },
+      {
+        "name": "must_view_sensitive_with_hq_consent",
+        "description": "Professional MUST viewDocument for a SENSITIVE doc when consent team_region_list contains HQ",
+        "type": "floor",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_sensitivity-structured_instruction/20260417T062825Z_repair_mi05_repair_loop/tax_add_sensitivity_iter_02/_eval_workspace/references/must_view_sensitive_with_hq_consent.cedar"
+      },
+      {
+        "name": "liveness_view_document",
+        "description": "Professional+viewDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "org_match_consent_and_sensitivity_safety",
+        "check_type": "implies",
+        "description": "Professional may viewDocument only when (org match AND valid consent AND (!sensitive OR HQ in team_region_list))",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Taxpreparer::Professional::\"\", action: Taxpreparer::Action::\"viewDocument\", resource: Taxpreparer::Document::\"\"\ncontext: {consent: {client: Taxpreparer::Client::\"\", team_region_list: [\"\", \"HQ\"]}}\nentities: [\n  Taxpreparer::Document::\"\" {\n    isSensitive: true,\n    location: \"A\",\n    owner: Taxpreparer::Client::\"\",\n    serviceline: \"C\",\n  },\n  Taxpreparer::Action::\"viewDocument\",\n  Taxpreparer::Client::\"\" {\n    organization: \"B\",\n  },\n  Taxpreparer::Professional::\"\" {\n    assigned_orgs: [],\n    location: \"\",\n  },\n]"
+      },
+      {
+        "check_name": "must_view_non_sensitive_with_consent",
+        "check_type": "implies",
+        "description": "Professional MUST viewDocument for a NON-sensitive doc with org match + valid consent",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "must_view_sensitive_with_hq_consent",
+        "check_type": "implies",
+        "description": "Professional MUST viewDocument for a SENSITIVE doc when consent team_region_list contains HQ",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_document",
+        "check_type": "always-denies (liveness)",
+        "description": "Professional+viewDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 4,
+        "failed_checks": [
+          "org_match_consent_and_sensitivity_safety"
+        ],
+        "solver_time_s": 0.201,
+        "checks": [
+          {
+            "name": "org_match_consent_and_sensitivity_safety",
+            "type": "implies",
+            "description": "Professional may viewDocument only when (org match AND valid consent AND (!sensitive OR HQ in team_region_list))",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Taxpreparer::Professional::\"\", action: Taxpreparer::Action::\"viewDocument\", resource: Taxpreparer::Document::\"\"\ncontext: {consent: {client: Taxpreparer::Client::\"\", team_region_list: [\"\", \"HQ\"]}}\nentities: [\n  Taxpreparer::Document::\"\" {\n    isSensitive: true,\n    location: \"A\",\n    owner: Taxpreparer::Client::\"\",\n    serviceline: \"C\",\n  },\n  Taxpreparer::Action::\"viewDocument\",\n  Taxpreparer::Client::\"\" {\n    organization: \"B\",\n  },\n  Taxpreparer::Professional::\"\" {\n    assigned_orgs: [],\n    location: \"\",\n  },\n]"
+          },
+          {
+            "name": "must_view_non_sensitive_with_consent",
+            "type": "implies",
+            "description": "Professional MUST viewDocument for a NON-sensitive doc with org match + valid consent",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "must_view_sensitive_with_hq_consent",
+            "type": "implies",
+            "description": "Professional MUST viewDocument for a SENSITIVE doc when consent team_region_list contains HQ",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_document",
+            "type": "always-denies (liveness)",
+            "description": "Professional+viewDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,433 @@
+{
+  "loss": 2,
+  "solver_time_s": 1.387,
+  "checks": [
+    {
+      "name": "pull_safety",
+      "description": "Pull access is only granted to users who are readers of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"pull\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_pull.cedar"
+    },
+    {
+      "name": "fork_safety",
+      "description": "Fork access is only granted to users who are readers of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"fork\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_fork.cedar"
+    },
+    {
+      "name": "push_safety",
+      "description": "Push access is only granted to users who are writers of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"push\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_push.cedar"
+    },
+    {
+      "name": "assign_issue_safety",
+      "description": "Assign issue is only granted to users who are triagers of the issue's repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"assign_issue\"",
+      "resource_type": "Issue",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_assign_issue.cedar"
+    },
+    {
+      "name": "edit_issue_safety",
+      "description": "Edit issue is only granted to writers OR (readers who are the reporter)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"edit_issue\"",
+      "resource_type": "Issue",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_edit_issue.cedar"
+    },
+    {
+      "name": "delete_issue_safety",
+      "description": "Delete issue is only granted to maintainers OR (readers who are the reporter)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"delete_issue\"",
+      "resource_type": "Issue",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_delete_issue.cedar"
+    },
+    {
+      "name": "add_reader_safety",
+      "description": "Add reader is only granted to admins of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"add_reader\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_add_reader.cedar"
+    },
+    {
+      "name": "add_triager_safety",
+      "description": "Add triager is only granted to admins of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"add_triager\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_add_triager.cedar"
+    },
+    {
+      "name": "add_writer_safety",
+      "description": "Add writer is only granted to admins of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"add_writer\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_add_writer.cedar"
+    },
+    {
+      "name": "add_maintainer_safety",
+      "description": "Add maintainer is only granted to admins of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"add_maintainer\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_add_maintainer.cedar"
+    },
+    {
+      "name": "add_admin_safety",
+      "description": "Add admin is only granted to admins of the repository",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"add_admin\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/ceiling_add_admin.cedar"
+    },
+    {
+      "name": "reader_pull_floor",
+      "description": "Readers MUST be able to pull from the repository",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"pull\"",
+      "resource_type": "Repository",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_reader_pull.cedar"
+    },
+    {
+      "name": "reader_fork_floor",
+      "description": "Readers MUST be able to fork the repository",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"fork\"",
+      "resource_type": "Repository",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_reader_fork.cedar"
+    },
+    {
+      "name": "writer_push_floor",
+      "description": "Writers MUST be able to push to the repository",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"push\"",
+      "resource_type": "Repository",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_writer_push.cedar"
+    },
+    {
+      "name": "triager_assign_floor",
+      "description": "Triagers MUST be able to assign issues",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"assign_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_triager_assign.cedar"
+    },
+    {
+      "name": "writer_edit_floor",
+      "description": "Writers MUST be able to edit any issue in the repository",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"edit_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_writer_edit.cedar"
+    },
+    {
+      "name": "reporter_edit_floor",
+      "description": "Readers who are the reporter MUST be able to edit their own issue",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"edit_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_reporter_edit.cedar"
+    },
+    {
+      "name": "maintainer_delete_floor",
+      "description": "Maintainers MUST be able to delete any issue in the repository",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"delete_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_maintainer_delete.cedar"
+    },
+    {
+      "name": "reporter_delete_floor",
+      "description": "Readers who are the reporter MUST be able to delete their own issue",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"delete_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_reporter_delete.cedar"
+    },
+    {
+      "name": "admin_add_reader_floor",
+      "description": "Admins MUST be able to add readers",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"add_reader\"",
+      "resource_type": "Repository",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_no_archive-structured_instruction/20260417T061056Z_repair_mi05_repair_loop/github_no_archive_iter_01/_eval_workspace/references/floor_admin_add_reader.cedar"
+    },
+    {
+      "name": "liveness_pull",
+      "description": "Pull policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"pull\"",
+      "resource_type": "Repository"
+    },
+    {
+      "name": "liveness_push",
+      "description": "Push policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"push\"",
+      "resource_type": "Repository"
+    },
+    {
+      "name": "liveness_fork",
+      "description": "Fork policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"fork\"",
+      "resource_type": "Repository"
+    },
+    {
+      "name": "liveness_assign_issue",
+      "description": "Assign issue policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"assign_issue\"",
+      "resource_type": "Issue"
+    },
+    {
+      "name": "liveness_edit_issue",
+      "description": "Edit issue policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"edit_issue\"",
+      "resource_type": "Issue"
+    },
+    {
+      "name": "liveness_delete_issue",
+      "description": "Delete issue policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"delete_issue\"",
+      "resource_type": "Issue"
+    },
+    {
+      "name": "liveness_add_admin",
+      "description": "Add admin policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"add_admin\"",
+      "resource_type": "Repository"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "pull_safety",
+      "check_type": "implies",
+      "description": "Pull access is only granted to users who are readers of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "fork_safety",
+      "check_type": "implies",
+      "description": "Fork access is only granted to users who are readers of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "push_safety",
+      "check_type": "implies",
+      "description": "Push access is only granted to users who are writers of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "assign_issue_safety",
+      "check_type": "implies",
+      "description": "Assign issue is only granted to users who are triagers of the issue's repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_issue_safety",
+      "check_type": "implies",
+      "description": "Edit issue is only granted to writers OR (readers who are the reporter)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"edit_issue\", resource: Issue::\"\"\ncontext: {}\nentities: [\n  Action::\"add_admin\",\n  Repository::\"\" {\n    admins: UserGroup::\"B\",\n    maintainers: UserGroup::\"C\",\n    readers: UserGroup::\"\",\n    triagers: UserGroup::\"D\",\n    writers: UserGroup::\"A\",\n  },\n  Action::\"pull\",\n  Issue::\"\" {\n    repo: Repository::\"\",\n    reporter: User::\"\",\n  },\n  Action::\"add_triager\",\n  Action::\"push\",\n  Action::\"delete_issue\",\n  UserGroup::\"\",\n  Action::\"add_reader\",\n  Action::\"add_maintainer\",\n  User::\"\",\n  UserGroup::\"A\",\n  UserGroup::\"B\",\n  Action::\"assign_issue\",\n  UserGroup::\"C\",\n  Action::\"add_writer\",\n  Action::\"fork\",\n  UserGroup::\"D\",\n  Action::\"edit_issue\",\n]"
+    },
+    {
+      "check_name": "delete_issue_safety",
+      "check_type": "implies",
+      "description": "Delete issue is only granted to maintainers OR (readers who are the reporter)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"delete_issue\", resource: Issue::\"\"\ncontext: {}\nentities: [\n  Issue::\"\" {\n    repo: Repository::\"\",\n    reporter: User::\"\",\n  },\n  UserGroup::\"C\",\n  UserGroup::\"D\",\n  UserGroup::\"\",\n  UserGroup::\"B\",\n  Repository::\"\" {\n    admins: UserGroup::\"B\",\n    maintainers: UserGroup::\"\",\n    readers: UserGroup::\"A\",\n    triagers: UserGroup::\"C\",\n    writers: UserGroup::\"D\",\n  },\n  Action::\"add_reader\",\n  Action::\"add_maintainer\",\n  Action::\"pull\",\n  Action::\"fork\",\n  Action::\"add_triager\",\n  Action::\"assign_issue\",\n  Action::\"add_admin\",\n  UserGroup::\"A\",\n  Action::\"delete_issue\",\n  Action::\"add_writer\",\n  Action::\"push\",\n  Action::\"edit_issue\",\n  User::\"\",\n]"
+    },
+    {
+      "check_name": "add_reader_safety",
+      "check_type": "implies",
+      "description": "Add reader is only granted to admins of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "add_triager_safety",
+      "check_type": "implies",
+      "description": "Add triager is only granted to admins of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "add_writer_safety",
+      "check_type": "implies",
+      "description": "Add writer is only granted to admins of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "add_maintainer_safety",
+      "check_type": "implies",
+      "description": "Add maintainer is only granted to admins of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "add_admin_safety",
+      "check_type": "implies",
+      "description": "Add admin is only granted to admins of the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reader_pull_floor",
+      "check_type": "implies",
+      "description": "Readers MUST be able to pull from the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reader_fork_floor",
+      "check_type": "implies",
+      "description": "Readers MUST be able to fork the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "writer_push_floor",
+      "check_type": "implies",
+      "description": "Writers MUST be able to push to the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "triager_assign_floor",
+      "check_type": "implies",
+      "description": "Triagers MUST be able to assign issues",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "writer_edit_floor",
+      "check_type": "implies",
+      "description": "Writers MUST be able to edit any issue in the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reporter_edit_floor",
+      "check_type": "implies",
+      "description": "Readers who are the reporter MUST be able to edit their own issue",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "maintainer_delete_floor",
+      "check_type": "implies",
+      "description": "Maintainers MUST be able to delete any issue in the repository",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "reporter_delete_floor",
+      "check_type": "implies",
+      "description": "Readers who are the reporter MUST be able to delete their own issue",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "admin_add_reader_floor",
+      "check_type": "implies",
+      "description": "Admins MUST be able to add readers",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_pull",
+      "check_type": "always-denies (liveness)",
+      "description": "Pull policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_push",
+      "check_type": "always-denies (liveness)",
+      "description": "Push policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_fork",
+      "check_type": "always-denies (liveness)",
+      "description": "Fork policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_assign_issue",
+      "check_type": "always-denies (liveness)",
+      "description": "Assign issue policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit_issue",
+      "check_type": "always-denies (liveness)",
+      "description": "Edit issue policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete_issue",
+      "check_type": "always-denies (liveness)",
+      "description": "Delete issue policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_add_admin",
+      "check_type": "always-denies (liveness)",
+      "description": "Add admin policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

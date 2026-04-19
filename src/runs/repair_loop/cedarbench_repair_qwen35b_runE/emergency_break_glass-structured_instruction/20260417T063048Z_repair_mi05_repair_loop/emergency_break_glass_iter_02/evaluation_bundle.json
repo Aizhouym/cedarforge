@@ -1,0 +1,223 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 7,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_schema",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 7,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.291,
+    "checks": [
+      {
+        "name": "view_safety",
+        "description": "viewRecord permitted only when same-hospital AND (care-team OR break-glass conditions)",
+        "type": "implies",
+        "principal_type": "Clinician",
+        "action": "Action::\"viewRecord\"",
+        "resource_type": "Record",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace/references/view_safety.cedar"
+      },
+      {
+        "name": "edit_safety",
+        "description": "editRecord permitted only when same-hospital AND care-team (break-glass does NOT authorize edits)",
+        "type": "implies",
+        "principal_type": "Clinician",
+        "action": "Action::\"editRecord\"",
+        "resource_type": "Record",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace/references/edit_safety.cedar"
+      },
+      {
+        "name": "careteam_view_must_permit",
+        "description": "Same-hospital care-team member MUST be permitted to viewRecord",
+        "type": "floor",
+        "principal_type": "Clinician",
+        "action": "Action::\"viewRecord\"",
+        "resource_type": "Record",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace/references/careteam_view_must_permit.cedar"
+      },
+      {
+        "name": "careteam_edit_must_permit",
+        "description": "Same-hospital care-team member MUST be permitted to editRecord",
+        "type": "floor",
+        "principal_type": "Clinician",
+        "action": "Action::\"editRecord\"",
+        "resource_type": "Record",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace/references/careteam_edit_must_permit.cedar"
+      },
+      {
+        "name": "break_glass_view_must_permit",
+        "description": "On-call clinician at same hospital with active emergency and non-empty reason MUST be permitted to viewRecord for a non-care-team patient",
+        "type": "floor",
+        "principal_type": "Clinician",
+        "action": "Action::\"viewRecord\"",
+        "resource_type": "Record",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_02/_eval_workspace/references/break_glass_view_must_permit.cedar"
+      },
+      {
+        "name": "liveness_view_record",
+        "description": "Clinician+viewRecord+Record has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "Clinician",
+        "action": "Action::\"viewRecord\"",
+        "resource_type": "Record"
+      },
+      {
+        "name": "liveness_edit_record",
+        "description": "Clinician+editRecord+Record has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "Clinician",
+        "action": "Action::\"editRecord\"",
+        "resource_type": "Record"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "view_safety",
+        "check_type": "implies",
+        "description": "viewRecord permitted only when same-hospital AND (care-team OR break-glass conditions)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_safety",
+        "check_type": "implies",
+        "description": "editRecord permitted only when same-hospital AND care-team (break-glass does NOT authorize edits)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "careteam_view_must_permit",
+        "check_type": "implies",
+        "description": "Same-hospital care-team member MUST be permitted to viewRecord",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "careteam_edit_must_permit",
+        "check_type": "implies",
+        "description": "Same-hospital care-team member MUST be permitted to editRecord",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "break_glass_view_must_permit",
+        "check_type": "implies",
+        "description": "On-call clinician at same hospital with active emergency and non-empty reason MUST be permitted to viewRecord for a non-care-team patient",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_record",
+        "check_type": "always-denies (liveness)",
+        "description": "Clinician+viewRecord+Record has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_edit_record",
+        "check_type": "always-denies (liveness)",
+        "description": "Clinician+editRecord+Record has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 7,
+        "solver_time_s": 0.291,
+        "checks": [
+          {
+            "name": "view_safety",
+            "type": "implies",
+            "description": "viewRecord permitted only when same-hospital AND (care-team OR break-glass conditions)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_safety",
+            "type": "implies",
+            "description": "editRecord permitted only when same-hospital AND care-team (break-glass does NOT authorize edits)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "careteam_view_must_permit",
+            "type": "implies",
+            "description": "Same-hospital care-team member MUST be permitted to viewRecord",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "careteam_edit_must_permit",
+            "type": "implies",
+            "description": "Same-hospital care-team member MUST be permitted to editRecord",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "break_glass_view_must_permit",
+            "type": "implies",
+            "description": "On-call clinician at same hospital with active emergency and non-empty reason MUST be permitted to viewRecord for a non-care-team patient",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_record",
+            "type": "always-denies (liveness)",
+            "description": "Clinician+viewRecord+Record has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_edit_record",
+            "type": "always-denies (liveness)",
+            "description": "Clinician+editRecord+Record has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

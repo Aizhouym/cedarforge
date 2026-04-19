@@ -1,0 +1,2510 @@
+{
+  "loss": 0,
+  "solver_time_s": 7.503,
+  "checks": [
+    {
+      "name": "viewOrder_safety",
+      "description": "viewOrder permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/viewOrder_safety.cedar"
+    },
+    {
+      "name": "listOrders_safety",
+      "description": "listOrders permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/listOrders_safety.cedar"
+    },
+    {
+      "name": "updateCart_safety",
+      "description": "updateCart permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"updateCart\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/updateCart_safety.cedar"
+    },
+    {
+      "name": "placeOrder_safety",
+      "description": "placeOrder permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"placeOrder\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/placeOrder_safety.cedar"
+    },
+    {
+      "name": "cancelOrder_safety",
+      "description": "cancelOrder permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/cancelOrder_safety.cedar"
+    },
+    {
+      "name": "refundOrder_safety",
+      "description": "refundOrder permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"refundOrder\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/refundOrder_safety.cedar"
+    },
+    {
+      "name": "shipOrder_safety",
+      "description": "shipOrder permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"shipOrder\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/shipOrder_safety.cedar"
+    },
+    {
+      "name": "markDelivered_safety",
+      "description": "markDelivered permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"markDelivered\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/markDelivered_safety.cedar"
+    },
+    {
+      "name": "modifyPricing_safety",
+      "description": "modifyPricing permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/modifyPricing_safety.cedar"
+    },
+    {
+      "name": "adminOverride_safety",
+      "description": "adminOverride permitted only for allowed roles/statuses",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/adminOverride_safety.cedar"
+    },
+    {
+      "name": "must_viewOrder_viewer_cart",
+      "description": "viewer MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_viewer_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_viewer_pending",
+      "description": "viewer MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_viewer_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_viewer_shipped",
+      "description": "viewer MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_viewer_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_viewer_delivered",
+      "description": "viewer MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_viewer_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_viewer_refunded",
+      "description": "viewer MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_viewer_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_agent_cart",
+      "description": "cs_agent MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_agent_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_agent_pending",
+      "description": "cs_agent MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_agent_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_agent_shipped",
+      "description": "cs_agent MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_agent_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_agent_delivered",
+      "description": "cs_agent MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_agent_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_agent_refunded",
+      "description": "cs_agent MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_agent_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_manager_cart",
+      "description": "cs_manager MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_manager_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_manager_pending",
+      "description": "cs_manager MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_manager_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_manager_shipped",
+      "description": "cs_manager MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_manager_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_manager_delivered",
+      "description": "cs_manager MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_manager_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_cs_manager_refunded",
+      "description": "cs_manager MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_cs_manager_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_fulfillment_cart",
+      "description": "fulfillment MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_fulfillment_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_fulfillment_pending",
+      "description": "fulfillment MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_fulfillment_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_fulfillment_shipped",
+      "description": "fulfillment MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_fulfillment_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_fulfillment_delivered",
+      "description": "fulfillment MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_fulfillment_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_fulfillment_refunded",
+      "description": "fulfillment MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_fulfillment_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_warehouse_lead_cart",
+      "description": "warehouse_lead MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_warehouse_lead_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_warehouse_lead_pending",
+      "description": "warehouse_lead MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_warehouse_lead_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_warehouse_lead_shipped",
+      "description": "warehouse_lead MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_warehouse_lead_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_warehouse_lead_delivered",
+      "description": "warehouse_lead MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_warehouse_lead_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_warehouse_lead_refunded",
+      "description": "warehouse_lead MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_warehouse_lead_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_returns_cart",
+      "description": "returns MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_returns_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_returns_pending",
+      "description": "returns MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_returns_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_returns_shipped",
+      "description": "returns MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_returns_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_returns_delivered",
+      "description": "returns MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_returns_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_returns_refunded",
+      "description": "returns MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_returns_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_ops_cart",
+      "description": "finance_ops MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_ops_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_ops_pending",
+      "description": "finance_ops MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_ops_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_ops_shipped",
+      "description": "finance_ops MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_ops_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_ops_delivered",
+      "description": "finance_ops MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_ops_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_ops_refunded",
+      "description": "finance_ops MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_ops_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_manager_cart",
+      "description": "finance_manager MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_manager_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_manager_pending",
+      "description": "finance_manager MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_manager_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_manager_shipped",
+      "description": "finance_manager MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_manager_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_manager_delivered",
+      "description": "finance_manager MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_manager_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_finance_manager_refunded",
+      "description": "finance_manager MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_finance_manager_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_platform_admin_cart",
+      "description": "platform_admin MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_platform_admin_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_platform_admin_pending",
+      "description": "platform_admin MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_platform_admin_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_platform_admin_shipped",
+      "description": "platform_admin MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_platform_admin_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_platform_admin_delivered",
+      "description": "platform_admin MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_platform_admin_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_platform_admin_refunded",
+      "description": "platform_admin MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_platform_admin_refunded.cedar"
+    },
+    {
+      "name": "must_viewOrder_security_admin_cart",
+      "description": "security_admin MUST viewOrder order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_security_admin_cart.cedar"
+    },
+    {
+      "name": "must_viewOrder_security_admin_pending",
+      "description": "security_admin MUST viewOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_security_admin_pending.cedar"
+    },
+    {
+      "name": "must_viewOrder_security_admin_shipped",
+      "description": "security_admin MUST viewOrder order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_security_admin_shipped.cedar"
+    },
+    {
+      "name": "must_viewOrder_security_admin_delivered",
+      "description": "security_admin MUST viewOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_security_admin_delivered.cedar"
+    },
+    {
+      "name": "must_viewOrder_security_admin_refunded",
+      "description": "security_admin MUST viewOrder order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_viewOrder_security_admin_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_viewer_cart",
+      "description": "viewer MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_viewer_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_viewer_pending",
+      "description": "viewer MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_viewer_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_viewer_shipped",
+      "description": "viewer MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_viewer_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_viewer_delivered",
+      "description": "viewer MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_viewer_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_viewer_refunded",
+      "description": "viewer MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_viewer_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_agent_cart",
+      "description": "cs_agent MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_agent_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_agent_pending",
+      "description": "cs_agent MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_agent_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_agent_shipped",
+      "description": "cs_agent MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_agent_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_agent_delivered",
+      "description": "cs_agent MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_agent_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_agent_refunded",
+      "description": "cs_agent MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_agent_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_manager_cart",
+      "description": "cs_manager MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_manager_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_manager_pending",
+      "description": "cs_manager MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_manager_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_manager_shipped",
+      "description": "cs_manager MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_manager_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_manager_delivered",
+      "description": "cs_manager MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_manager_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_cs_manager_refunded",
+      "description": "cs_manager MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_cs_manager_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_fulfillment_cart",
+      "description": "fulfillment MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_fulfillment_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_fulfillment_pending",
+      "description": "fulfillment MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_fulfillment_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_fulfillment_shipped",
+      "description": "fulfillment MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_fulfillment_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_fulfillment_delivered",
+      "description": "fulfillment MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_fulfillment_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_fulfillment_refunded",
+      "description": "fulfillment MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_fulfillment_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_warehouse_lead_cart",
+      "description": "warehouse_lead MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_warehouse_lead_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_warehouse_lead_pending",
+      "description": "warehouse_lead MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_warehouse_lead_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_warehouse_lead_shipped",
+      "description": "warehouse_lead MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_warehouse_lead_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_warehouse_lead_delivered",
+      "description": "warehouse_lead MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_warehouse_lead_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_warehouse_lead_refunded",
+      "description": "warehouse_lead MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_warehouse_lead_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_returns_cart",
+      "description": "returns MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_returns_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_returns_pending",
+      "description": "returns MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_returns_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_returns_shipped",
+      "description": "returns MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_returns_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_returns_delivered",
+      "description": "returns MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_returns_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_returns_refunded",
+      "description": "returns MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_returns_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_ops_cart",
+      "description": "finance_ops MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_ops_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_ops_pending",
+      "description": "finance_ops MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_ops_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_ops_shipped",
+      "description": "finance_ops MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_ops_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_ops_delivered",
+      "description": "finance_ops MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_ops_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_ops_refunded",
+      "description": "finance_ops MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_ops_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_manager_cart",
+      "description": "finance_manager MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_manager_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_manager_pending",
+      "description": "finance_manager MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_manager_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_manager_shipped",
+      "description": "finance_manager MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_manager_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_manager_delivered",
+      "description": "finance_manager MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_manager_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_finance_manager_refunded",
+      "description": "finance_manager MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_finance_manager_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_platform_admin_cart",
+      "description": "platform_admin MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_platform_admin_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_platform_admin_pending",
+      "description": "platform_admin MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_platform_admin_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_platform_admin_shipped",
+      "description": "platform_admin MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_platform_admin_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_platform_admin_delivered",
+      "description": "platform_admin MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_platform_admin_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_platform_admin_refunded",
+      "description": "platform_admin MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_platform_admin_refunded.cedar"
+    },
+    {
+      "name": "must_listOrders_security_admin_cart",
+      "description": "security_admin MUST listOrders order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_security_admin_cart.cedar"
+    },
+    {
+      "name": "must_listOrders_security_admin_pending",
+      "description": "security_admin MUST listOrders order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_security_admin_pending.cedar"
+    },
+    {
+      "name": "must_listOrders_security_admin_shipped",
+      "description": "security_admin MUST listOrders order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_security_admin_shipped.cedar"
+    },
+    {
+      "name": "must_listOrders_security_admin_delivered",
+      "description": "security_admin MUST listOrders order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_security_admin_delivered.cedar"
+    },
+    {
+      "name": "must_listOrders_security_admin_refunded",
+      "description": "security_admin MUST listOrders order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_listOrders_security_admin_refunded.cedar"
+    },
+    {
+      "name": "must_updateCart_viewer_cart",
+      "description": "viewer MUST updateCart order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"updateCart\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_updateCart_viewer_cart.cedar"
+    },
+    {
+      "name": "must_updateCart_cs_agent_cart",
+      "description": "cs_agent MUST updateCart order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"updateCart\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_updateCart_cs_agent_cart.cedar"
+    },
+    {
+      "name": "must_updateCart_cs_manager_cart",
+      "description": "cs_manager MUST updateCart order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"updateCart\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_updateCart_cs_manager_cart.cedar"
+    },
+    {
+      "name": "must_placeOrder_viewer_pending",
+      "description": "viewer MUST placeOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"placeOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_placeOrder_viewer_pending.cedar"
+    },
+    {
+      "name": "must_placeOrder_cs_agent_pending",
+      "description": "cs_agent MUST placeOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"placeOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_placeOrder_cs_agent_pending.cedar"
+    },
+    {
+      "name": "must_placeOrder_cs_manager_pending",
+      "description": "cs_manager MUST placeOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"placeOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_placeOrder_cs_manager_pending.cedar"
+    },
+    {
+      "name": "must_cancelOrder_cs_agent_pending",
+      "description": "cs_agent MUST cancelOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_cancelOrder_cs_agent_pending.cedar"
+    },
+    {
+      "name": "must_cancelOrder_cs_manager_pending",
+      "description": "cs_manager MUST cancelOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_cancelOrder_cs_manager_pending.cedar"
+    },
+    {
+      "name": "must_cancelOrder_finance_ops_pending",
+      "description": "finance_ops MUST cancelOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_cancelOrder_finance_ops_pending.cedar"
+    },
+    {
+      "name": "must_cancelOrder_finance_manager_pending",
+      "description": "finance_manager MUST cancelOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_cancelOrder_finance_manager_pending.cedar"
+    },
+    {
+      "name": "must_refundOrder_cs_manager_delivered",
+      "description": "cs_manager MUST refundOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"refundOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_refundOrder_cs_manager_delivered.cedar"
+    },
+    {
+      "name": "must_refundOrder_finance_ops_delivered",
+      "description": "finance_ops MUST refundOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"refundOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_refundOrder_finance_ops_delivered.cedar"
+    },
+    {
+      "name": "must_refundOrder_finance_manager_delivered",
+      "description": "finance_manager MUST refundOrder order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"refundOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_refundOrder_finance_manager_delivered.cedar"
+    },
+    {
+      "name": "must_shipOrder_fulfillment_pending",
+      "description": "fulfillment MUST shipOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"shipOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_shipOrder_fulfillment_pending.cedar"
+    },
+    {
+      "name": "must_shipOrder_warehouse_lead_pending",
+      "description": "warehouse_lead MUST shipOrder order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"shipOrder\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_shipOrder_warehouse_lead_pending.cedar"
+    },
+    {
+      "name": "must_markDelivered_fulfillment_shipped",
+      "description": "fulfillment MUST markDelivered order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"markDelivered\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_markDelivered_fulfillment_shipped.cedar"
+    },
+    {
+      "name": "must_markDelivered_warehouse_lead_shipped",
+      "description": "warehouse_lead MUST markDelivered order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"markDelivered\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_markDelivered_warehouse_lead_shipped.cedar"
+    },
+    {
+      "name": "must_modifyPricing_finance_manager_cart",
+      "description": "finance_manager MUST modifyPricing order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_finance_manager_cart.cedar"
+    },
+    {
+      "name": "must_modifyPricing_finance_manager_pending",
+      "description": "finance_manager MUST modifyPricing order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_finance_manager_pending.cedar"
+    },
+    {
+      "name": "must_modifyPricing_finance_manager_shipped",
+      "description": "finance_manager MUST modifyPricing order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_finance_manager_shipped.cedar"
+    },
+    {
+      "name": "must_modifyPricing_finance_manager_delivered",
+      "description": "finance_manager MUST modifyPricing order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_finance_manager_delivered.cedar"
+    },
+    {
+      "name": "must_modifyPricing_finance_manager_refunded",
+      "description": "finance_manager MUST modifyPricing order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_finance_manager_refunded.cedar"
+    },
+    {
+      "name": "must_modifyPricing_platform_admin_cart",
+      "description": "platform_admin MUST modifyPricing order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_platform_admin_cart.cedar"
+    },
+    {
+      "name": "must_modifyPricing_platform_admin_pending",
+      "description": "platform_admin MUST modifyPricing order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_platform_admin_pending.cedar"
+    },
+    {
+      "name": "must_modifyPricing_platform_admin_shipped",
+      "description": "platform_admin MUST modifyPricing order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_platform_admin_shipped.cedar"
+    },
+    {
+      "name": "must_modifyPricing_platform_admin_delivered",
+      "description": "platform_admin MUST modifyPricing order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_platform_admin_delivered.cedar"
+    },
+    {
+      "name": "must_modifyPricing_platform_admin_refunded",
+      "description": "platform_admin MUST modifyPricing order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_modifyPricing_platform_admin_refunded.cedar"
+    },
+    {
+      "name": "must_adminOverride_platform_admin_cart",
+      "description": "platform_admin MUST adminOverride order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_platform_admin_cart.cedar"
+    },
+    {
+      "name": "must_adminOverride_platform_admin_pending",
+      "description": "platform_admin MUST adminOverride order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_platform_admin_pending.cedar"
+    },
+    {
+      "name": "must_adminOverride_platform_admin_shipped",
+      "description": "platform_admin MUST adminOverride order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_platform_admin_shipped.cedar"
+    },
+    {
+      "name": "must_adminOverride_platform_admin_delivered",
+      "description": "platform_admin MUST adminOverride order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_platform_admin_delivered.cedar"
+    },
+    {
+      "name": "must_adminOverride_platform_admin_refunded",
+      "description": "platform_admin MUST adminOverride order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_platform_admin_refunded.cedar"
+    },
+    {
+      "name": "must_adminOverride_security_admin_cart",
+      "description": "security_admin MUST adminOverride order with status=cart",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_security_admin_cart.cedar"
+    },
+    {
+      "name": "must_adminOverride_security_admin_pending",
+      "description": "security_admin MUST adminOverride order with status=pending",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_security_admin_pending.cedar"
+    },
+    {
+      "name": "must_adminOverride_security_admin_shipped",
+      "description": "security_admin MUST adminOverride order with status=shipped",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_security_admin_shipped.cedar"
+    },
+    {
+      "name": "must_adminOverride_security_admin_delivered",
+      "description": "security_admin MUST adminOverride order with status=delivered",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_security_admin_delivered.cedar"
+    },
+    {
+      "name": "must_adminOverride_security_admin_refunded",
+      "description": "security_admin MUST adminOverride order with status=refunded",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace/references/must_adminOverride_security_admin_refunded.cedar"
+    },
+    {
+      "name": "liveness_viewOrder",
+      "description": "viewOrder has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"viewOrder\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_listOrders",
+      "description": "listOrders has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"listOrders\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_updateCart",
+      "description": "updateCart has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"updateCart\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_placeOrder",
+      "description": "placeOrder has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"placeOrder\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_cancelOrder",
+      "description": "cancelOrder has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"cancelOrder\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_refundOrder",
+      "description": "refundOrder has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"refundOrder\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_shipOrder",
+      "description": "shipOrder has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"shipOrder\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_markDelivered",
+      "description": "markDelivered has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"markDelivered\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_modifyPricing",
+      "description": "modifyPricing has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"modifyPricing\"",
+      "resource_type": "Order"
+    },
+    {
+      "name": "liveness_adminOverride",
+      "description": "adminOverride has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"adminOverride\"",
+      "resource_type": "Order"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "viewOrder_safety",
+      "check_type": "implies",
+      "description": "viewOrder permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "listOrders_safety",
+      "check_type": "implies",
+      "description": "listOrders permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "updateCart_safety",
+      "check_type": "implies",
+      "description": "updateCart permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "placeOrder_safety",
+      "check_type": "implies",
+      "description": "placeOrder permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "cancelOrder_safety",
+      "check_type": "implies",
+      "description": "cancelOrder permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "refundOrder_safety",
+      "check_type": "implies",
+      "description": "refundOrder permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "shipOrder_safety",
+      "check_type": "implies",
+      "description": "shipOrder permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "markDelivered_safety",
+      "check_type": "implies",
+      "description": "markDelivered permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "modifyPricing_safety",
+      "check_type": "implies",
+      "description": "modifyPricing permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "adminOverride_safety",
+      "check_type": "implies",
+      "description": "adminOverride permitted only for allowed roles/statuses",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_viewer_cart",
+      "check_type": "implies",
+      "description": "viewer MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_viewer_pending",
+      "check_type": "implies",
+      "description": "viewer MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_viewer_shipped",
+      "check_type": "implies",
+      "description": "viewer MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_viewer_delivered",
+      "check_type": "implies",
+      "description": "viewer MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_viewer_refunded",
+      "check_type": "implies",
+      "description": "viewer MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_agent_cart",
+      "check_type": "implies",
+      "description": "cs_agent MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_agent_pending",
+      "check_type": "implies",
+      "description": "cs_agent MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_agent_shipped",
+      "check_type": "implies",
+      "description": "cs_agent MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_agent_delivered",
+      "check_type": "implies",
+      "description": "cs_agent MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_agent_refunded",
+      "check_type": "implies",
+      "description": "cs_agent MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_manager_cart",
+      "check_type": "implies",
+      "description": "cs_manager MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_manager_pending",
+      "check_type": "implies",
+      "description": "cs_manager MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_manager_shipped",
+      "check_type": "implies",
+      "description": "cs_manager MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_manager_delivered",
+      "check_type": "implies",
+      "description": "cs_manager MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_cs_manager_refunded",
+      "check_type": "implies",
+      "description": "cs_manager MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_fulfillment_cart",
+      "check_type": "implies",
+      "description": "fulfillment MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_fulfillment_pending",
+      "check_type": "implies",
+      "description": "fulfillment MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_fulfillment_shipped",
+      "check_type": "implies",
+      "description": "fulfillment MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_fulfillment_delivered",
+      "check_type": "implies",
+      "description": "fulfillment MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_fulfillment_refunded",
+      "check_type": "implies",
+      "description": "fulfillment MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_warehouse_lead_cart",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_warehouse_lead_pending",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_warehouse_lead_shipped",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_warehouse_lead_delivered",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_warehouse_lead_refunded",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_returns_cart",
+      "check_type": "implies",
+      "description": "returns MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_returns_pending",
+      "check_type": "implies",
+      "description": "returns MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_returns_shipped",
+      "check_type": "implies",
+      "description": "returns MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_returns_delivered",
+      "check_type": "implies",
+      "description": "returns MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_returns_refunded",
+      "check_type": "implies",
+      "description": "returns MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_ops_cart",
+      "check_type": "implies",
+      "description": "finance_ops MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_ops_pending",
+      "check_type": "implies",
+      "description": "finance_ops MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_ops_shipped",
+      "check_type": "implies",
+      "description": "finance_ops MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_ops_delivered",
+      "check_type": "implies",
+      "description": "finance_ops MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_ops_refunded",
+      "check_type": "implies",
+      "description": "finance_ops MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_manager_cart",
+      "check_type": "implies",
+      "description": "finance_manager MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_manager_pending",
+      "check_type": "implies",
+      "description": "finance_manager MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_manager_shipped",
+      "check_type": "implies",
+      "description": "finance_manager MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_manager_delivered",
+      "check_type": "implies",
+      "description": "finance_manager MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_finance_manager_refunded",
+      "check_type": "implies",
+      "description": "finance_manager MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_platform_admin_cart",
+      "check_type": "implies",
+      "description": "platform_admin MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_platform_admin_pending",
+      "check_type": "implies",
+      "description": "platform_admin MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_platform_admin_shipped",
+      "check_type": "implies",
+      "description": "platform_admin MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_platform_admin_delivered",
+      "check_type": "implies",
+      "description": "platform_admin MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_platform_admin_refunded",
+      "check_type": "implies",
+      "description": "platform_admin MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_security_admin_cart",
+      "check_type": "implies",
+      "description": "security_admin MUST viewOrder order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_security_admin_pending",
+      "check_type": "implies",
+      "description": "security_admin MUST viewOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_security_admin_shipped",
+      "check_type": "implies",
+      "description": "security_admin MUST viewOrder order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_security_admin_delivered",
+      "check_type": "implies",
+      "description": "security_admin MUST viewOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_viewOrder_security_admin_refunded",
+      "check_type": "implies",
+      "description": "security_admin MUST viewOrder order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_viewer_cart",
+      "check_type": "implies",
+      "description": "viewer MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_viewer_pending",
+      "check_type": "implies",
+      "description": "viewer MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_viewer_shipped",
+      "check_type": "implies",
+      "description": "viewer MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_viewer_delivered",
+      "check_type": "implies",
+      "description": "viewer MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_viewer_refunded",
+      "check_type": "implies",
+      "description": "viewer MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_agent_cart",
+      "check_type": "implies",
+      "description": "cs_agent MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_agent_pending",
+      "check_type": "implies",
+      "description": "cs_agent MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_agent_shipped",
+      "check_type": "implies",
+      "description": "cs_agent MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_agent_delivered",
+      "check_type": "implies",
+      "description": "cs_agent MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_agent_refunded",
+      "check_type": "implies",
+      "description": "cs_agent MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_manager_cart",
+      "check_type": "implies",
+      "description": "cs_manager MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_manager_pending",
+      "check_type": "implies",
+      "description": "cs_manager MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_manager_shipped",
+      "check_type": "implies",
+      "description": "cs_manager MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_manager_delivered",
+      "check_type": "implies",
+      "description": "cs_manager MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_cs_manager_refunded",
+      "check_type": "implies",
+      "description": "cs_manager MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_fulfillment_cart",
+      "check_type": "implies",
+      "description": "fulfillment MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_fulfillment_pending",
+      "check_type": "implies",
+      "description": "fulfillment MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_fulfillment_shipped",
+      "check_type": "implies",
+      "description": "fulfillment MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_fulfillment_delivered",
+      "check_type": "implies",
+      "description": "fulfillment MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_fulfillment_refunded",
+      "check_type": "implies",
+      "description": "fulfillment MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_warehouse_lead_cart",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_warehouse_lead_pending",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_warehouse_lead_shipped",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_warehouse_lead_delivered",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_warehouse_lead_refunded",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_returns_cart",
+      "check_type": "implies",
+      "description": "returns MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_returns_pending",
+      "check_type": "implies",
+      "description": "returns MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_returns_shipped",
+      "check_type": "implies",
+      "description": "returns MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_returns_delivered",
+      "check_type": "implies",
+      "description": "returns MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_returns_refunded",
+      "check_type": "implies",
+      "description": "returns MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_ops_cart",
+      "check_type": "implies",
+      "description": "finance_ops MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_ops_pending",
+      "check_type": "implies",
+      "description": "finance_ops MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_ops_shipped",
+      "check_type": "implies",
+      "description": "finance_ops MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_ops_delivered",
+      "check_type": "implies",
+      "description": "finance_ops MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_ops_refunded",
+      "check_type": "implies",
+      "description": "finance_ops MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_manager_cart",
+      "check_type": "implies",
+      "description": "finance_manager MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_manager_pending",
+      "check_type": "implies",
+      "description": "finance_manager MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_manager_shipped",
+      "check_type": "implies",
+      "description": "finance_manager MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_manager_delivered",
+      "check_type": "implies",
+      "description": "finance_manager MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_finance_manager_refunded",
+      "check_type": "implies",
+      "description": "finance_manager MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_platform_admin_cart",
+      "check_type": "implies",
+      "description": "platform_admin MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_platform_admin_pending",
+      "check_type": "implies",
+      "description": "platform_admin MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_platform_admin_shipped",
+      "check_type": "implies",
+      "description": "platform_admin MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_platform_admin_delivered",
+      "check_type": "implies",
+      "description": "platform_admin MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_platform_admin_refunded",
+      "check_type": "implies",
+      "description": "platform_admin MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_security_admin_cart",
+      "check_type": "implies",
+      "description": "security_admin MUST listOrders order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_security_admin_pending",
+      "check_type": "implies",
+      "description": "security_admin MUST listOrders order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_security_admin_shipped",
+      "check_type": "implies",
+      "description": "security_admin MUST listOrders order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_security_admin_delivered",
+      "check_type": "implies",
+      "description": "security_admin MUST listOrders order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_listOrders_security_admin_refunded",
+      "check_type": "implies",
+      "description": "security_admin MUST listOrders order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_updateCart_viewer_cart",
+      "check_type": "implies",
+      "description": "viewer MUST updateCart order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_updateCart_cs_agent_cart",
+      "check_type": "implies",
+      "description": "cs_agent MUST updateCart order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_updateCart_cs_manager_cart",
+      "check_type": "implies",
+      "description": "cs_manager MUST updateCart order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_placeOrder_viewer_pending",
+      "check_type": "implies",
+      "description": "viewer MUST placeOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_placeOrder_cs_agent_pending",
+      "check_type": "implies",
+      "description": "cs_agent MUST placeOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_placeOrder_cs_manager_pending",
+      "check_type": "implies",
+      "description": "cs_manager MUST placeOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_cancelOrder_cs_agent_pending",
+      "check_type": "implies",
+      "description": "cs_agent MUST cancelOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_cancelOrder_cs_manager_pending",
+      "check_type": "implies",
+      "description": "cs_manager MUST cancelOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_cancelOrder_finance_ops_pending",
+      "check_type": "implies",
+      "description": "finance_ops MUST cancelOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_cancelOrder_finance_manager_pending",
+      "check_type": "implies",
+      "description": "finance_manager MUST cancelOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_refundOrder_cs_manager_delivered",
+      "check_type": "implies",
+      "description": "cs_manager MUST refundOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_refundOrder_finance_ops_delivered",
+      "check_type": "implies",
+      "description": "finance_ops MUST refundOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_refundOrder_finance_manager_delivered",
+      "check_type": "implies",
+      "description": "finance_manager MUST refundOrder order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_shipOrder_fulfillment_pending",
+      "check_type": "implies",
+      "description": "fulfillment MUST shipOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_shipOrder_warehouse_lead_pending",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST shipOrder order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_markDelivered_fulfillment_shipped",
+      "check_type": "implies",
+      "description": "fulfillment MUST markDelivered order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_markDelivered_warehouse_lead_shipped",
+      "check_type": "implies",
+      "description": "warehouse_lead MUST markDelivered order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_finance_manager_cart",
+      "check_type": "implies",
+      "description": "finance_manager MUST modifyPricing order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_finance_manager_pending",
+      "check_type": "implies",
+      "description": "finance_manager MUST modifyPricing order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_finance_manager_shipped",
+      "check_type": "implies",
+      "description": "finance_manager MUST modifyPricing order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_finance_manager_delivered",
+      "check_type": "implies",
+      "description": "finance_manager MUST modifyPricing order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_finance_manager_refunded",
+      "check_type": "implies",
+      "description": "finance_manager MUST modifyPricing order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_platform_admin_cart",
+      "check_type": "implies",
+      "description": "platform_admin MUST modifyPricing order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_platform_admin_pending",
+      "check_type": "implies",
+      "description": "platform_admin MUST modifyPricing order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_platform_admin_shipped",
+      "check_type": "implies",
+      "description": "platform_admin MUST modifyPricing order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_platform_admin_delivered",
+      "check_type": "implies",
+      "description": "platform_admin MUST modifyPricing order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_modifyPricing_platform_admin_refunded",
+      "check_type": "implies",
+      "description": "platform_admin MUST modifyPricing order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_platform_admin_cart",
+      "check_type": "implies",
+      "description": "platform_admin MUST adminOverride order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_platform_admin_pending",
+      "check_type": "implies",
+      "description": "platform_admin MUST adminOverride order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_platform_admin_shipped",
+      "check_type": "implies",
+      "description": "platform_admin MUST adminOverride order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_platform_admin_delivered",
+      "check_type": "implies",
+      "description": "platform_admin MUST adminOverride order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_platform_admin_refunded",
+      "check_type": "implies",
+      "description": "platform_admin MUST adminOverride order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_security_admin_cart",
+      "check_type": "implies",
+      "description": "security_admin MUST adminOverride order with status=cart",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_security_admin_pending",
+      "check_type": "implies",
+      "description": "security_admin MUST adminOverride order with status=pending",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_security_admin_shipped",
+      "check_type": "implies",
+      "description": "security_admin MUST adminOverride order with status=shipped",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_security_admin_delivered",
+      "check_type": "implies",
+      "description": "security_admin MUST adminOverride order with status=delivered",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_adminOverride_security_admin_refunded",
+      "check_type": "implies",
+      "description": "security_admin MUST adminOverride order with status=refunded",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_viewOrder",
+      "check_type": "always-denies (liveness)",
+      "description": "viewOrder has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_listOrders",
+      "check_type": "always-denies (liveness)",
+      "description": "listOrders has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_updateCart",
+      "check_type": "always-denies (liveness)",
+      "description": "updateCart has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_placeOrder",
+      "check_type": "always-denies (liveness)",
+      "description": "placeOrder has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_cancelOrder",
+      "check_type": "always-denies (liveness)",
+      "description": "cancelOrder has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_refundOrder",
+      "check_type": "always-denies (liveness)",
+      "description": "refundOrder has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_shipOrder",
+      "check_type": "always-denies (liveness)",
+      "description": "shipOrder has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_markDelivered",
+      "check_type": "always-denies (liveness)",
+      "description": "markDelivered has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_modifyPricing",
+      "check_type": "always-denies (liveness)",
+      "description": "modifyPricing has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_adminOverride",
+      "check_type": "always-denies (liveness)",
+      "description": "adminOverride has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

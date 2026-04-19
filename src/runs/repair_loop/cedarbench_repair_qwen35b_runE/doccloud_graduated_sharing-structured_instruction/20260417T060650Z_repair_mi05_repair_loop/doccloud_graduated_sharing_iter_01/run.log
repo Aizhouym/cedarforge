@@ -1,0 +1,1043 @@
+========================================================================
+ITERATION START
+task:       doccloud_graduated_sharing
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "modify constraint"
+difficulty: medium
+features:
+  - ACL-based sharing
+  - owner/viewer/editor roles
+  - blocking semantics
+  - graduated sharing levels
+domain: document management
+source: mutation (doccloud domain)
+---
+
+# Document Cloud Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a document management platform with
+Documents, Users, Groups, Drives, and sharing ACLs (DocumentShare).
+
+Documents have three ACL attributes (viewACL, modifyACL, manageACL), each
+referencing a DocumentShare entity that Groups and Public can be members of.
+Documents also have a publicAccess string attribute and an owner reference.
+
+## Requirements
+
+### 1. Owner Permissions
+- The **owner** of a document may perform ALL actions on that document:
+  ViewDocument, ModifyDocument, DeleteDocument, EditIsPrivate, EditPublicAccess,
+  AddToShareACL.
+
+### 2. View ACL Permissions
+- A user who is in a document's **viewACL** may **ViewDocument**.
+
+### 3. Modify ACL Permissions
+- A user who is in a document's **modifyACL** may **ModifyDocument**.
+
+### 4. Manage ACL Permissions
+- A user who is in a document's **manageACL** may perform:
+  **AddToShareACL**, **DeleteDocument**, **EditIsPrivate**, **EditPublicAccess**.
+
+### 5. Public Access Rules
+- If a document's `publicAccess == "view"`, then **Public** principals (or any
+  authenticated user) may **ViewDocument**.
+- If a document's `publicAccess == "edit"`, then **Public** principals may
+  **ViewDocument** and **ModifyDocument**.
+
+### 6. Blocking Rules (Deny Rules -- Bidirectional)
+- If the **principal** is in the document owner's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- If the document **owner** is in the principal's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- Blocking is bidirectional: either direction triggers the deny.
+
+### 7. Authentication Requirement (Deny Rule)
+- For **User** principals, all actions are forbidden unless
+  `context.is_authenticated == true`.
+
+### 8. Group Owner Permissions
+- The **owner** of a Group may **DeleteGroup** and **ModifyGroup** on that Group.
+
+## Notes
+- ACL membership is checked via `principal in resource.viewACL` (etc.).
+- The Public entity type is a separate principal type, not a User.
+- Cedar denies by default -- no explicit deny-by-default policy is needed.
+- Blocking forbid rules use `when` conditions on entity attribute sets.
+### 9. Graduated Public Sharing
+- The `publicAccess` attribute now supports three values: `"view"`, `"edit"`,
+  and `"preview"`.
+- If `publicAccess == "preview"`, **Public** principals may **ViewMetadata** only.
+  They may NOT **ViewDocument** (which grants full content access).
+- If `publicAccess == "view"`, **Public** principals may **ViewDocument** and
+  **ViewMetadata**.
+- If `publicAccess == "edit"`, **Public** principals may **ViewDocument**,
+  **ViewMetadata**, and **ModifyDocument**.
+
+### 10. ViewMetadata Action
+- **ViewMetadata** is a new action that allows viewing document metadata
+  (title, owner, dates) without viewing the full document content.
+- Any user who can **ViewDocument** can also **ViewMetadata** (ViewDocument
+  implies ViewMetadata).
+- The document **owner** may **ViewMetadata** (owners can do everything).
+- Users in **viewACL**, **modifyACL**, or **manageACL** may **ViewMetadata**.
+
+## Notes (Graduated Sharing)
+- Three levels of public access: preview (metadata only) < view (full) < edit (full + modify).
+- ViewMetadata is strictly weaker than ViewDocument.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+entity DocumentShare, Drive;
+entity Document  = {
+  "isPrivate": Bool,
+  "manageACL": DocumentShare,
+  "modifyACL": DocumentShare,
+  "owner": User,
+  "publicAccess": String,
+  "viewACL": DocumentShare,
+};
+entity Group in [DocumentShare] = {
+  "owner": User,
+};
+entity Public in [DocumentShare];
+entity User in [Group] = {
+  "blocked": Set<User>,
+  "personalGroup": Group,
+};
+
+action DeleteGroup, ModifyGroup appliesTo {
+  principal: [User],
+  resource: [Group],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action CreateGroup appliesTo {
+  principal: [User],
+  resource: [Drive],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action ViewDocument appliesTo {
+  principal: [User, Public],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo {
+  principal: [User],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action ModifyDocument appliesTo {
+  principal: [User],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action CreateDocument appliesTo {
+  principal: [User],
+  resource: [Drive],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+
+action ViewMetadata appliesTo {
+    principal: [User, Public],
+    resource: [Document],
+    context: { "is_authenticated": Bool }
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    principal in resource.modifyACL ||
+    principal in resource.manageACL ||
+    (resource.publicAccess == "view" && principal is Public) ||
+    (resource.publicAccess == "edit" && principal is Public)
+} unless {
+    (resource.owner has blocked && principal in resource.owner.blocked) ||
+    (principal has blocked && resource.owner in principal.blocked)
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.modifyACL ||
+    (resource.publicAccess == "edit" && principal is Public)
+} unless {
+    (resource.owner has blocked && principal in resource.owner.blocked) ||
+    (principal has blocked && resource.owner in principal.blocked)
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditIsPrivate",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditPublicAccess",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"AddToShareACL",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"ViewMetadata",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    principal in resource.modifyACL ||
+    principal in resource.manageACL ||
+    (resource.publicAccess == "preview" && principal is Public) ||
+    (resource.publicAccess == "view" && principal is Public) ||
+    (resource.publicAccess == "edit" && principal is Public)
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateDocument",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateGroup",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    principal in resource.modifyACL ||
+    principal in resource.manageACL ||
+    (resource.publicAccess == "view" && principal is Public) ||
+    (resource.publicAccess == "edit" && principal is Public)
+} unless {
+    (resource.owner has blocked && principal in resource.owner.blocked) ||
+    (principal has blocked && resource.owner in principal.blocked)
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.modifyACL ||
+    (resource.publicAccess == "edit" && principal is Public)
+} unless {
+    (resource.owner has blocked && principal in resource.owner.blocked) ||
+    (principal has blocked && resource.owner in principal.blocked)
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditIsPrivate",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditPublicAccess",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"AddToShareACL",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"ViewMetadata",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    principal in resource.modifyACL ||
+    principal in resource.manageACL ||
+    (resource.publicAccess == "preview" && principal is Public) ||
+    (resource.publicAccess == "view" && principal is Public) ||
+    (resource.publicAccess == "edit" && principal is Public)
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateDocument",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateGroup",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=fail passed=False
+message: One or more semantic checks failed.
+total_checks: 29
+solver_time_s: 3.097
+
+semantic check results:
+  - owner_view_document_ceiling [implies] FAIL
+    description: ViewDocument for Users is only allowed if: owner, in viewACL, in modifyACL, in manageACL, or publicAccess is view/edit
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ViewDocument", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  User::"A" in [DocumentShare::"B"] {
+    blocked: [],
+    personalGroup: Group::"A",
+  },
+  Group::"A" {
+    owner: User::"",
+  },
+  Action::"CreateGroup",
+  Action::"EditIsPrivate",
+  Action::"EditPublicAccess",
+  Action::"CreateDocument",
+  DocumentShare::"A",
+  Action::"ViewMetadata",
+  Action::"ModifyDocument",
+  Action::"ModifyGroup",
+  DocumentShare::"B",
+  Action::"AddToShareACL",
+  Action::"ViewDocument",
+  Action::"DeleteGroup",
+  DocumentShare::"",
+  Action::"DeleteDocument",
+  Document
+...[truncated]...
+  - public_view_document_ceiling [implies] PASS
+    description: ViewDocument for Public is only allowed if publicAccess is view or edit
+  - modify_document_user_ceiling [implies] FAIL
+    description: ModifyDocument for Users is only allowed if: owner, in modifyACL, or publicAccess is edit
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ModifyDocument", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"ViewMetadata",
+  Action::"EditPublicAccess",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"ViewDocument",
+  Action::"AddToShareACL",
+  Action::"CreateDocument",
+  Action::"DeleteGroup",
+  Action::"CreateGroup",
+  Group::"" {
+    owner: User::"",
+  },
+  DocumentShare::"A",
+  Action::"EditIsPrivate",
+  Action::"ModifyDocument",
+  Action::"ModifyGroup",
+  DocumentShare::"",
+  Action::"DeleteDocument",
+  Document::"" {
+    isPrivate: true,
+    manageACL: Docu
+...[truncated]...
+  - delete_document_ceiling [implies] FAIL
+    description: DeleteDocument only allowed if owner or in manageACL
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"DeleteDocument", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Group::"" {
+    owner: User::"",
+  },
+  Action::"CreateDocument",
+  Action::"DeleteGroup",
+  DocumentShare::"",
+  DocumentShare::"B",
+  Action::"ViewDocument",
+  Action::"AddToShareACL",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"DeleteDocument",
+  Action::"EditIsPrivate",
+  Action::"ModifyGroup",
+  Action::"CreateGroup",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAcc
+...[truncated]...
+  - edit_is_private_ceiling [implies] FAIL
+    description: EditIsPrivate only allowed if owner or in manageACL
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"EditIsPrivate", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAccess: "",
+    viewACL: DocumentShare::"B",
+  },
+  Action::"DeleteGroup",
+  Action::"ModifyDocument",
+  Action::"ModifyGroup",
+  Action::"ViewDocument",
+  DocumentShare::"B",
+  DocumentShare::"",
+  Group::"" {
+    owner: User::"",
+  },
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"DeleteDocument",
+  Action::"AddToShareACL",
+  Acti
+...[truncated]...
+  - edit_public_access_ceiling [implies] FAIL
+    description: EditPublicAccess only allowed if owner or in manageACL
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"EditPublicAccess", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"EditPublicAccess",
+  Action::"ModifyGroup",
+  Action::"CreateGroup",
+  Action::"ViewDocument",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAccess: "",
+    viewACL: DocumentShare::"B",
+  },
+  Action::"ModifyDocument",
+  Action::"DeleteDocument",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"ViewMetadata",
+  DocumentShare::"",
+  Action::"EditIsPrivate",
+  Action:
+...[truncated]...
+  - add_to_share_acl_ceiling [implies] FAIL
+    description: AddToShareACL only allowed if owner or in manageACL
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"AddToShareACL", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"ModifyGroup",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAccess: "",
+    viewACL: DocumentShare::"B",
+  },
+  Action::"ModifyDocument",
+  Action::"EditPublicAccess",
+  Action::"DeleteGroup",
+  DocumentShare::"",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"CreateGroup",
+  Action::"DeleteDocument",
+  DocumentShare::"B",
+  Group::"" {
+    owner: User::"",
+  },
+  Ac
+...[truncated]...
+  - delete_group_ceiling [implies] FAIL
+    description: DeleteGroup only allowed if principal is the group owner and authenticated
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"DeleteGroup", resource: Group::""
+context: {is_authenticated: false}
+entities: [
+  Action::"ViewMetadata",
+  Action::"DeleteDocument",
+  DocumentShare::"",
+  Action::"ViewDocument",
+  Action::"CreateGroup",
+  Action::"EditIsPrivate",
+  Action::"EditPublicAccess",
+  Action::"AddToShareACL",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"DeleteGroup",
+  Group::"" {
+    owner: User::"",
+  },
+  Action::"CreateDocument",
+  Action::"ModifyDocument",
+  Action::"ModifyGroup",
+]
+  - modify_group_ceiling [implies] FAIL
+    description: ModifyGroup only allowed if principal is the group owner and authenticated
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ModifyGroup", resource: Group::""
+context: {is_authenticated: false}
+entities: [
+  Action::"EditPublicAccess",
+  Action::"DeleteGroup",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Group::"" {
+    owner: User::"",
+  },
+  Action::"EditIsPrivate",
+  Action::"ModifyGroup",
+  Action::"ViewDocument",
+  Action::"ViewMetadata",
+  Action::"AddToShareACL",
+  Action::"CreateDocument",
+  Action::"CreateGroup",
+  Action::"DeleteDocument",
+  Action::"ModifyDocument",
+  DocumentShare::"",
+]
+  - view_metadata_user_ceiling [implies] FAIL
+    description: ViewMetadata for Users is allowed if: owner, in viewACL, modifyACL, manageACL, or publicAccess is preview/view/edit
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ViewMetadata", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"DeleteGroup",
+  Group::"" {
+    owner: User::"",
+  },
+  User::"" in [DocumentShare::"B"] {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"EditPublicAccess",
+  Action::"DeleteDocument",
+  User::"A" in [DocumentShare::"B"] {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"AddToShareACL",
+  Action::"CreateGroup",
+  Action::"CreateDocument",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"B",
+    modifyACL: DocumentShare::"A",
+    owner: U
+...[truncated]...
+  - view_metadata_public_ceiling [implies] PASS
+    description: ViewMetadata for Public is allowed if publicAccess is preview, view, or edit
+  - owner_view_document_floor [implies] PASS
+    description: Owner who is authenticated and not blocked MUST be able to ViewDocument
+  - owner_modify_document_floor [implies] PASS
+    description: Owner who is authenticated and not blocked MUST be able to ModifyDocument
+  - owner_delete_document_floor [implies] PASS
+    description: Owner who is authenticated MUST be able to DeleteDocument
+  - view_acl_floor [implies] PASS
+    description: User in viewACL who is authenticated and not blocked MUST be able to ViewDocument
+  - modify_acl_floor [implies] PASS
+    description: User in modifyACL who is authenticated and not blocked MUST be able to ModifyDocument
+  - manage_acl_add_share_floor [implies] PASS
+    description: User in manageACL who is authenticated MUST be able to AddToShareACL
+  - public_view_document_floor [implies] FAIL
+    description: Public principal MUST be able to ViewDocument when publicAccess is view
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Public::"", action: Action::"ViewDocument", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAccess: "view",
+    viewACL: DocumentShare::"B",
+  },
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"ModifyGroup",
+  Action::"DeleteDocument",
+  Action::"EditPublicAccess",
+  Action::"CreateGroup",
+  Action::"EditIsPrivate",
+  DocumentShare::"",
+  Group::"" {
+    owner: User::"",
+  },
+  Action::"AddToShareACL",
+  Action::"ViewDocum
+...[truncated]...
+  - public_preview_view_metadata_floor [implies] FAIL
+    description: Public principal MUST be able to ViewMetadata when publicAccess is preview
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Public::"", action: Action::"ViewMetadata", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"EditPublicAccess",
+  Action::"ModifyGroup",
+  Group::"" {
+    owner: User::"",
+  },
+  Action::"DeleteGroup",
+  Action::"ViewMetadata",
+  Action::"CreateGroup",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"",
+    modifyACL: DocumentShare::"A",
+    owner: User::"",
+    publicAccess: "preview",
+    viewACL: DocumentShare::"B",
+  },
+  Public::"",
+  DocumentShare::"A",
+  Action::"EditIsPrivate",
+  Action::"ModifyDocument",
+  Action::"ViewDocument",
+  Action::"Create
+...[truncated]...
+  - group_owner_delete_floor [implies] PASS
+    description: Group owner who is authenticated MUST be able to DeleteGroup
+  - user_public_edit_modify_floor [implies] FAIL
+    description: Authenticated user MUST be able to ModifyDocument when publicAccess is edit and not blocked
+    counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ModifyDocument", resource: Document::""
+context: {is_authenticated: true}
+entities: [
+  User::"A" {
+    blocked: [],
+    personalGroup: Group::"A",
+  },
+  Action::"DeleteDocument",
+  Document::"" {
+    isPrivate: true,
+    manageACL: DocumentShare::"A",
+    modifyACL: DocumentShare::"",
+    owner: User::"A",
+    publicAccess: "edit",
+    viewACL: DocumentShare::"B",
+  },
+  Action::"CreateGroup",
+  Action::"ModifyDocument",
+  Action::"AddToShareACL",
+  Group::"" {
+    owner: User::"",
+  },
+  DocumentShare::"A",
+  Action::"EditIsPrivate",
+  Action::"EditPublicAccess",
+  Action::"Vie
+...[truncated]...
+  - liveness_view_document_user [always-denies (liveness)] PASS
+    description: ViewDocument for Users is not trivially deny-all
+  - liveness_modify_document_user [always-denies (liveness)] PASS
+    description: ModifyDocument for Users is not trivially deny-all
+  - liveness_delete_document [always-denies (liveness)] PASS
+    description: DeleteDocument is not trivially deny-all
+  - liveness_add_to_share_acl [always-denies (liveness)] PASS
+    description: AddToShareACL is not trivially deny-all
+  - liveness_create_document [always-denies (liveness)] PASS
+    description: CreateDocument is not trivially deny-all
+  - liveness_create_group [always-denies (liveness)] PASS
+    description: CreateGroup is not trivially deny-all
+  - liveness_delete_group [always-denies (liveness)] PASS
+    description: DeleteGroup is not trivially deny-all
+  - liveness_view_metadata_public [always-denies (liveness)] FAIL
+    description: ViewMetadata for Public is not trivially deny-all
+    counterexample:
+LIVENESS VIOLATION: Policy always denies this action. It must allow at least one scenario.
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  0.5517
+VerificationPass:  False
+Loss:              13
+FailedChecks:      owner_view_document_ceiling, modify_document_user_ceiling, delete_document_ceiling, edit_is_private_ceiling, edit_public_access_ceiling, add_to_share_acl_ceiling, delete_group_ceiling, modify_group_ceiling, view_metadata_user_ceiling, public_view_document_floor, public_preview_view_metadata_floor, user_public_edit_modify_floor, liveness_view_metadata_public
+DurationSec:       4.405
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_graduated_sharing-structured_instruction/20260417T060650Z_repair_mi05_repair_loop/doccloud_graduated_sharing_iter_01/run.log

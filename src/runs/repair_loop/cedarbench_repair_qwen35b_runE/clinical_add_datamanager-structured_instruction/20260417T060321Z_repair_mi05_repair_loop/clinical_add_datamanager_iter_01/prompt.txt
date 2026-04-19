@@ -1,0 +1,326 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "add role"
+difficulty: medium
+features:
+  - role-clearance hierarchy
+  - document sensitivity levels
+  - consent-based access
+  - new role: data manager
+domain: healthcare / clinical trials
+source: mutation (clinical domain)
+---
+
+# Clinical Trial Data Platform -- Policy Specification
+
+## Context
+
+This policy governs access control for a clinical trial data platform with
+Users, Roles, Projects, and Documents. Users belong to Roles (e.g.,
+ClinicalResearcher, PrincipalInvestigator, GlobalAuditor). Documents
+belong to Projects. Project attributes (status, managingDepartment)
+are denormalized onto Document for policy evaluation.
+
+## Requirements
+
+### 1. Active Project Gate
+- A user may only **View** or **Edit** a document if the document's
+  `projectStatus == "Active"`. Documents in non-active projects are
+  inaccessible.
+
+### 2. Role Gate
+- Only users in the **ClinicalResearcher**, **PrincipalInvestigator**,
+  or **DataManager** role may View or Edit documents. All other users
+  are denied by default.
+
+### 3. Clinical Researcher Constraints
+- A ClinicalResearcher may View/Edit a document only if:
+  - `principal.clearanceLevel > 3`, AND
+  - `resource.classification != "HighlyRestricted"`.
+
+### 4. Principal Investigator Constraints
+- A PrincipalInvestigator may View/Edit a document only if:
+  - `context.networkRiskScore < 20`, AND
+  - `context.isCompliantDevice == true`.
+
+### 5. Cross-Departmental Block (Forbid)
+- **Forbid** any View or Edit if the user's `department` does not match
+  the document's `projectManagingDepartment`.
+- This forbid overrides all permit rules.
+
+### 6. Auditor Loophole
+- The **GlobalAuditor** role is exempt from the cross-departmental block
+  (via an `unless` clause on the forbid rule). GlobalAuditors may access
+  documents outside their department, provided they otherwise qualify
+  under the permit rules.
+
+## Notes
+- Roles are checked via entity group membership: `principal in Role::"ClinicalResearcher"`.
+- Cedar denies by default; no explicit deny-all policy is needed.
+- The forbid/unless pattern is the key complexity driver in this scenario.
+### 7. DataManager Constraints
+- A **DataManager** is a new role (checked via `principal in Role::"DataManager"`).
+- A DataManager may **Edit** documents (including `"HighlyRestricted"` classification)
+  only if `principal.clearanceLevel > 5`.
+- A DataManager may also **View** documents under the same clearance constraint.
+- DataManagers are still subject to the active project gate (requirement 1)
+  and the cross-departmental block with auditor loophole (requirements 5 and 6).
+- Unlike ClinicalResearchers, DataManagers CAN access HighlyRestricted documents
+  (provided their clearanceLevel > 5).
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Clinical Trial Data Platform -- Cedar Schema
+//
+// Design note: Cedar cannot traverse entity hierarchies to access
+// parent attributes (e.g., no resource.parent.status). To reference
+// Project attributes in policies, projectStatus and projectManagingDepartment
+// are denormalized onto Document. The application ensures these stay in sync.
+
+entity Role;
+
+entity User in [Role] {
+    department: String,
+    clearanceLevel: Long,
+};
+
+entity Project {
+    status: String,
+    managingDepartment: String,
+};
+
+entity Document in [Project] {
+    classification: String,
+    projectStatus: String,
+    projectManagingDepartment: String,
+};
+
+action "View" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+    },
+};
+
+action "Edit" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

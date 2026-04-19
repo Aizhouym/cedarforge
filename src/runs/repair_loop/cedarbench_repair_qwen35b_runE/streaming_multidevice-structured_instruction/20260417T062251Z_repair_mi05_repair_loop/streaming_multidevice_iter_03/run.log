@@ -1,0 +1,878 @@
+========================================================================
+ITERATION START
+task:       streaming_multidevice
+iteration:  3
+strategy:   structured_instruction_repair_semantic
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 3
+
+
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: "add constraint"
+difficulty: medium
+features:
+  - subscription tiers
+  - datetime-based content windows
+  - parental controls
+  - multi-device limit
+domain: media / streaming
+source: mutation (streaming domain)
+---
+
+# Streaming Service — Policy Specification
+
+## Context
+
+This policy governs access control for a streaming video platform with
+FreeMember and Subscriber principals, and Movie and Show resources.
+
+Subscribers have a `subscription` with a `tier` (e.g. "standard", "premium")
+and a `profile` with an `isKid` boolean.
+
+## Requirements
+
+### 1. Subscriber Watch Permissions
+- A **Subscriber** may **watch** any Show, UNLESS the show has `isEarlyAccess == true`
+  AND the current time (`context.now.datetime`) is before the show's `releaseDate`.
+- A **Subscriber** may **watch** any Movie, UNLESS the movie has `needsRentOrBuy == true`.
+
+### 2. FreeMember Watch Permissions
+- A **FreeMember** may **watch** any Movie where `isFree == true`.
+- A **FreeMember** may **watch** any Show where `isFree == true`.
+
+### 3. Oscar Promo (Rent/Buy Window)
+- A **Subscriber** may **rent** or **buy** a Movie IF the movie has `isOscarNominated == true`
+  AND the current time is within the Oscar promo window:
+  `datetime("2025-02-01T00:00:00Z")` to `datetime("2025-03-31T23:59:59Z")`.
+
+### 4. Early Access for Premium Subscribers
+- A **Subscriber** with `subscription.tier == "premium"` may **watch** a Show
+  that has `isEarlyAccess == true` even before the `releaseDate`, as long as
+  the current time is within 24 hours before the `releaseDate`
+  (i.e. `context.now.datetime >= resource.releaseDate.offset(duration("-24h"))`).
+
+### 5. Kid Bedtime Restriction (Deny Rule)
+- If a Subscriber's `profile.isKid == true`, the **watch** action is forbidden
+  outside of 6:00 AM to 9:00 PM local time.
+  Local time is computed using `context.now.datetime.offset(context.now.localTimeOffset)`.
+  Specifically, forbid watch when the local time-of-day is before 06:00 or at/after 21:00.
+
+## Notes
+- Cedar denies by default — no explicit deny-by-default needed.
+- Temporal comparisons use Cedar's `datetime` and `duration` extension types.
+- The bedtime rule is a `forbid` that overrides any `permit`.
+### 6. Concurrent Stream Limits (Deny Rules)
+- The **watch** action's context includes `activeStreams: Long`, the number of streams
+  currently active on the account (not counting the one being requested).
+- **FreeMember**: limited to 1 concurrent stream. Forbid watch if `context.activeStreams >= 1`.
+- **Subscriber** with `subscription.tier == "standard"`: limited to 2 concurrent streams.
+  Forbid watch if `context.activeStreams >= 2`.
+- **Subscriber** with `subscription.tier == "premium"`: limited to 5 concurrent streams.
+  Forbid watch if `context.activeStreams >= 5`.
+
+## Notes (Multi-Device)
+- The stream limit forbids are principal-type-specific and tier-specific.
+- For Subscribers, the forbid conditions must check both `principal is Subscriber` and
+  `principal.subscription.tier` to determine the correct limit.
+- The FreeMember stream limit is a separate forbid rule.
+- These forbid rules interact with the bedtime restriction — both may apply.
+
+---
+
+# Cedar Schema
+```cedar
+// Streaming Service — Cedar Schema
+
+// Types
+type Subscription = {
+    tier: String,
+};
+type Profile = {
+    isKid: Bool,
+};
+
+// Entities
+entity FreeMember;
+entity Subscriber = {
+    subscription: Subscription,
+    profile: Profile,
+};
+entity Movie = {
+    isFree: Bool,
+    needsRentOrBuy: Bool,
+    isOscarNominated: Bool,
+};
+entity Show = {
+    isFree: Bool,
+    releaseDate: datetime,
+    isEarlyAccess: Bool,
+};
+
+// Actions for content in general
+action watch appliesTo {
+    principal: [FreeMember, Subscriber],
+    resource: [Movie, Show],
+    context: {
+        now: {
+            datetime: datetime,
+            localTimeOffset: duration,
+        },
+        activeStreams: Long,
+    },
+};
+
+// Actions for movies only
+action rent, buy appliesTo {
+    principal: [FreeMember, Subscriber],
+    resource: [Movie],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !resource.isEarlyAccess ||
+    context.now.datetime >= resource.releaseDate.offset(duration("-24h"))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h") ||
+        context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h") ||
+        context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+    )
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 3 of 27 check(s) failed.
+
+--- Check 1: subscriber_show_premium_or_not_early [implies] ---
+Description: Subscriber may watch a Show only when !isEarlyAccess OR tier==premium
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (subscriber_show_premium_or_not_early.cedar):
+```cedar
+// Ceiling: a Subscriber may watch a Show only when either (a) the show is
+// not in its early-access window, or (b) the subscriber is on the premium
+// tier. Standard-tier subscribers cannot watch early-access shows.
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+)
+when {
+    !resource.isEarlyAccess || principal.subscription.tier == "premium"
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Subscriber::"", action: Action::"watch", resource: Show::""
+context: {activeStreams: -1, now: {datetime: (datetime("1970-01-01")).offset(duration("-9223372036854775808ms")), localTimeOffset: duration("-1ms")}}
+entities: [
+  Show::"" {
+    isEarlyAccess: true,
+    isFree: true,
+    releaseDate: (datetime("1970-01-
+...[truncated]...
+
+--- Check 2: kid_bedtime_no_watch_movie [implies] ---
+Description: Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (kid_bedtime_no_watch_movie.cedar):
+```cedar
+// Ceiling: a Subscriber may watch a Movie only when it is NOT the case that
+// (a) the kid profile is enabled AND (b) the local clock time is in the
+// bedtime window (>= 21:00 or < 06:00). The local clock is computed by
+// applying the per-request `localTimeOffset` duration to `now.datetime`,
+// then taking the time-of-day with `.toTime()`.
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+)
+when {
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime
+...[truncated]...
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Subscriber::"", action: Action::"watch", resource: Movie::""
+context: {activeStreams: -1, now: {datetime: (datetime("1970-01-01")).offset(duration("-9223372036854775808ms")), localTimeOffset: duration("-1ms")}}
+entities: [
+  Action::"watch",
+  Movie::"" {
+    isFree: true,
+    isOscarNominated: true,
+    needsRen
+...[truncated]...
+
+--- Check 3: kid_bedtime_no_watch_show [implies] ---
+Description: Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (kid_bedtime_no_watch_show.cedar):
+```cedar
+// Ceiling: a Subscriber may watch a Show only when it is NOT the case that
+// (a) the kid profile is enabled AND (b) the local clock time is in the
+// bedtime window (>= 21:00 or < 06:00).
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+)
+when {
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h")))
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Subscriber::"", action: Action::"watch", resource: Show::""
+context: {activeStreams: -1, now: {datetime: (datetime("1970-01-01")).offset(duration("-9223372036854775808ms")), localTimeOffset: duration("-1ms")}}
+entities: [
+  Action::"rent",
+  Action::"buy",
+  Action::"watch",
+  Subscriber::"" {
+    profile: {"isKi
+...[truncated]...
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.4
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy &&
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    (!resource.isEarlyAccess || principal.subscription.tier == "premium") &&
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy &&
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    (!resource.isEarlyAccess || principal.subscription.tier == "premium") &&
+    !(principal.profile.isKid &&
+      (context.now.datetime.offset(context.now.localTimeOffset).toTime() >= duration("21h")
+       || context.now.datetime.offset(context.now.localTimeOffset).toTime() < duration("6h")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    context.activeStreams >= 1
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "standard" &&
+    context.activeStreams >= 2
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.subscription.tier == "premium" &&
+    context.activeStreams >= 5
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 27
+solver_time_s: 3.357
+
+semantic check results:
+  - freemember_movie_only_free [implies] PASS
+    description: FreeMember may watch a Movie only when isFree
+  - freemember_show_only_free [implies] PASS
+    description: FreeMember may watch a Show only when isFree
+  - subscriber_movie_no_rent_buy [implies] PASS
+    description: Subscriber may watch a Movie only when !needsRentOrBuy
+  - subscriber_show_premium_or_not_early [implies] PASS
+    description: Subscriber may watch a Show only when !isEarlyAccess OR tier==premium
+  - kid_bedtime_no_watch_movie [implies] PASS
+    description: Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)
+  - kid_bedtime_no_watch_show [implies] PASS
+    description: Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)
+  - freemember_movie_stream_limit [implies] PASS
+    description: FreeMember may watch a Movie only when activeStreams < 1
+  - freemember_show_stream_limit [implies] PASS
+    description: FreeMember may watch a Show only when activeStreams < 1
+  - subscriber_movie_stream_limit [implies] PASS
+    description: Subscriber may watch a Movie only when tier-stream-limit holds (standard<2, premium<5)
+  - subscriber_show_stream_limit [implies] PASS
+    description: Subscriber may watch a Show only when tier-stream-limit holds
+  - freemember_must_watch_free_movie_low_streams [implies] PASS
+    description: FreeMember MUST watch any free Movie when activeStreams < 1
+  - freemember_must_watch_free_show_low_streams [implies] PASS
+    description: FreeMember MUST watch any free Show when activeStreams < 1
+  - subscriber_must_watch_movie_no_rent_no_kid_low_streams [implies] PASS
+    description: Non-kid Subscriber MUST watch any !needsRentOrBuy Movie when activeStreams < 2
+  - subscriber_must_watch_show_not_early_no_kid_low_streams [implies] PASS
+    description: Non-kid Subscriber MUST watch any !isEarlyAccess Show when activeStreams < 2
+  - premium_must_watch_show_early_no_kid_low_streams [implies] PASS
+    description: Non-kid premium Subscriber MUST watch early-access Show in 24h pre-release when activeStreams < 5
+  - freemember_no_rent [implies] PASS
+    description: FreeMember can NEVER rent (empty ceiling)
+  - subscriber_rent_oscar_in_window_safety [implies] PASS
+    description: Subscriber may rent only when oscar AND in window
+  - subscriber_must_rent_oscar_in_window [implies] PASS
+    description: Subscriber MUST rent any oscar movie in window
+  - freemember_no_buy [implies] PASS
+    description: FreeMember can NEVER buy (empty ceiling)
+  - subscriber_buy_oscar_in_window_safety [implies] PASS
+    description: Subscriber may buy only when oscar AND in window
+  - subscriber_must_buy_oscar_in_window [implies] PASS
+    description: Subscriber MUST buy any oscar movie in window
+  - liveness_freemember_watch_movie [always-denies (liveness)] PASS
+    description: FreeMember+watch+Movie liveness
+  - liveness_freemember_watch_show [always-denies (liveness)] PASS
+    description: FreeMember+watch+Show liveness
+  - liveness_subscriber_watch_movie [always-denies (liveness)] PASS
+    description: Subscriber+watch+Movie liveness
+  - liveness_subscriber_watch_show [always-denies (liveness)] PASS
+    description: Subscriber+watch+Show liveness
+  - liveness_subscriber_rent_movie [always-denies (liveness)] PASS
+    description: Subscriber+rent+Movie liveness
+  - liveness_subscriber_buy_movie [always-denies (liveness)] PASS
+    description: Subscriber+buy+Movie liveness
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       3.828
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/run.log

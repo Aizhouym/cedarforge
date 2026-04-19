@@ -1,0 +1,190 @@
+# Role
+You are a **Cedar Policy Schema Engineer**.
+
+Your only job is to fix schema grounding errors in the previous candidate.
+The policy parses correctly but references entity types, attributes, or actions that do not exist in the schema.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic or conditions.**
+Only replace incorrect identifiers with the correct ones from the schema.
+Check every entity type, action, and attribute reference against the schema below.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "remove constraint"
+difficulty: easy
+features:
+  - organization-scoped access
+  - consent-based forbid
+  - client profiles
+  - remove consent forbid
+domain: finance / tax preparation
+source: mutation (tax domain)
+---
+
+# Tax Preparer Permissions -- Policy Specification (No Consent)
+
+## Context
+
+This policy governs access control for a tax preparation platform within the
+`Taxpreparer` namespace. The system has Professionals, Documents, and Clients.
+
+Professionals have `assigned_orgs: Set<orgInfo>` where each orgInfo contains
+`organization`, `serviceline`, and `location` strings.
+
+Documents have `serviceline`, `location`, and `owner: Client` attributes.
+Clients have an `organization: String`.
+
+A context record with `consent: Consent` is still present in the schema but
+there is NO consent enforcement rule.
+
+## Requirements
+
+### 1. Organization-Level Access
+- A Professional may **viewDocument** if the professional's `assigned_orgs`
+  set contains a record matching the document's owner organization, serviceline,
+  and location:
+  `principal.assigned_orgs.contains({organization: resource.owner.organization, serviceline: resource.serviceline, location: resource.location})`.
+
+### 2. Ad-Hoc Access (Per Linked Template)
+- Individual (principal, resource) pairs may be granted ad-hoc viewDocument
+  access via linked policy templates:
+  `permit(principal == ?principal, action == Taxpreparer::Action::"viewDocument", resource == ?resource)`.
+
+## Notes
+- There is NO forbid rule for consent. Access is granted purely based on
+  organization matching or ad-hoc template linkage.
+- The Consent type remains in the schema but is not enforced by any policy.
+- All entities and actions are in the `Taxpreparer` namespace.
+
+---
+
+# Cedar Schema
+```cedar
+namespace Taxpreparer {
+  type orgInfo = {
+    organization: String,
+    serviceline: String,
+    location: String,
+  };
+  // A tax-preparing professional
+  entity Professional = {
+    assigned_orgs: Set<orgInfo>,
+    location: String,
+  };
+  // A client's tax document
+  entity Document = {
+    serviceline: String,
+    location: String,
+    owner: Client,
+  };
+  // A client
+  entity Client = {
+    organization: String
+  };
+  // The record of consent from a client to view a doc
+  type Consent = {
+    client: Client,
+    team_region_list: Set<String>
+  };
+
+  action viewDocument appliesTo {
+    principal: [Professional],
+    resource: [Document],
+    context: { consent: Consent }
+  };
+}
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    principal.assigned_orgs.contains({
+        organization: resource.owner.organization,
+        serviceline: resource.serviceline,
+        location: resource.location
+    })
+};
+```
+
+---
+
+# Schema Error
+SCHEMA ERROR — The policy parses but uses identifiers not present in the schema.
+
+Summary:       The policy parses, but it does not ground correctly to the schema.
+Likely cause:  The model likely used a missing identifier, wrong type, or invalid appliesTo combination.
+Suggested fix: Compare every entity type, action, and attribute against the schema exactly.
+
+Raw error:
+× policy set validation failed
+  ╰─▶ for policy `policy0`, unrecognized entity type `Professional`
+   ╭─[2:18]
+ 1 │ permit (
+ 2 │     principal is Professional,
+   ·                  ────────────
+ 3 │     action == Action::"viewDocument",
+   ╰────
+  help: did you mean `Taxpreparer::Professional`?
+
+Error: 
+  × for policy `policy0`, unrecognized entity type `Document`
+   ╭─[4:17]
+ 3 │     action == Action::"viewDocument",
+ 4 │     resource is Document
+   ·                 ────────
+ 5 │ ) when {
+   ╰────
+  help: did you mean `Taxpreparer::Document`?
+
+Error: 
+  × for policy `policy0`, unrecognized action `Action::"viewDocument"`
+   ╭─[3:15]
+ 2 │     principal is Professional,
+ 3 │     action == Action::"viewDocument",
+   ·               ──────────────────────
+ 4 │     resource is Document
+   ╰────
+  help: did you mean `Taxpreparer::Action::"viewDocument"`?
+
+Error: 
+  × for policy `policy0`, unable to find an applicable action given the policy scope constraints
+    ╭─[1:1]
+  1 │ ╭─▶ permit (
+  2 │ │       principal is Professional,
+  3 │ │       action == Action::"viewDocument",
+  4 │ │       resource is Document
+  5 │ │   ) when {
+  6 │ │       principal.assigned_orgs.contains({
+  7 │
+...[truncated]...
+
+NOTE: Only fix identifier names. Do not change policy logic or conditions.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

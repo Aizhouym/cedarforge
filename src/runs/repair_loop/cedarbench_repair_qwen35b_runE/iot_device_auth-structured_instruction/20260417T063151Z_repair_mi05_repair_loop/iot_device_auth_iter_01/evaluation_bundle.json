@@ -1,0 +1,291 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 10,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 10,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.312,
+    "checks": [
+      {
+        "name": "telemetry_safety",
+        "description": "telemetry only when active + read_sensor cap",
+        "type": "implies",
+        "principal_type": "Device",
+        "action": "Action::\"telemetry\"",
+        "resource_type": "Endpoint",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/telemetry_safety.cedar"
+      },
+      {
+        "name": "control_safety",
+        "description": "control only when active + actuate cap",
+        "type": "implies",
+        "principal_type": "Device",
+        "action": "Action::\"control\"",
+        "resource_type": "Endpoint",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/control_safety.cedar"
+      },
+      {
+        "name": "stream_safety",
+        "description": "stream only when active + stream cap",
+        "type": "implies",
+        "principal_type": "Device",
+        "action": "Action::\"stream\"",
+        "resource_type": "Endpoint",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/stream_safety.cedar"
+      },
+      {
+        "name": "manage_safety",
+        "description": "manage only when owner",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"manage\"",
+        "resource_type": "Endpoint",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/manage_safety.cedar"
+      },
+      {
+        "name": "floor_active_telemetry",
+        "description": "active device with read_sensor MUST telemetry",
+        "type": "floor",
+        "principal_type": "Device",
+        "action": "Action::\"telemetry\"",
+        "resource_type": "Endpoint",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/floor_active_telemetry.cedar"
+      },
+      {
+        "name": "floor_active_control",
+        "description": "active device with actuate MUST control",
+        "type": "floor",
+        "principal_type": "Device",
+        "action": "Action::\"control\"",
+        "resource_type": "Endpoint",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/floor_active_control.cedar"
+      },
+      {
+        "name": "floor_owner_manage",
+        "description": "owner MUST manage",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"manage\"",
+        "resource_type": "Endpoint",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/_eval_workspace/references/floor_owner_manage.cedar"
+      },
+      {
+        "name": "liveness_telemetry",
+        "description": "at least one telemetry permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Device",
+        "action": "Action::\"telemetry\"",
+        "resource_type": "Endpoint"
+      },
+      {
+        "name": "liveness_control",
+        "description": "at least one control permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Device",
+        "action": "Action::\"control\"",
+        "resource_type": "Endpoint"
+      },
+      {
+        "name": "liveness_manage",
+        "description": "at least one manage permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"manage\"",
+        "resource_type": "Endpoint"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "telemetry_safety",
+        "check_type": "implies",
+        "description": "telemetry only when active + read_sensor cap",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "control_safety",
+        "check_type": "implies",
+        "description": "control only when active + actuate cap",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "stream_safety",
+        "check_type": "implies",
+        "description": "stream only when active + stream cap",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manage_safety",
+        "check_type": "implies",
+        "description": "manage only when owner",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_active_telemetry",
+        "check_type": "implies",
+        "description": "active device with read_sensor MUST telemetry",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_active_control",
+        "check_type": "implies",
+        "description": "active device with actuate MUST control",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_owner_manage",
+        "check_type": "implies",
+        "description": "owner MUST manage",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_telemetry",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one telemetry permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_control",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one control permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_manage",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one manage permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 10,
+        "solver_time_s": 0.312,
+        "checks": [
+          {
+            "name": "telemetry_safety",
+            "type": "implies",
+            "description": "telemetry only when active + read_sensor cap",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "control_safety",
+            "type": "implies",
+            "description": "control only when active + actuate cap",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "stream_safety",
+            "type": "implies",
+            "description": "stream only when active + stream cap",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manage_safety",
+            "type": "implies",
+            "description": "manage only when owner",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_active_telemetry",
+            "type": "implies",
+            "description": "active device with read_sensor MUST telemetry",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_active_control",
+            "type": "implies",
+            "description": "active device with actuate MUST control",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_owner_manage",
+            "type": "implies",
+            "description": "owner MUST manage",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_telemetry",
+            "type": "always-denies (liveness)",
+            "description": "at least one telemetry permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_control",
+            "type": "always-denies (liveness)",
+            "description": "at least one control permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_manage",
+            "type": "always-denies (liveness)",
+            "description": "at least one manage permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

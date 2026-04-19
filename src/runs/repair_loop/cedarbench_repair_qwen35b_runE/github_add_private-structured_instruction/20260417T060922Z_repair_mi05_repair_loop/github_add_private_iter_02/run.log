@@ -1,0 +1,811 @@
+========================================================================
+ITERATION START
+task:       github_add_private
+iteration:  2
+strategy:   structured_instruction_repair_semantic
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: "add constraint"
+difficulty: easy
+features:
+  - entity hierarchy (User/Team)
+  - role-based permissions
+  - archive blocking
+  - private visibility flag
+domain: software development
+source: mutation (github domain)
+---
+
+# GitHub Repository Permissions — Policy Specification
+
+## Context
+
+This policy governs access control for a GitHub-like platform with
+Organizations, Repositories, Issues, Users, and Teams.
+
+Repositories have five role tiers, represented as UserGroup attributes:
+readers, triagers, writers, maintainers, and admins.
+
+## Requirements
+
+### 1. Reader Permissions
+- A user who is a **reader** of a repository may **pull** and **fork** that repository.
+- A reader may **delete** or **edit** an issue ONLY if they are also the **reporter** of that issue.
+
+### 2. Triager Permissions
+- A user who is a **triager** may **assign** issues in a repository.
+
+### 3. Writer Permissions
+- A user who is a **writer** may **push** to a repository.
+- A writer may **edit** any issue in a repository (regardless of who reported it).
+
+### 4. Maintainer Permissions
+- A user who is a **maintainer** may **delete** any issue in a repository (regardless of who reported it).
+
+### 5. Admin Permissions
+- A user who is an **admin** may add users to any role: add_reader, add_triager, add_writer, add_maintainer, add_admin.
+
+### 6. Archived Repository Block (Deny Rule)
+- If a repository is archived (`isArchived == true`), no **write operations** are allowed.
+  Write operations include: push, add_reader, add_writer, add_maintainer, add_admin, add_triager.
+- Read operations (pull, fork) remain allowed on archived repos.
+- Issue operations are unaffected by archive status.
+
+## Notes
+- Roles are checked via entity group membership: `principal in resource.readers` (for repo actions)
+  or `principal in resource.repo.readers` (for issue actions, traversing Issue → Repository).
+- There is no explicit deny-by-default policy needed — Cedar denies by default.
+### 7. Private Repository Restriction (Deny Rule)
+- If a repository is private (`isPrivate == true`), the **fork** action is forbidden.
+- All other actions are unaffected by the private flag (readers can still pull, writers can still push, etc.).
+- This is independent of the archive rule — a repo can be both private and archived.
+
+---
+
+# Cedar Schema
+```cedar
+// GitHub Repository Permissions — Cedar Schema
+// Adapted from cedar-policy/cedar-examples/cedar-example-use-cases/github_example
+
+entity Team, UserGroup in [UserGroup];
+
+entity Issue = {
+    repo: Repository,
+    reporter: User,
+};
+
+entity Org = {
+    members: UserGroup,
+    owners: UserGroup,
+};
+
+entity Repository = {
+    readers: UserGroup,
+    triagers: UserGroup,
+    writers: UserGroup,
+    maintainers: UserGroup,
+    admins: UserGroup,
+    isArchived: Bool,
+isPrivate: Bool,
+};
+
+entity User in [UserGroup, Team];
+
+// Repository actions
+action pull, push, fork appliesTo {
+    principal: [User],
+    resource: [Repository],
+};
+
+// Issue actions
+action assign_issue, delete_issue, edit_issue appliesTo {
+    principal: [User],
+    resource: [Issue],
+};
+
+// Admin actions
+action add_reader, add_writer, add_maintainer, add_admin, add_triager appliesTo {
+    principal: [User],
+    resource: [Repository],
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"pull",
+    resource is Repository
+) when {
+    principal in resource.readers
+};
+
+permit (
+    principal is User,
+    action == Action::"fork",
+    resource is Repository
+) when {
+    principal in resource.readers &&
+    !resource.isPrivate
+};
+
+permit (
+    principal is User,
+    action == Action::"push",
+    resource is Repository
+) when {
+    principal in resource.writers &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"assign_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.triagers
+};
+
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+) when {
+    (principal in resource.repo.writers &&
+     !resource.repo.isArchived) ||
+    (principal == resource.reporter &&
+     !resource.repo.isArchived)
+};
+
+permit (
+    principal is User,
+    action == Action::"delete_issue",
+    resource is Issue
+) when {
+    (principal in resource.repo.maintainers &&
+     !resource.repo.isArchived) ||
+    (principal == resource.reporter &&
+     !resource.repo.isArchived)
+};
+
+permit (
+    principal is User,
+    action == Action::"add_reader",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_writer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_maintainer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_admin",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_triager",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 5 of 28 check(s) failed.
+
+--- Check 1: edit_issue_safety [implies] ---
+Description: Edit issue only if (reader and reporter) or writer of the repo
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (ceiling_edit_issue.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+)
+when {
+    principal in resource.repo.writers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"edit_issue", resource: Issue::""
+context: {}
+entities: [
+  UserGroup::"D",
+  Action::"add_triager",
+  Action::"add_writer",
+  Action::"fork",
+  Repository::"" {
+    admins: UserGroup::"B",
+    isArchived: false,
+    isPrivate: true,
+    maintainers: UserGroup::"C",
+    readers: UserGrou
+...[truncated]...
+
+--- Check 2: delete_issue_safety [implies] ---
+Description: Delete issue only if (reader and reporter) or maintainer of the repo
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (ceiling_delete_issue.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"delete_issue",
+    resource is Issue
+)
+when {
+    principal in resource.repo.maintainers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"delete_issue", resource: Issue::""
+context: {}
+entities: [
+  Action::"pull",
+  Action::"push",
+  Action::"add_triager",
+  UserGroup::"B",
+  Action::"add_reader",
+  Action::"edit_issue",
+  UserGroup::"D",
+  Action::"add_admin",
+  Action::"fork",
+  Action::"add_maintainer",
+  UserGroup::"
+...[truncated]...
+
+--- Check 3: writer_edit_issue_floor [implies] ---
+Description: Writers MUST be able to edit any issue in their repo regardless of reporter
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (floor_writer_edit_issue.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+)
+when { principal in resource.repo.writers };
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"edit_issue", resource: Issue::""
+context: {}
+entities: [
+  Action::"delete_issue",
+  UserGroup::"",
+  UserGroup::"D",
+  Action::"add_writer",
+  User::"" in [UserGroup::""],
+  User::"A",
+  UserGroup::"B",
+  Action::"assign_issue",
+  Action::"edit_issue",
+  Action::"add_admin",
+  Action::
+...[truncated]...
+
+... 2 additional failed checks omitted to keep the repair prompt within context limits.
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.4
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"pull",
+    resource is Repository
+) when {
+    principal in resource.readers
+};
+
+permit (
+    principal is User,
+    action == Action::"fork",
+    resource is Repository
+) when {
+    principal in resource.readers &&
+    !resource.isPrivate
+};
+
+permit (
+    principal is User,
+    action == Action::"push",
+    resource is Repository
+) when {
+    principal in resource.writers &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"assign_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.triagers
+};
+
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.writers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+
+permit (
+    principal is User,
+    action == Action::"delete_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.maintainers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+
+permit (
+    principal is User,
+    action == Action::"add_reader",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_writer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_maintainer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_admin",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_triager",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is User,
+    action == Action::"pull",
+    resource is Repository
+) when {
+    principal in resource.readers
+};
+
+permit (
+    principal is User,
+    action == Action::"fork",
+    resource is Repository
+) when {
+    principal in resource.readers &&
+    !resource.isPrivate
+};
+
+permit (
+    principal is User,
+    action == Action::"push",
+    resource is Repository
+) when {
+    principal in resource.writers &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"assign_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.triagers
+};
+
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.writers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+
+permit (
+    principal is User,
+    action == Action::"delete_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.maintainers ||
+    (principal in resource.repo.readers && principal == resource.reporter)
+};
+
+permit (
+    principal is User,
+    action == Action::"add_reader",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_writer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_maintainer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_admin",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_triager",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 28
+solver_time_s: 1.387
+
+semantic check results:
+  - pull_safety [implies] PASS
+    description: Pull access only for users who are readers of the repository
+  - fork_safety [implies] PASS
+    description: Fork access only for readers, and forbidden if repo is private
+  - push_safety [implies] PASS
+    description: Push access only for writers, and forbidden if repo is archived
+  - assign_issue_safety [implies] PASS
+    description: Assign issue only for triagers of the issue's repository
+  - edit_issue_safety [implies] PASS
+    description: Edit issue only if (reader and reporter) or writer of the repo
+  - delete_issue_safety [implies] PASS
+    description: Delete issue only if (reader and reporter) or maintainer of the repo
+  - add_reader_safety [implies] PASS
+    description: Add reader only for admins, forbidden if repo is archived
+  - add_writer_safety [implies] PASS
+    description: Add writer only for admins, forbidden if repo is archived
+  - add_maintainer_safety [implies] PASS
+    description: Add maintainer only for admins, forbidden if repo is archived
+  - add_admin_safety [implies] PASS
+    description: Add admin only for admins, forbidden if repo is archived
+  - add_triager_safety [implies] PASS
+    description: Add triager only for admins, forbidden if repo is archived
+  - reader_pull_floor [implies] PASS
+    description: Readers MUST be able to pull from a non-archived repository
+  - reader_fork_floor [implies] PASS
+    description: Readers MUST be able to fork a non-archived, non-private repository
+  - writer_push_floor [implies] PASS
+    description: Writers MUST be able to push to a non-archived repository
+  - writer_edit_issue_floor [implies] PASS
+    description: Writers MUST be able to edit any issue in their repo regardless of reporter
+  - reporter_delete_issue_floor [implies] PASS
+    description: Readers who are the reporter MUST be able to delete their own issue
+  - maintainer_delete_issue_floor [implies] PASS
+    description: Maintainers MUST be able to delete any issue in their repo
+  - triager_assign_issue_floor [implies] PASS
+    description: Triagers MUST be able to assign issues in their repo
+  - admin_add_reader_floor [implies] PASS
+    description: Admins MUST be able to add readers on non-archived repos
+  - archived_pull_floor [implies] PASS
+    description: Readers MUST still be able to pull from archived repos (read not blocked)
+  - private_fork_denied [implies] PASS
+    description: Fork is forbidden on private repos — verify no fork allowed when isPrivate
+  - liveness_pull [always-denies (liveness)] PASS
+    description: Pull policy is not trivially deny-all
+  - liveness_push [always-denies (liveness)] PASS
+    description: Push policy is not trivially deny-all
+  - liveness_fork [always-denies (liveness)] PASS
+    description: Fork policy is not trivially deny-all
+  - liveness_edit_issue [always-denies (liveness)] PASS
+    description: Edit issue policy is not trivially deny-all
+  - liveness_delete_issue [always-denies (liveness)] PASS
+    description: Delete issue policy is not trivially deny-all
+  - liveness_assign_issue [always-denies (liveness)] PASS
+    description: Assign issue policy is not trivially deny-all
+  - liveness_add_reader [always-denies (liveness)] PASS
+    description: Add reader policy is not trivially deny-all
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       3.093
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_private-structured_instruction/20260417T060922Z_repair_mi05_repair_loop/github_add_private_iter_02/run.log

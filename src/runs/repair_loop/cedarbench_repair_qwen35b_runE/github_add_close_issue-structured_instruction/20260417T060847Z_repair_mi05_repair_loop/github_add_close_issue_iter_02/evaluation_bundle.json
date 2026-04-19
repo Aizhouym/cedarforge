@@ -1,0 +1,178 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 5,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 5,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.296,
+    "checks": [
+      {
+        "name": "ceiling_close_issue",
+        "description": "close_issue only if (reader + reporter) OR writer",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"close_issue\"",
+        "resource_type": "Issue",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_02/_eval_workspace/references/ceiling_close_issue.cedar"
+      },
+      {
+        "name": "ceiling_push",
+        "description": "Push access only for writers, blocked if repo is archived",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"push\"",
+        "resource_type": "Repository",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_02/_eval_workspace/references/ceiling_push.cedar"
+      },
+      {
+        "name": "ceiling_edit_issue",
+        "description": "Edit issue only if (reader + reporter) OR writer",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"edit_issue\"",
+        "resource_type": "Issue",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_02/_eval_workspace/references/ceiling_edit_issue.cedar"
+      },
+      {
+        "name": "floor_reporter_close",
+        "description": "Readers who ARE the reporter MUST be able to close their own issue",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"close_issue\"",
+        "resource_type": "Issue",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_02/_eval_workspace/references/floor_reporter_close.cedar"
+      },
+      {
+        "name": "liveness_close_issue",
+        "description": "close_issue is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"close_issue\"",
+        "resource_type": "Issue"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "ceiling_close_issue",
+        "check_type": "implies",
+        "description": "close_issue only if (reader + reporter) OR writer",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "ceiling_push",
+        "check_type": "implies",
+        "description": "Push access only for writers, blocked if repo is archived",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "ceiling_edit_issue",
+        "check_type": "implies",
+        "description": "Edit issue only if (reader + reporter) OR writer",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_reporter_close",
+        "check_type": "implies",
+        "description": "Readers who ARE the reporter MUST be able to close their own issue",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_close_issue",
+        "check_type": "always-denies (liveness)",
+        "description": "close_issue is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 5,
+        "solver_time_s": 0.296,
+        "checks": [
+          {
+            "name": "ceiling_close_issue",
+            "type": "implies",
+            "description": "close_issue only if (reader + reporter) OR writer",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "ceiling_push",
+            "type": "implies",
+            "description": "Push access only for writers, blocked if repo is archived",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "ceiling_edit_issue",
+            "type": "implies",
+            "description": "Edit issue only if (reader + reporter) OR writer",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_reporter_close",
+            "type": "implies",
+            "description": "Readers who ARE the reporter MUST be able to close their own issue",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_close_issue",
+            "type": "always-denies (liveness)",
+            "description": "close_issue is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

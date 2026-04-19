@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy1`, unexpected type: expected __cedar::internal::AnyEntity but saw Bool\n    \u256d\u2500[16:5]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500\n  help: try using `contains`, `containsAny`, or `containsAll` to examine the contents of a set\n\nError: \n  \u00d7 for policy `policy1`, unexpected type: expected Bool but saw Patient\n    \u256d\u2500[16:6]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

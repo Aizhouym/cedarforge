@@ -1,0 +1,281 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: policy annotations (@id / @description)
+difficulty: easy
+features:
+  - "@id" annotation on each policy rule
+  - "@description" annotation on each policy rule
+  - simple RBAC baseline to keep semantic complexity low
+domain: content management
+---
+
+# Policy Annotations — Policy Specification
+
+## Context
+
+A simple content management system with `User` principals who have a
+`role` attribute (`"viewer"`, `"editor"`, `"admin"`). Resources are
+`Article` entities with an `isPublished` boolean.
+
+This scenario is deliberately simple in its access-control semantics.
+The interesting dimension is that every rule MUST carry `@id("...")`
+and `@description("...")` Cedar annotations. These annotations are
+first-class Cedar syntax (not comments) and are preserved by the
+parser. They serve as machine-readable policy identifiers and
+human-readable explanations in auditing and compliance workflows.
+
+## Requirements
+
+### 1. Viewer — Read Published Only
+- A User whose `role` is `"viewer"` may `read` an Article when
+  `resource.isPublished == true`.
+
+### 2. Editor — Read and Write
+- A User whose `role` is `"editor"` may `read` any Article
+  (published or not).
+- A User whose `role` is `"editor"` may `write` any Article.
+
+### 3. Admin — Full Access
+- A User whose `role` is `"admin"` may `read`, `write`, and `delete`
+  any Article.
+
+### 4. Default Deny
+All other requests are denied.
+
+### 5. Annotation Requirement
+Every `permit` and `forbid` rule in the synthesized policy MUST carry
+both `@id("...")` and `@description("...")` annotations. The `@id`
+should be a short kebab-case identifier (e.g. `"viewer-read-published"`).
+The `@description` should be a one-sentence English explanation of what
+the rule does.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Policy Annotations — simple CMS with role-based access.
+// Tests @id and @description annotations on policy rules.
+
+entity User = {
+    role: String,   // "viewer" | "editor" | "admin"
+};
+
+entity Article = {
+    isPublished: Bool,
+};
+
+action read, write, delete appliesTo {
+    principal: [User],
+    resource: [Article],
+    context: {},
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

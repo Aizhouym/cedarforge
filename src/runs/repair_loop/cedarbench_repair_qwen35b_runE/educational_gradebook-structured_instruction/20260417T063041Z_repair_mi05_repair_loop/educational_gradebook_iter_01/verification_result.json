@@ -1,0 +1,244 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.646,
+  "checks": [
+    {
+      "name": "viewGrade_safety",
+      "description": "viewGrade permitted only when teacher in same class, OR student self-access, OR parent with valid parentOf",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"viewGrade\"",
+      "resource_type": "GradeRecord",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/viewGrade_safety.cedar"
+    },
+    {
+      "name": "editGrade_safety",
+      "description": "editGrade permitted only when teacher in same class AND grade is not final",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"editGrade\"",
+      "resource_type": "GradeRecord",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/editGrade_safety.cedar"
+    },
+    {
+      "name": "publishGrade_safety",
+      "description": "publishGrade permitted only when teacher in same class",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"publishGrade\"",
+      "resource_type": "GradeRecord",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/publishGrade_safety.cedar"
+    },
+    {
+      "name": "viewClassAverage_safety",
+      "description": "viewClassAverage permitted only when teacher or student in same class",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"viewClassAverage\"",
+      "resource_type": "GradeRecord",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/viewClassAverage_safety.cedar"
+    },
+    {
+      "name": "teacher_view_grade",
+      "description": "Teacher in same class MUST be permitted to viewGrade",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewGrade\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/teacher_view_grade.cedar"
+    },
+    {
+      "name": "student_self_view_grade",
+      "description": "Student MUST be permitted to viewGrade on their own grade",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewGrade\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/student_self_view_grade.cedar"
+    },
+    {
+      "name": "parent_view_grade",
+      "description": "Parent with valid parentOf MUST be permitted to viewGrade on their child's grade",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewGrade\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/parent_view_grade.cedar"
+    },
+    {
+      "name": "teacher_edit_nonfinal",
+      "description": "Teacher in same class MUST be permitted to editGrade when grade is not final",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"editGrade\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/teacher_edit_nonfinal.cedar"
+    },
+    {
+      "name": "teacher_publish",
+      "description": "Teacher in same class MUST be permitted to publishGrade",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"publishGrade\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/teacher_publish.cedar"
+    },
+    {
+      "name": "teacher_view_avg",
+      "description": "Teacher in same class MUST be permitted to viewClassAverage",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewClassAverage\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/teacher_view_avg.cedar"
+    },
+    {
+      "name": "student_view_avg",
+      "description": "Student in same class MUST be permitted to viewClassAverage",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewClassAverage\"",
+      "resource_type": "GradeRecord",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/educational_gradebook-structured_instruction/20260417T063041Z_repair_mi05_repair_loop/educational_gradebook_iter_01/_eval_workspace/references/student_view_avg.cedar"
+    },
+    {
+      "name": "liveness_viewGrade",
+      "description": "User+viewGrade+GradeRecord liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"viewGrade\"",
+      "resource_type": "GradeRecord"
+    },
+    {
+      "name": "liveness_editGrade",
+      "description": "User+editGrade+GradeRecord liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"editGrade\"",
+      "resource_type": "GradeRecord"
+    },
+    {
+      "name": "liveness_publishGrade",
+      "description": "User+publishGrade+GradeRecord liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"publishGrade\"",
+      "resource_type": "GradeRecord"
+    },
+    {
+      "name": "liveness_viewClassAverage",
+      "description": "User+viewClassAverage+GradeRecord liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"viewClassAverage\"",
+      "resource_type": "GradeRecord"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "viewGrade_safety",
+      "check_type": "implies",
+      "description": "viewGrade permitted only when teacher in same class, OR student self-access, OR parent with valid parentOf",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "editGrade_safety",
+      "check_type": "implies",
+      "description": "editGrade permitted only when teacher in same class AND grade is not final",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "publishGrade_safety",
+      "check_type": "implies",
+      "description": "publishGrade permitted only when teacher in same class",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "viewClassAverage_safety",
+      "check_type": "implies",
+      "description": "viewClassAverage permitted only when teacher or student in same class",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "teacher_view_grade",
+      "check_type": "implies",
+      "description": "Teacher in same class MUST be permitted to viewGrade",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "student_self_view_grade",
+      "check_type": "implies",
+      "description": "Student MUST be permitted to viewGrade on their own grade",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "parent_view_grade",
+      "check_type": "implies",
+      "description": "Parent with valid parentOf MUST be permitted to viewGrade on their child's grade",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "teacher_edit_nonfinal",
+      "check_type": "implies",
+      "description": "Teacher in same class MUST be permitted to editGrade when grade is not final",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "teacher_publish",
+      "check_type": "implies",
+      "description": "Teacher in same class MUST be permitted to publishGrade",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "teacher_view_avg",
+      "check_type": "implies",
+      "description": "Teacher in same class MUST be permitted to viewClassAverage",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "student_view_avg",
+      "check_type": "implies",
+      "description": "Student in same class MUST be permitted to viewClassAverage",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_viewGrade",
+      "check_type": "always-denies (liveness)",
+      "description": "User+viewGrade+GradeRecord liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_editGrade",
+      "check_type": "always-denies (liveness)",
+      "description": "User+editGrade+GradeRecord liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_publishGrade",
+      "check_type": "always-denies (liveness)",
+      "description": "User+publishGrade+GradeRecord liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_viewClassAverage",
+      "check_type": "always-denies (liveness)",
+      "description": "User+viewClassAverage+GradeRecord liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

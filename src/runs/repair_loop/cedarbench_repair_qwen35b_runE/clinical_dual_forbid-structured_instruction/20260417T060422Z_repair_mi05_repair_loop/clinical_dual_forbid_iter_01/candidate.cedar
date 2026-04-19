@@ -1,0 +1,62 @@
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == "Edit",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) unless {
+    principal in Role::"GlobalAuditor"
+} when {
+    principal.department != resource.projectManagingDepartment
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) when {
+    resource.classification == "HighlyRestricted" &&
+    !context.isCompliantDevice
+};

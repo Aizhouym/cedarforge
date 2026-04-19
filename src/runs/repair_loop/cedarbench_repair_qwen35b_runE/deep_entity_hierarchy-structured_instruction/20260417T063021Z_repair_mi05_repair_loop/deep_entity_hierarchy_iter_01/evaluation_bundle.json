@@ -1,0 +1,314 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 11,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 11,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.437,
+    "checks": [
+      {
+        "name": "view_safety",
+        "description": "view permitted only when public/internal (any employee) or confidential+same-team",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/view_safety.cedar"
+      },
+      {
+        "name": "edit_safety",
+        "description": "edit permitted only when same team AND not confidential",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/edit_safety.cedar"
+      },
+      {
+        "name": "delete_safety",
+        "description": "delete permitted only when same team AND public",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"delete\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/delete_safety.cedar"
+      },
+      {
+        "name": "floor_any_employee_view_public",
+        "description": "any employee MUST view public documents",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/floor_any_employee_view_public.cedar"
+      },
+      {
+        "name": "floor_any_employee_view_internal",
+        "description": "any employee MUST view internal documents",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/floor_any_employee_view_internal.cedar"
+      },
+      {
+        "name": "floor_team_view_confidential",
+        "description": "team member MUST view confidential documents owned by their team",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/floor_team_view_confidential.cedar"
+      },
+      {
+        "name": "floor_team_edit_nonconfidential",
+        "description": "team member MUST edit non-confidential documents owned by their team",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"edit\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/floor_team_edit_nonconfidential.cedar"
+      },
+      {
+        "name": "floor_team_delete_public",
+        "description": "team member MUST delete public documents owned by their team",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"delete\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/deep_entity_hierarchy-structured_instruction/20260417T063021Z_repair_mi05_repair_loop/deep_entity_hierarchy_iter_01/_eval_workspace/references/floor_team_delete_public.cedar"
+      },
+      {
+        "name": "liveness_view",
+        "description": "at least one view request must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_edit",
+        "description": "at least one edit request must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"edit\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete",
+        "description": "at least one delete request must be permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"delete\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "view_safety",
+        "check_type": "implies",
+        "description": "view permitted only when public/internal (any employee) or confidential+same-team",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_safety",
+        "check_type": "implies",
+        "description": "edit permitted only when same team AND not confidential",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_safety",
+        "check_type": "implies",
+        "description": "delete permitted only when same team AND public",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_any_employee_view_public",
+        "check_type": "implies",
+        "description": "any employee MUST view public documents",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_any_employee_view_internal",
+        "check_type": "implies",
+        "description": "any employee MUST view internal documents",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_team_view_confidential",
+        "check_type": "implies",
+        "description": "team member MUST view confidential documents owned by their team",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_team_edit_nonconfidential",
+        "check_type": "implies",
+        "description": "team member MUST edit non-confidential documents owned by their team",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_team_delete_public",
+        "check_type": "implies",
+        "description": "team member MUST delete public documents owned by their team",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one view request must be permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_edit",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one edit request must be permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one delete request must be permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 11,
+        "solver_time_s": 0.437,
+        "checks": [
+          {
+            "name": "view_safety",
+            "type": "implies",
+            "description": "view permitted only when public/internal (any employee) or confidential+same-team",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_safety",
+            "type": "implies",
+            "description": "edit permitted only when same team AND not confidential",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_safety",
+            "type": "implies",
+            "description": "delete permitted only when same team AND public",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_any_employee_view_public",
+            "type": "implies",
+            "description": "any employee MUST view public documents",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_any_employee_view_internal",
+            "type": "implies",
+            "description": "any employee MUST view internal documents",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_team_view_confidential",
+            "type": "implies",
+            "description": "team member MUST view confidential documents owned by their team",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_team_edit_nonconfidential",
+            "type": "implies",
+            "description": "team member MUST edit non-confidential documents owned by their team",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_team_delete_public",
+            "type": "implies",
+            "description": "team member MUST delete public documents owned by their team",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view",
+            "type": "always-denies (liveness)",
+            "description": "at least one view request must be permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_edit",
+            "type": "always-denies (liveness)",
+            "description": "at least one edit request must be permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete",
+            "type": "always-denies (liveness)",
+            "description": "at least one delete request must be permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

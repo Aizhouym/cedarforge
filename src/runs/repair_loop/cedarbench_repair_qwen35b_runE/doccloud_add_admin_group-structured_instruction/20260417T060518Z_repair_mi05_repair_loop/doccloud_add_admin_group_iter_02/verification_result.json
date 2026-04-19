@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 unexpected token `not`\n     \u256d\u2500[113:15]\n 112 \u2502     principal != resource.owner &&\n 113 \u2502     principal not in resource.manageACL\n     \u00b7               \u2500\u252c\u2500\n     \u00b7                \u2570\u2500\u2500 expected `!=`, `&&`, `(`, `*`, `+`, `-`, `.`, `::`, `<`, `<=`, `==`, `>`, `>=`, `[`, `||`, `}`, `has`, `in`, `is`, or `like`\n 114 \u2502 };\n     \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `not`\n     \u256d\u2500[123:15]\n 122 \u2502     principal != resource.owner &&\n 123 \u2502     principal not in resource.manageACL\n     \u00b7               \u2500\u252c\u2500\n     \u00b7                \u2570\u2500\u2500 expected `!=`, `&&`, `(`, `*`, `+`, `-`, `.`, `::`, `<`, `<=`, `==`, `>`, `>=`, `[`, `||`, `}`, `has`, `in`, `is`, or `like`\n 124 \u2502 };\n     \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

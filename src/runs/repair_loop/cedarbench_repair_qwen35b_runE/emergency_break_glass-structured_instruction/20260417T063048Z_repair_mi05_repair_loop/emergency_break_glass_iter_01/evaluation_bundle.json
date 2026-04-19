@@ -1,0 +1,77 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/emergency_break_glass-structured_instruction/20260417T063048Z_repair_mi05_repair_loop/emergency_break_glass_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": false,
+  "semantic_accuracy": 0.0,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 0,
+  "failed_checks": [
+    "syntax"
+  ],
+  "failed_check_types": [
+    "syntax"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": false,
+    "semantic_accuracy": 0.0,
+    "syntax_error": false,
+    "schema_error": true,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 1.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 0,
+    "primary_error_type": "schema",
+    "validation_message": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy1`, unexpected type: expected __cedar::internal::AnyEntity but saw Bool\n    \u256d\u2500[16:5]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500\n  help: try using `contains`, `containsAny`, or `containsAll` to examine the contents of a set\n\nError: \n  \u00d7 for policy `policy1`, unexpected type: expected Bool but saw Patient\n    \u256d\u2500[16:6]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500"
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 0.0,
+    "checks": [],
+    "results": [
+      {
+        "check_name": "syntax",
+        "check_type": "syntax",
+        "description": "Cedar validation",
+        "passed": false,
+        "counterexample": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy1`, unexpected type: expected __cedar::internal::AnyEntity but saw Bool\n    \u256d\u2500[16:5]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500\n  help: try using `contains`, `containsAny`, or `containsAll` to examine the contents of a set\n\nError: \n  \u00d7 for policy `policy1`, unexpected type: expected Bool but saw Patient\n    \u256d\u2500[16:6]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": false,
+      "status": "fail",
+      "message": "Schema grounding failed during Cedar validation.",
+      "details": {
+        "error": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy1`, unexpected type: expected __cedar::internal::AnyEntity but saw Bool\n    \u256d\u2500[16:5]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500\n  help: try using `contains`, `containsAny`, or `containsAll` to examine the contents of a set\n\nError: \n  \u00d7 for policy `policy1`, unexpected type: expected Bool but saw Patient\n    \u256d\u2500[16:6]\n 15 \u2502     principal.hospital == resource.hospital &&\n 16 \u2502     !resource.patient in principal.careTeamPatients &&\n    \u00b7      \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 17 \u2502     principal.isOnCall &&\n    \u2570\u2500\u2500\u2500\u2500",
+        "explanation": {
+          "category": "schema",
+          "summary": "The policy parses, but it does not ground correctly to the schema.",
+          "likely_cause": "The model likely used a missing identifier, wrong type, or invalid appliesTo combination.",
+          "suggested_fix": "Compare every entity type, action, and attribute against the schema exactly."
+        }
+      }
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "skipped",
+      "message": "Skipped because schema grounding failed.",
+      "details": {}
+    }
+  ]
+}

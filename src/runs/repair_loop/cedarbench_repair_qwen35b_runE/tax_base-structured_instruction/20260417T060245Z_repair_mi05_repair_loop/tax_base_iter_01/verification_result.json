@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 invalid variable: o\n   \u256d\u2500[6:38]\n 5 \u2502 ) when {\n 6 \u2502     principal.assigned_orgs.contains(o) &&\n   \u00b7                                      \u2500\n 7 \u2502     o.organization == resource.owner.organization &&\n   \u2570\u2500\u2500\u2500\u2500\n  help: the valid Cedar variables are `principal`, `action`, `resource`, and `context`; did you mean to enclose `o` in quotes to make a string?\n\nError: \n  \u00d7 invalid member access `o.organization`, `o` has no fields or methods\n   \u256d\u2500[7:5]\n 6 \u2502     principal.assigned_orgs.contains(o) &&\n 7 \u2502     o.organization == resource.owner.organization &&\n   \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 8 \u2502     o.serviceline == resource.serviceline &&\n   \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 invalid member access `o.serviceline`, `o` has no fields or methods\n   \u256d\u2500[8:5]\n 7 \u2502     o.organization == resource.owner.organization &&\n 8 \u2502     o.serviceline == resource.serviceline &&\n   \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 9 \u2502     o.location == resource.location\n   \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 invalid member access `o.location`, `o` has no fields or methods\n    \u256d\u2500[9:5]\n  8 \u2502     o.serviceline == resource.serviceline &&\n  9 \u2502     o.location == resource.location\n    \u00b7     \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 10 \u2502 };\n    \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

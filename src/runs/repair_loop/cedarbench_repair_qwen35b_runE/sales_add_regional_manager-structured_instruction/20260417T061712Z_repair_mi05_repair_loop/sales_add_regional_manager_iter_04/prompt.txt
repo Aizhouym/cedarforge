@@ -1,0 +1,432 @@
+# Role
+You are a **Cedar Policy Schema Engineer**.
+
+Your only job is to fix schema grounding errors in the previous candidate.
+The policy parses correctly but references entity types, attributes, or actions that do not exist in the schema.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic or conditions.**
+Only replace incorrect identifiers with the correct ones from the schema.
+Check every entity type, action, and attribute reference against the schema below.
+
+---
+
+# Repair Context
+
+Current repair iteration: 4
+
+WARNING: Oscillation detected (#1). You have been alternating between error types without converging.
+Rules for this attempt:
+1. Ensure syntax is correct FIRST — do not change policy logic while fixing syntax.
+2. Once syntax passes, address semantic issues separately.
+3. Do not revert to a candidate that failed syntax.
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "add role"
+difficulty: medium
+features:
+  - job-level hierarchy
+  - regional segmentation
+  - customer restrictions
+  - regional manager role
+domain: enterprise sales / CRM
+source: mutation (sales domain)
+---
+
+# Sales Organization Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a sales organization platform with
+Users, Markets, Presentations, Templates, and Jobs.
+
+Users belong to Markets (via `User in [Market]`) and have a `job: Job` attribute
+(with entity values like `Job::"internal"`, `Job::"distributor"`, `Job::"customer"`)
+and a `customerId: String`.
+
+Presentations have `owner: User`, `viewers: Set<User>`, and `editors: Set<User>`.
+Templates have `owner: User`, `viewers: Set<User>`, `editors: Set<User>`,
+`viewerMarkets: Set<Market>`, and `editorMarkets: Set<Market>`.
+
+Actions are organized into action groups:
+- Presentation actions: InternalPrezViewActions, ExternalPrezViewActions, PrezEditActions
+- Template actions: InternalTemplateViewActions, MarketTemplateViewActions, TemplateEditActions
+
+## Requirements
+
+### 1. External Presentation View
+- A user may perform **ExternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation) if `principal in resource.viewers`.
+
+### 2. Internal Presentation View
+- A user may perform **InternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation, duplicatePresentation) if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 3. Presentation Edit
+- A user may perform **PrezEditActions** (viewPresentation,
+  removeSelfAccessFromPresentation, duplicatePresentation, editPresentation,
+  grantViewAccessToPresentation, grantEditAccessToPresentation) if
+  `resource.owner == principal` OR `principal in resource.editors`.
+
+### 4. Customer Sharing Restriction (Deny Rule)
+- When granting view access to a presentation, the action
+  **grantViewAccessToPresentation** is **forbidden** unless:
+  - `context.target.job != Job::"customer"`, OR
+  - (`principal.job == Job::"distributor"` AND
+     `principal.customerId == context.target.customerId`).
+- In other words: you cannot share view access with a customer user UNLESS
+  you are a distributor sharing with your own customer (same customerId).
+
+### 5. Internal-Only Edit Sharing (Deny Rule)
+- **grantEditAccessToPresentation** is **forbidden** when
+  `context.target.job != Job::"internal"`.
+- Only internal users can receive edit access to presentations.
+
+### 6. Market Template View
+- A user may perform **MarketTemplateViewActions** (viewTemplate,
+  duplicateTemplate) if `principal in resource.viewerMarkets`.
+
+### 7. Internal Template View
+- A user may perform **InternalTemplateViewActions** (viewTemplate,
+  duplicateTemplate, removeSelfAccessFromTemplate) if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 8. Template Edit
+- A user may perform **TemplateEditActions** (viewTemplate, duplicateTemplate,
+  removeSelfAccessFromTemplate, editTemplate, removeOthersAccessToTemplate,
+  grantViewAccessToTemplate, grantEditAccessToTemplate) if
+  `resource.owner == principal` OR `principal in resource.editors` OR
+  `principal in resource.editorMarkets`.
+
+### 9. Template View Grant Restriction (Deny Rule)
+- **grantViewAccessToTemplate** is **forbidden** when the context specifies
+  a `targetUser` AND that user is a customer AND the granting user is not
+  a distributor sharing with their own customer:
+  `context has targetUser && context.targetUser.job == Job::"customer" && (principal.job != Job::"distributor" || principal.customerId != context.targetUser.customerId)`.
+- Market-targeted grants (`context has targetMarket`) are always allowed.
+
+### 10. Template Edit Grant Restriction (Deny Rule)
+- **grantEditAccessToTemplate** is **forbidden** when
+  `context has targetUser && context.targetUser.job != Job::"internal"`.
+- Market-targeted grants are always allowed.
+
+## Notes
+- Job types are entity references: `Job::"internal"`, `Job::"distributor"`,
+  `Job::"customer"`, `Job::"other"`.
+- The grant actions use context to specify the target of the grant.
+- Market membership is checked via `principal in resource.viewerMarkets`
+  because User is `in [Market]`.
+- Cedar denies by default; the forbid rules are additional restrictions.
+### 11. Regional Manager Template Access
+- User now has an optional `managedMarkets: Set<Market>` attribute.
+- A user whose `job == Job::"regional_manager"` gains additional template
+  edit permissions based on their managed markets.
+- A regional manager may perform **TemplateEditActions** on a template if
+  any of the template's `editorMarkets` overlap with the manager's
+  `managedMarkets`. Specifically, the manager has edit access if the template's
+  editorMarkets set contains a market that is also in the manager's managedMarkets.
+- This is IN ADDITION to the normal template edit path (owner, editors, editorMarkets
+  membership). The regional manager path provides an alternative way to get
+  edit access to templates whose markets the manager oversees.
+- All existing forbid rules (customer sharing, internal-only edit) still apply
+  to regional managers.
+
+## Notes (Regional Manager)
+- The regional manager permit checks: `principal.job == Job::"regional_manager"`
+  and uses market overlap between `principal.managedMarkets` and `resource.editorMarkets`.
+- Regional manager is an internal job type, so it passes the internal-only
+  edit sharing check when granting access.
+
+---
+
+# Cedar Schema
+```cedar
+// Sales Organization Permissions -- Cedar Schema (with Regional Manager)
+
+entity Job;
+entity User in [Market] {
+  job: Job,
+  customerId: String,
+  managedMarkets: Set<Market>,
+};
+entity Market;
+entity Presentation {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+};
+entity Template {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+  viewerMarkets: Set<Market>,
+  editorMarkets: Set<Market>,
+};
+// Actions -- Presentations
+action InternalPrezViewActions;
+action ExternalPrezViewActions;
+action PrezEditActions;
+action viewPresentation, removeSelfAccessFromPresentation
+    in [InternalPrezViewActions, ExternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action duplicatePresentation in [InternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action editPresentation in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action grantViewAccessToPresentation, grantEditAccessToPresentation
+    in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+    context: { target: User, },
+  };
+
+// Actions -- Templates
+action InternalTemplateViewActions;
+action MarketTemplateViewActions;
+action TemplateEditActions;
+action viewTemplate, duplicateTemplate
+   in [InternalTemplateViewActions, TemplateEditActions,
+       MarketTemplateViewActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+  };
+action removeSelfAccessFromTemplate
+   in [InternalTemplateViewActions, TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action editTemplate, removeOthersAccessToTemplate in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action grantViewAccessToTemplate, grantEditAccessToTemplate
+    in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+    context: { targetMarket?: Market, targetUser?: User },
+  };
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"viewPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicatePresentation",
+    resource is Presentation
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editPresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal ||
+    principal in resource.editors
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    (context.target.job != Job::"customer") ||
+    (principal.job == Job::"distributor" &&
+     principal.customerId == context.target.customerId)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    context.target.job == Job::"internal"
+};
+
+permit (
+    principal is User,
+    action == Action::"viewTemplate",
+    resource is Template
+) when {
+    principal in resource.viewerMarkets ||
+    (principal.job == Job::"internal" &&
+     principal in resource.viewers)
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicateTemplate",
+    resource is Template
+) when {
+    principal in resource.viewerMarkets ||
+    (principal.job == Job::"internal" &&
+     principal in resource.viewers)
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromTemplate",
+    resource is Template
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets ||
+    (principal.job == Job::"regional_manager" &&
+     principal has managedMarkets &&
+     principal.managedMarkets.containsAny(resource.editorMarkets))
+};
+
+permit (
+    principal is User,
+    action == Action::"removeOthersAccessToTemplate",
+    resource is Template
+) when {
+    resource.owner == principal ||
+    principal in resource.editors ||
+    principal in resource.editorMarkets ||
+    (principal.job == Job::"regional_manager" &&
+     principal has managedMarkets &&
+     principal.managedMarkets.containsAny(resource.editorMarkets))
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    (context has targetMarket) ||
+    (!(context has targetUser) ||
+     (context.targetUser.job != Job::"customer") ||
+     (principal.job == Job::"distributor" &&
+      principal.customerId == context.targetUser.customerId))
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    (context has targetMarket) ||
+    (!(context has targetUser) ||
+     context.targetUser.job == Job::"internal")
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    (context.target.job == Job::"customer") &&
+    !(principal.job == Job::"distributor" &&
+      principal.customerId == context.target.customerId)
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    context.target.job != Job::"internal"
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    (context has targetUser) &&
+    (context.targetUser.job == Job::"customer") &&
+    !(principal.job == Job::"distributor" &&
+      principal.customerId == context.targetUser.customerId)
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    (context has targetUser) &&
+    context.targetUser.job != Job::"internal"
+};
+```
+
+---
+
+# Schema Error
+SCHEMA ERROR — The policy parses but uses identifiers not present in the schema.
+
+Summary:       The policy parses, but it does not ground correctly to the schema.
+Likely cause:  The model likely used a missing identifier, wrong type, or invalid appliesTo combination.
+Suggested fix: Compare every entity type, action, and attribute against the schema exactly.
+
+Raw error:
+× policy set validation failed
+  ╰─▶ for policy `policy11`, unable to guarantee safety of access to optional attribute `targetUser` in context for Action::"grantViewAccessToTemplate"
+     ╭─[117:31]
+ 116 │      (principal.job == Job::"distributor" &&
+ 117 │       principal.customerId == context.targetUser.customerId))
+     ·                               ─────────────────────────────
+ 118 │ };
+     ╰────
+  help: try testing for the attribute's presence with `context has targetUser && ..`
+
+NOTE: Only fix identifier names. Do not change policy logic or conditions.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

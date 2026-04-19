@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 unexpected token `||`\n   \u256d\u2500[7:3]\n 6 \u2502     principal.tier == \"free\" && context.usageCount < 5\n 7 \u2502 } ||\n   \u00b7   \u2500\u252c\n   \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 8 \u2502 (\n   \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

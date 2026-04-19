@@ -1,0 +1,196 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.685,
+  "checks": [
+    {
+      "name": "read_safety",
+      "description": "read permitted only when (owner OR valid active read grant)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "write_safety",
+      "description": "write permitted only when (owner OR valid active write grant)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"write\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/write_safety.cedar"
+    },
+    {
+      "name": "create_grant_safety",
+      "description": "createGrant permitted only when owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"createGrant\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/create_grant_safety.cedar"
+    },
+    {
+      "name": "revoke_grant_safety",
+      "description": "revokeGrant permitted only when owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"revokeGrant\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/revoke_grant_safety.cedar"
+    },
+    {
+      "name": "owner_must_read",
+      "description": "Owner MUST read their own resource",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/owner_must_read.cedar"
+    },
+    {
+      "name": "owner_must_write",
+      "description": "Owner MUST write their own resource",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"write\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/owner_must_write.cedar"
+    },
+    {
+      "name": "active_read_grant_must_permit",
+      "description": "Non-owner with active valid read grant MUST be permitted to read",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/active_read_grant_must_permit.cedar"
+    },
+    {
+      "name": "active_write_grant_must_permit",
+      "description": "Non-owner with active valid write grant MUST be permitted to write",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"write\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/delegation_temporary_grant-structured_instruction/20260417T063028Z_repair_mi05_repair_loop/delegation_temporary_grant_iter_01/_eval_workspace/references/active_write_grant_must_permit.cedar"
+    },
+    {
+      "name": "liveness_read",
+      "description": "User+read+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Resource"
+    },
+    {
+      "name": "liveness_write",
+      "description": "User+write+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"write\"",
+      "resource_type": "Resource"
+    },
+    {
+      "name": "liveness_create_grant",
+      "description": "User+createGrant+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"createGrant\"",
+      "resource_type": "Resource"
+    },
+    {
+      "name": "liveness_revoke_grant",
+      "description": "User+revokeGrant+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"revokeGrant\"",
+      "resource_type": "Resource"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "read permitted only when (owner OR valid active read grant)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "write_safety",
+      "check_type": "implies",
+      "description": "write permitted only when (owner OR valid active write grant)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "create_grant_safety",
+      "check_type": "implies",
+      "description": "createGrant permitted only when owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "revoke_grant_safety",
+      "check_type": "implies",
+      "description": "revokeGrant permitted only when owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_must_read",
+      "check_type": "implies",
+      "description": "Owner MUST read their own resource",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_must_write",
+      "check_type": "implies",
+      "description": "Owner MUST write their own resource",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "active_read_grant_must_permit",
+      "check_type": "implies",
+      "description": "Non-owner with active valid read grant MUST be permitted to read",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "active_write_grant_must_permit",
+      "check_type": "implies",
+      "description": "Non-owner with active valid write grant MUST be permitted to write",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_read",
+      "check_type": "always-denies (liveness)",
+      "description": "User+read+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_write",
+      "check_type": "always-denies (liveness)",
+      "description": "User+write+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_create_grant",
+      "check_type": "always-denies (liveness)",
+      "description": "User+createGrant+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_revoke_grant",
+      "check_type": "always-denies (liveness)",
+      "description": "User+revokeGrant+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

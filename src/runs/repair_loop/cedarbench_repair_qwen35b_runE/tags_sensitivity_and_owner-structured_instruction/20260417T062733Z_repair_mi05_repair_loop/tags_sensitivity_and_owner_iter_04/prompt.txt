@@ -1,0 +1,342 @@
+# Role
+You are a **Cedar Policy Schema Engineer**.
+
+Your only job is to fix schema grounding errors in the previous candidate.
+The policy parses correctly but references entity types, attributes, or actions that do not exist in the schema.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic or conditions.**
+Only replace incorrect identifiers with the correct ones from the schema.
+Check every entity type, action, and attribute reference against the schema below.
+
+---
+
+# Repair Context
+
+Current repair iteration: 4
+
+
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "compound mutation"
+difficulty: hard
+features:
+  - tag namespaces
+  - role-scoped access
+  - wildcard matching
+  - sensitivity + owner compound
+domain: content management / tagging
+source: mutation (tags domain)
+---
+
+# Tags & Roles Workspace Permissions -- Policy Specification (Combined)
+
+## Context
+
+This policy governs access control for a workspace platform where access is
+determined by tag-based matching between Users and Workspaces, scoped by Roles.
+
+Users belong to Roles. Each User has an `allowedTagsForRole` record. Workspaces
+have tags, a `sensitivity: Long` (0-5), an `owner: User`, and an `isApproved: Bool`.
+
+Two roles: **Role-A** (Update, Delete, Read) and **Role-B** (Read only).
+
+## Requirements
+
+### 1. Role-A Permissions (Tag-Based)
+- A user in **Role-A** may perform **Role-A Actions** (UpdateWorkspace,
+  DeleteWorkspace, ReadWorkspace) on a workspace when tag-matching passes
+  for all three dimensions (production_status, country, stage):
+  - Per dimension: user's set contains `"ALL"`, OR workspace's set contains
+    `"ALL"`, OR user's set `containsAll` of workspace's set.
+  - Missing dimensions pass automatically.
+
+### 2. Role-B Permissions (Tag-Based)
+- A user in **Role-B** may perform **Role-B Actions** (ReadWorkspace) using
+  the same tag-matching logic, checking `allowedTagsForRole["Role-B"]`.
+
+### 3. Owner Bypass for Read Access
+- The **owner** of a workspace may always **ReadWorkspace** on that workspace,
+  regardless of role membership or tag matching.
+- The owner bypass applies ONLY to ReadWorkspace. The owner must still qualify
+  via Role-A tag matching for UpdateWorkspace and DeleteWorkspace.
+- The owner bypass also ignores sensitivity restrictions for read access.
+
+### 4. Sensitivity Level Restriction (Deny Rules)
+- For **Role-A** actions: if `resource.sensitivity > 3`, all Role-A actions
+  are **forbidden** for users acting in Role-A.
+- For **Role-B** actions: if `resource.sensitivity > 1`, all Role-B actions
+  are **forbidden** for users acting in Role-B.
+- **Exception**: The owner bypass for ReadWorkspace is NOT subject to sensitivity
+  restrictions. If `principal == resource.owner`, ReadWorkspace is always allowed.
+
+### 5. Approval Gate (Deny Rule)
+- If `resource.isApproved == false`, **UpdateWorkspace** and **DeleteWorkspace**
+  are **forbidden** for ALL users, including owners.
+- **ReadWorkspace** is still allowed on unapproved workspaces.
+
+## Notes
+- Three independent forbid rules exist: Role-A sensitivity, Role-B sensitivity,
+  and approval gate. They operate independently.
+- The owner bypass creates a separate permit path for ReadWorkspace that is
+  immune to sensitivity forbids (the forbid must use `unless { principal == resource.owner }`).
+- The approval gate has no owner exception -- even workspace owners cannot
+  update or delete unapproved workspaces.
+- This is a complex scenario with tag matching, numeric thresholds, owner bypass,
+  and boolean gates all interacting.
+
+---
+
+# Cedar Schema
+```cedar
+// Tags & Roles -- Cedar Schema (Sensitivity + Owner + Approval)
+
+entity Role;
+entity User in [Role] {
+  allowedTagsForRole: {
+    "Role-A"?: {
+        production_status?: Set<String>,
+        country?: Set<String>,
+        stage?: Set<String>,
+    },
+    "Role-B"?: {
+        production_status?: Set<String>,
+        country?: Set<String>,
+        stage?: Set<String>,
+    },
+  },
+};
+entity Workspace {
+  tags: {
+    production_status?: Set<String>,
+    country?: Set<String>,
+    stage?: Set<String>,
+  },
+  sensitivity: Long,
+  owner: User,
+  isApproved: Bool,
+};
+
+action "Role-A Actions";
+action "Role-B Actions";
+action UpdateWorkspace in ["Role-A Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+
+action DeleteWorkspace in ["Role-A Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+
+action ReadWorkspace in ["Role-A Actions", "Role-B Actions"] appliesTo {
+  principal: User,
+  resource: Workspace,
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"ReadWorkspace",
+    resource is Workspace
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"ReadWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-A" &&
+    (
+        (!resource.tags has production_status ||
+         (
+             principal.allowedTagsForRole has "Role-A" &&
+             (
+                 principal.allowedTagsForRole["Role-A"] has production_status &&
+                 (
+                     principal.allowedTagsForRole["Role-A"]["production_status"].contains("ALL") ||
+                     resource.tags["production_status"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-A"]["production_status"].containsAll(resource.tags["production_status"])
+                 )
+             )
+         )) &&
+        (!resource.tags has country ||
+         (
+             principal.allowedTagsForRole has "Role-A" &&
+             (
+                 principal.allowedTagsForRole["Role-A"] has country &&
+                 (
+                     principal.allowedTagsForRole["Role-A"]["country"].contains("ALL") ||
+                     resource.tags["country"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-A"]["country"].containsAll(resource.tags["country"])
+                 )
+             )
+         )) &&
+        (!resource.tags has stage ||
+         (
+             principal.allowedTagsForRole has "Role-A" &&
+             (
+                 principal.allowedTagsForRole["Role-A"] has stage &&
+                 (
+                     principal.allowedTagsForRole["Role-A"]["stage"].contains("ALL") ||
+                     resource.tags["stage"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-A"]["stage"].containsAll(resource.tags["stage"])
+                 )
+             )
+         ))
+    )
+};
+
+permit (
+    principal is User,
+    action == Action::"ReadWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-B" &&
+    (
+        (!resource.tags has production_status ||
+         (
+             principal.allowedTagsForRole has "Role-B" &&
+             (
+                 principal.allowedTagsForRole["Role-B"] has production_status &&
+                 (
+                     principal.allowedTagsForRole["Role-B"]["production_status"].contains("ALL") ||
+                     resource.tags["production_status"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-B"]["production_status"].containsAll(resource.tags["production_status"])
+                 )
+             )
+         )) &&
+        (!resource.tags has country ||
+         (
+             principal.allowedTagsForRole has "Role-B" &&
+             (
+                 principal.allowedTagsForRole["Role-B"] has country &&
+                 (
+                     principal.allowedTagsForRole["Role-B"]["country"].contains("ALL") ||
+                     resource.tags["country"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-B"]["country"].containsAll(resource.tags["country"])
+                 )
+             )
+         )) &&
+        (!resource.tags has stage ||
+         (
+             principal.allowedTagsForRole has "Role-B" &&
+             (
+                 principal.allowedTagsForRole["Role-B"] has stage &&
+                 (
+                     principal.allowedTagsForRole["Role-B"]["stage"].contains("ALL") ||
+                     resource.tags["stage"].contains("ALL") ||
+                     principal.allowedTagsForRole["Role-B"]["stage"].containsAll(resource.tags["stage"])
+                 )
+             )
+         ))
+    )
+};
+
+forbid (
+    principal is User,
+    action == Action::"UpdateWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-A"
+};
+
+forbid (
+    principal is User,
+    action == Action::"DeleteWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-A"
+};
+
+forbid (
+    principal is User,
+    action == Action::"ReadWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-A" &&
+    resource.sensitivity > 3
+};
+
+forbid (
+    principal is User,
+    action == Action::"ReadWorkspace",
+    resource is Workspace
+) when {
+    principal in Role::"Role-B" &&
+    resource.sensitivity > 1
+};
+
+forbid (
+    principal is User,
+    action == Action::"UpdateWorkspace",
+    resource is Workspace
+) when {
+    !resource.isApproved
+};
+
+forbid (
+    principal is User,
+    action == Action::"DeleteWorkspace",
+    resource is Workspace
+) when {
+    !resource.isApproved
+};
+```
+
+---
+
+# Schema Error
+SCHEMA ERROR — The policy parses but uses identifiers not present in the schema.
+
+Summary:       The policy parses, but it does not ground correctly to the schema.
+Likely cause:  The model likely used a missing identifier, wrong type, or invalid appliesTo combination.
+Suggested fix: Compare every entity type, action, and attribute against the schema exactly.
+
+Raw error:
+× policy set validation failed
+  ╰─▶ for policy `policy1`, unable to guarantee safety of access to optional attribute `tags.country` on entity type `Workspace`
+    ╭─[35:22]
+ 34 │                      principal.allowedTagsForRole["Role-A"]["country"].contains("ALL") ||
+ 35 │                      resource.tags["country"].contains("ALL") ||
+    ·                      ────────────────────────────────────────
+ 36 │                      principal.allowedTagsForRole["Role-A"]["country"].containsAll(resource.tags["country"])
+    ╰────
+  help: try testing for the attribute's presence with `e.tags has country && ..`
+
+Error: 
+  × for policy `policy1`, unable to guarantee safety of access to optional attribute `tags.country` on entity type `Workspace`
+    ╭─[36:84]
+ 35 │                      resource.tags["country"].contains("ALL") ||
+ 36 │                      principal.allowedTagsForRole["Role-A"]["country"].containsAll(resource.tags["country"])
+    ·                                                                                    ────────────────────────
+ 37 │                  )
+    ╰────
+  help: try testing for the attribute's presence with `e.tags has country && ..`
+
+Error: 
+  × for po
+...[truncated]...
+
+NOTE: Only fix identifier names. Do not change policy logic or conditions.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

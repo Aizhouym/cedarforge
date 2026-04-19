@@ -1,0 +1,77 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_download-structured_instruction/20260417T062035Z_repair_mi05_repair_loop/streaming_add_download_iter_04/_eval_workspace",
+  "syntax_pass": false,
+  "schema_pass": false,
+  "semantic_accuracy": 0.0,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 0,
+  "failed_checks": [
+    "syntax"
+  ],
+  "failed_check_types": [
+    "syntax"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_syntax",
+    "syntax_pass": false,
+    "schema_pass": false,
+    "semantic_accuracy": 0.0,
+    "syntax_error": true,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 1.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 0,
+    "primary_error_type": "syntax",
+    "validation_message": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `hour` is not a valid method\n    \u256d\u2500[77:9]\n 76 \u2502     (\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[78:9]\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 79 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[89:9]\n 88 \u2502     (\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[90:9]\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 91 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500"
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 0.0,
+    "checks": [],
+    "results": [
+      {
+        "check_name": "syntax",
+        "check_type": "syntax",
+        "description": "Cedar validation",
+        "passed": false,
+        "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `hour` is not a valid method\n    \u256d\u2500[77:9]\n 76 \u2502     (\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[78:9]\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 79 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[89:9]\n 88 \u2502     (\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[90:9]\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 91 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": false,
+      "status": "fail",
+      "message": "Cedar parsing/DSL validation failed.",
+      "details": {
+        "error": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `hour` is not a valid method\n    \u256d\u2500[77:9]\n 76 \u2502     (\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[78:9]\n 77 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 78 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 79 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[89:9]\n 88 \u2502     (\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 `hour` is not a valid method\n    \u256d\u2500[90:9]\n 89 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() < 6 ||\n 90 \u2502         context.now.datetime.offset(context.now.localTimeOffset).toTime().hour() >= 21\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 91 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500",
+        "explanation": {
+          "category": "syntax",
+          "summary": "Cedar could not parse the generated policy.",
+          "likely_cause": "The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.",
+          "suggested_fix": "Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement."
+        }
+      }
+    },
+    {
+      "name": "schema",
+      "passed": false,
+      "status": "skipped",
+      "message": "Skipped because syntax validation failed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "skipped",
+      "message": "Skipped because syntax validation failed.",
+      "details": {}
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+# Role
+You are a **Cedar Policy Syntax Engineer**.
+
+Your only job is to fix a Cedar syntax error in the previous candidate.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic, conditions, or structure.**
+Only fix the specific syntax problem reported below.
+If a statement was nearly correct, adjust punctuation or token placement only.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "add temporal"
+difficulty: medium
+features:
+  - ACL-based sharing
+  - owner/viewer/editor roles
+  - blocking semantics
+  - document expiry datetime
+domain: document management
+source: mutation (doccloud domain)
+---
+
+# Document Cloud Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a document management platform with
+Documents, Users, Groups, Drives, and sharing ACLs (DocumentShare).
+
+Documents have three ACL attributes (viewACL, modifyACL, manageACL), each
+referencing a DocumentShare entity that Groups and Public can be members of.
+Documents also have a publicAccess string attribute and an owner reference.
+
+## Requirements
+
+### 1. Owner Permissions
+- The **owner** of a document may perform ALL actions on that document:
+  ViewDocument, ModifyDocument, DeleteDocument, EditIsPrivate, EditPublicAccess,
+  AddToShareACL.
+
+### 2. View ACL Permissions
+- A user who is in a document's **viewACL** may **ViewDocument**.
+
+### 3. Modify ACL Permissions
+- A user who is in a document's **modifyACL** may **ModifyDocument**.
+
+### 4. Manage ACL Permissions
+- A user who is in a document's **manageACL** may perform:
+  **AddToShareACL**, **DeleteDocument**, **EditIsPrivate**, **EditPublicAccess**.
+
+### 5. Public Access Rules
+- If a document's `publicAccess == "view"`, then **Public** principals (or any
+  authenticated user) may **ViewDocument**.
+- If a document's `publicAccess == "edit"`, then **Public** principals may
+  **ViewDocument** and **ModifyDocument**.
+
+### 6. Blocking Rules (Deny Rules -- Bidirectional)
+- If the **principal** is in the document owner's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- If the document **owner** is in the principal's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- Blocking is bidirectional: either direction triggers the deny.
+
+### 7. Authentication Requirement (Deny Rule)
+- For **User** principals, all actions are forbidden unless
+  `context.is_authenticated == true`.
+
+### 8. Group Owner Permissions
+- The **owner** of a Group may **DeleteGroup** and **ModifyGroup** on that Group.
+
+## Notes
+- ACL membership is checked via `principal in resource.viewACL` (etc.).
+- The Public entity type is a separate principal type, not a User.
+- Cedar denies by default -- no explicit deny-by-default policy is needed.
+- Blocking forbid rules use `when` conditions on entity attribute sets.
+### 9. Document Expiry (Deny Rule with Exception)
+- Documents have an `expiryDate` attribute (Long, representing epoch timestamp).
+- The context includes `currentTime` (Long, epoch timestamp) for document actions.
+- If `context.currentTime > resource.expiryDate`, forbid ALL actions on the document
+  EXCEPT: the document **owner** may still **DeleteDocument** on expired documents.
+- ViewDocument, ModifyDocument, AddToShareACL, EditIsPrivate, and EditPublicAccess
+  are all blocked after expiry for non-owners.
+- The owner retains DeleteDocument to allow cleanup of expired documents.
+
+## Notes (Expiry)
+- The expiry forbid must use an `unless` clause to exempt owner + DeleteDocument.
+- `expiryDate` and `currentTime` are Long (epoch) for numeric comparison.
+
+---
+
+# Cedar Schema
+```cedar
+// Document Cloud Permissions -- Cedar Schema
+
+entity DocumentShare, Drive;
+entity Document = {
+    "isPrivate": Bool,
+    "manageACL": DocumentShare,
+    "modifyACL": DocumentShare,
+    "owner": User,
+    "publicAccess": String,
+    "viewACL": DocumentShare,
+    "expiryDate": Long,
+};
+entity Group in [DocumentShare] = {
+    "owner": User,
+};
+entity Public in [DocumentShare];
+entity User in [Group] = {
+    "blocked": Set<User>,
+    "personalGroup": Group,
+};
+
+action DeleteGroup, ModifyGroup appliesTo {
+    principal: [User],
+    resource: [Group],
+    context: { "is_authenticated": Bool }
+};
+action CreateGroup appliesTo {
+    principal: [User],
+    resource: [Drive],
+    context: { "is_authenticated": Bool }
+};
+action ViewDocument appliesTo {
+    principal: [User, Public],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "currentTime": Long }
+};
+action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "currentTime": Long }
+};
+action ModifyDocument appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: { "is_authenticated": Bool, "currentTime": Long }
+};
+action CreateDocument appliesTo {
+    principal: [User],
+    resource: [Drive],
+    context: { "is_authenticated": Bool }
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    resource.publicAccess == "view" ||
+    (resource.publicAccess == "edit" && principal in resource.modifyACL)
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.modifyACL ||
+    (resource.publicAccess == "edit" && principal in resource.modifyACL)
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteDocument",
+    resource is Document
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"AddToShareACL",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditIsPrivate",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditPublicAccess",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateDocument",
+    resource is Drive
+);
+
+permit (
+    principal is User,
+    action == Action::"CreateGroup",
+    resource is Drive
+);
+
+permit (
+    principal is User,
+    action == Action::"ModifyGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+forbid (
+    principal is User,
+    action in [Action::"ViewDocument", Action::"ModifyDocument"],
+    resource is Document
+) when {
+    principal in resource.owner.blocked ||
+    resource.owner in principal.blocked
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"ViewDocument",
+        Action::"ModifyDocument",
+        Action::"AddToShareACL",
+        Action::"EditIsPrivate",
+        Action::"EditPublicAccess"
+    ],
+    resource is Document
+) when {
+    resource.expiryDate != null &&
+    context.currentTime > resource.expiryDate
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"ViewDocument",
+        Action::"ModifyDocument",
+        Action::"AddToShareACL",
+        Action::"EditIsPrivate",
+        Action::"EditPublicAccess",
+        Action::"CreateDocument",
+        Action::"CreateGroup",
+        Action::"ModifyGroup",
+        Action::"DeleteGroup"
+    ],
+    resource
+) when {
+    !context.is_authenticated
+};
+```
+
+---
+
+# Syntax Error
+SYNTAX ERROR — Fix the syntax before addressing anything else.
+
+Summary:       Cedar could not parse the generated policy.
+Likely cause:  The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.
+Suggested fix: Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement.
+
+Raw error:
+× failed to parse policy set
+  ╰─▶ invalid variable: null
+     ╭─[105:28]
+ 104 │ ) when {
+ 105 │     resource.expiryDate != null &&
+     ·                            ────
+ 106 │     context.currentTime > resource.expiryDate
+     ╰────
+  help: the valid Cedar variables are `principal`, `action`, `resource`, and `context`; did you mean to enclose `null` in quotes to make a string?
+
+NOTE: Semantic counterexamples are omitted — they are irrelevant until syntax passes.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

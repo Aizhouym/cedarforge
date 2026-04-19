@@ -1,0 +1,113 @@
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"viewReservation",
+    resource is Reservation
+) when {
+    principal in resource.property.viewPermissions.hotelReservations ||
+    principal in resource.property.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateReservation",
+    resource is Reservation
+) when {
+    principal in resource.property.memberPermissions.hotelReservations ||
+    principal in resource.property.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Reservation
+) when {
+    principal in resource.property.memberPermissions.hotelReservations ||
+    principal in resource.property.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessReservation",
+    resource is Reservation
+) when {
+    principal in resource.property.hotelAdminPermissions ||
+    principal in resource.property.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"viewProperty",
+    resource is Property
+) when {
+    principal in resource.viewPermissions.hotelReservations ||
+    principal in resource.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateProperty",
+    resource is Property
+) when {
+    principal in resource.memberPermissions.hotelReservations ||
+    principal in resource.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createProperty",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessProperty",
+    resource is Property
+) when {
+    principal in resource.hotelAdminPermissions ||
+    principal in resource.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"createHotel",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"viewHotel",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateHotel",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessHotel",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+forbid (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Reservation
+) when {
+    resource.property.isPremium &&
+    principal.loyaltyTier < 3
+};
+</cedar_policy>

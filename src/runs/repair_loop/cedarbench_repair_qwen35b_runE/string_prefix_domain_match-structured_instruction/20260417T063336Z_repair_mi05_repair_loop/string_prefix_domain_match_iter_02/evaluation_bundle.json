@@ -1,0 +1,246 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 8,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 8,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.362,
+    "checks": [
+      {
+        "name": "public_read_safety",
+        "description": "readResource permitted only when (public OR internal+employee OR partner+partner-subdomain)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"readResource\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/public_read_safety.cedar"
+      },
+      {
+        "name": "admin_write_safety",
+        "description": "writeResource permitted only when email starts with 'admin@'",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"writeResource\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/admin_write_safety.cedar"
+      },
+      {
+        "name": "any_must_read_public",
+        "description": "Any User MUST read a public resource",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readResource\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/any_must_read_public.cedar"
+      },
+      {
+        "name": "employee_must_read_internal",
+        "description": "User with @example.com email MUST read internal resources",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readResource\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/employee_must_read_internal.cedar"
+      },
+      {
+        "name": "partner_must_read_partner",
+        "description": "User with @partner.example.com email MUST read partner resources",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"readResource\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/partner_must_read_partner.cedar"
+      },
+      {
+        "name": "admin_must_write_any",
+        "description": "User with admin@ email prefix MUST write any resource",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"writeResource\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/string_prefix_domain_match-structured_instruction/20260417T063336Z_repair_mi05_repair_loop/string_prefix_domain_match_iter_02/_eval_workspace/references/admin_must_write_any.cedar"
+      },
+      {
+        "name": "liveness_read",
+        "description": "User+readResource+Resource liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"readResource\"",
+        "resource_type": "Resource"
+      },
+      {
+        "name": "liveness_write",
+        "description": "User+writeResource+Resource liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"writeResource\"",
+        "resource_type": "Resource"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "public_read_safety",
+        "check_type": "implies",
+        "description": "readResource permitted only when (public OR internal+employee OR partner+partner-subdomain)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "admin_write_safety",
+        "check_type": "implies",
+        "description": "writeResource permitted only when email starts with 'admin@'",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "any_must_read_public",
+        "check_type": "implies",
+        "description": "Any User MUST read a public resource",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "employee_must_read_internal",
+        "check_type": "implies",
+        "description": "User with @example.com email MUST read internal resources",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "partner_must_read_partner",
+        "check_type": "implies",
+        "description": "User with @partner.example.com email MUST read partner resources",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "admin_must_write_any",
+        "check_type": "implies",
+        "description": "User with admin@ email prefix MUST write any resource",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read",
+        "check_type": "always-denies (liveness)",
+        "description": "User+readResource+Resource liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_write",
+        "check_type": "always-denies (liveness)",
+        "description": "User+writeResource+Resource liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 8,
+        "solver_time_s": 0.362,
+        "checks": [
+          {
+            "name": "public_read_safety",
+            "type": "implies",
+            "description": "readResource permitted only when (public OR internal+employee OR partner+partner-subdomain)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "admin_write_safety",
+            "type": "implies",
+            "description": "writeResource permitted only when email starts with 'admin@'",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "any_must_read_public",
+            "type": "implies",
+            "description": "Any User MUST read a public resource",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "employee_must_read_internal",
+            "type": "implies",
+            "description": "User with @example.com email MUST read internal resources",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "partner_must_read_partner",
+            "type": "implies",
+            "description": "User with @partner.example.com email MUST read partner resources",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "admin_must_write_any",
+            "type": "implies",
+            "description": "User with admin@ email prefix MUST write any resource",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read",
+            "type": "always-denies (liveness)",
+            "description": "User+readResource+Resource liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_write",
+            "type": "always-denies (liveness)",
+            "description": "User+writeResource+Resource liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

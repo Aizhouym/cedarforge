@@ -1,0 +1,181 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.433,
+  "checks": [
+    {
+      "name": "deploy_safety",
+      "description": "deploy permitted only when tests passed AND (dev=any role, staging=lead/releaseManager, production=releaseManager)",
+      "type": "implies",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"deploy\"",
+      "resource_type": "Deployment",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/deploy_safety.cedar"
+    },
+    {
+      "name": "rollback_safety",
+      "description": "rollback permitted only when role is lead or releaseManager",
+      "type": "implies",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"rollback\"",
+      "resource_type": "Deployment",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/rollback_safety.cedar"
+    },
+    {
+      "name": "approve_safety",
+      "description": "approve permitted only when role is releaseManager",
+      "type": "implies",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"approve\"",
+      "resource_type": "Deployment",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/approve_safety.cedar"
+    },
+    {
+      "name": "dev_deploy_floor",
+      "description": "Developer with passing tests MUST deploy to dev",
+      "type": "floor",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"deploy\"",
+      "resource_type": "Deployment",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/dev_deploy_floor.cedar"
+    },
+    {
+      "name": "staging_deploy_floor",
+      "description": "Lead with passing tests MUST deploy to staging",
+      "type": "floor",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"deploy\"",
+      "resource_type": "Deployment",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/staging_deploy_floor.cedar"
+    },
+    {
+      "name": "prod_deploy_floor",
+      "description": "releaseManager with passing tests MUST deploy to production",
+      "type": "floor",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"deploy\"",
+      "resource_type": "Deployment",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/prod_deploy_floor.cedar"
+    },
+    {
+      "name": "rollback_floor",
+      "description": "Lead MUST be permitted to rollback any environment",
+      "type": "floor",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"rollback\"",
+      "resource_type": "Deployment",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/rollback_floor.cedar"
+    },
+    {
+      "name": "approve_floor",
+      "description": "releaseManager MUST be permitted to approve",
+      "type": "floor",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"approve\"",
+      "resource_type": "Deployment",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/ci_cd_deployment_gate-structured_instruction/20260417T062931Z_repair_mi05_repair_loop/ci_cd_deployment_gate_iter_01/_eval_workspace/references/approve_floor.cedar"
+    },
+    {
+      "name": "liveness_deploy",
+      "description": "PipelineUser+deploy+Deployment liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"deploy\"",
+      "resource_type": "Deployment"
+    },
+    {
+      "name": "liveness_rollback",
+      "description": "PipelineUser+rollback+Deployment liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"rollback\"",
+      "resource_type": "Deployment"
+    },
+    {
+      "name": "liveness_approve",
+      "description": "PipelineUser+approve+Deployment liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "PipelineUser",
+      "action": "Action::\"approve\"",
+      "resource_type": "Deployment"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "deploy_safety",
+      "check_type": "implies",
+      "description": "deploy permitted only when tests passed AND (dev=any role, staging=lead/releaseManager, production=releaseManager)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "rollback_safety",
+      "check_type": "implies",
+      "description": "rollback permitted only when role is lead or releaseManager",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approve_safety",
+      "check_type": "implies",
+      "description": "approve permitted only when role is releaseManager",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "dev_deploy_floor",
+      "check_type": "implies",
+      "description": "Developer with passing tests MUST deploy to dev",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "staging_deploy_floor",
+      "check_type": "implies",
+      "description": "Lead with passing tests MUST deploy to staging",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "prod_deploy_floor",
+      "check_type": "implies",
+      "description": "releaseManager with passing tests MUST deploy to production",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "rollback_floor",
+      "check_type": "implies",
+      "description": "Lead MUST be permitted to rollback any environment",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "approve_floor",
+      "check_type": "implies",
+      "description": "releaseManager MUST be permitted to approve",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_deploy",
+      "check_type": "always-denies (liveness)",
+      "description": "PipelineUser+deploy+Deployment liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_rollback",
+      "check_type": "always-denies (liveness)",
+      "description": "PipelineUser+rollback+Deployment liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_approve",
+      "check_type": "always-denies (liveness)",
+      "description": "PipelineUser+approve+Deployment liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

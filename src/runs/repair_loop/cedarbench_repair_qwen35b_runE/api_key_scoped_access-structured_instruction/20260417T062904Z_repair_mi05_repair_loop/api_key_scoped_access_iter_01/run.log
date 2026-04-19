@@ -1,0 +1,632 @@
+========================================================================
+ITERATION START
+task:       api_key_scoped_access
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: M2M authorization, scoped bearer tokens
+difficulty: medium
+features:
+  - non-User principal (ApiKey)
+  - scope string matching via set membership
+  - expiry + revocation forbid composition
+  - submitted-invoice read-only override
+  - organization-level tenant isolation
+domain: API platforms, integrations, third-party SaaS
+---
+
+# API Key Scoped Access — Policy Specification
+
+## Context
+
+This policy governs machine-to-machine access via API keys. Unlike
+user-facing policies, the principal is an `ApiKey` entity (not a
+`User`) — API keys act on behalf of an organization or integration.
+Each key has a fixed set of scope strings, an expiry datetime, and a
+revocation flag. The policy enforces:
+
+1. **Tenant isolation**: API keys can only act on resources belonging
+   to their own organization.
+2. **Scope matching**: each action requires a specific scope string to
+   be present in the key's `scopes` set.
+3. **Expiry**: expired keys reject all requests.
+4. **Revocation**: revoked keys reject all requests, regardless of
+   expiry state.
+5. **Submitted-invoice immutability**: invoices with `submitted == true`
+   are read-only even for keys with `write:invoice` scope.
+
+## Requirements
+
+### 1. Baseline Forbid — Expired Keys
+- **Forbid** any action on any resource when the key's expiry datetime
+  is at or before the current time:
+  `context.now.datetime >= principal.expiresAt`. This applies to all
+  five actions.
+
+### 2. Baseline Forbid — Revoked Keys
+- **Forbid** any action on any resource when the key has been revoked:
+  `principal.revoked == true`. This applies to all five actions and
+  overrides the expiry check (a key that is both revoked and expired
+  is still rejected).
+
+### 3. Organization Isolation
+- Permits require that the API key's organization matches the
+  resource's organization: `principal.organization ==
+  resource.organization`. This is a per-permit condition, not a
+  global forbid, to keep the scope-matching logic cleanly expressible.
+
+### 4. Scope-to-Action Mapping
+Each action requires a specific scope string in the key's `scopes` set:
+
+| Action           | Required scope string      |
+|------------------|----------------------------|
+| readDocument     | `"read:document"`          |
+| writeDocument    | `"write:document"`         |
+| deleteDocument   | `"delete:document"`        |
+| readInvoice      | `"read:invoice"`           |
+| writeInvoice     | `"write:invoice"`          |
+
+The permit rule for each action checks that the corresponding scope
+string is in `principal.scopes`.
+
+### 5. Submitted-Invoice Immutability (Forbid)
+- **Forbid** `writeInvoice` when the invoice has been submitted
+  (`resource.submitted == true`). Once an invoice is submitted, it
+  cannot be modified by any key, even one with `write:invoice` scope.
+- Reading submitted invoices is still permitted (the read is not
+  blocked).
+
+## Notes
+- API keys act as the principal, which means `principal.organization`,
+  `principal.scopes`, etc. reference ApiKey attributes — not User
+  attributes. This is a novel pattern not tested in any prior
+  scenario, where all principals have been `User` or equivalent.
+- Scope matching is string set membership: `principal.scopes.contains("read:document")`.
+  This is a literal string comparison, not a pattern match.
+- The expiry check uses `>=` (key is invalid AT the expiry instant),
+  which is one common convention. An alternative is `>` (valid up to
+  the expiry instant); the policy uses `>=` per standard bearer-token
+  semantics.
+- Common failure modes: (a) forgetting the revocation check (only
+  checking expiry), (b) missing the submitted-invoice forbid,
+  (c) allowing cross-organization access.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// API Key Scoped Access — machine-to-machine authorization where the
+// principal is an API key (not a user) with a set of scope strings and
+// an expiry datetime. Tests the pattern where non-User principals act
+// on behalf of an organization or integration.
+
+entity Organization;
+
+// API keys are principals distinct from human users. Each key belongs
+// to an organization, has a scope set, and expires at a specific
+// datetime.
+entity ApiKey = {
+    organization: Organization,
+    // The set of scope strings this key is authorized for. Scopes
+    // follow a "verb:noun" convention: "read:document",
+    // "write:document", "delete:document", "read:invoice", etc.
+    scopes: Set<String>,
+    expiresAt: datetime,
+    // Whether this key has been manually revoked. Revoked keys should
+    // reject all requests regardless of scope or expiry.
+    revoked: Bool,
+};
+
+// Resources belong to an organization (every resource is tenant-scoped).
+entity Document = {
+    organization: Organization,
+};
+
+entity Invoice = {
+    organization: Organization,
+    // Whether this invoice has been submitted (finalized). Submitted
+    // invoices are read-only even for keys with write:invoice scope.
+    submitted: Bool,
+};
+
+// Document actions — each requires a specific scope.
+action readDocument appliesTo {
+    principal: [ApiKey],
+    resource: [Document],
+    context: {
+        now: { datetime: datetime },
+    },
+};
+
+action writeDocument appliesTo {
+    principal: [ApiKey],
+    resource: [Document],
+    context: {
+        now: { datetime: datetime },
+    },
+};
+
+action deleteDocument appliesTo {
+    principal: [ApiKey],
+    resource: [Document],
+    context: {
+        now: { datetime: datetime },
+    },
+};
+
+// Invoice actions.
+action readInvoice appliesTo {
+    principal: [ApiKey],
+    resource: [Invoice],
+    context: {
+        now: { datetime: datetime },
+    },
+};
+
+action writeInvoice appliesTo {
+    principal: [ApiKey],
+    resource: [Invoice],
+    context: {
+        now: { datetime: datetime },
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is ApiKey,
+    action == Action::"readDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("read:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"writeDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("write:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"deleteDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("delete:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"readInvoice",
+    resource is Invoice
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("read:invoice") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"writeInvoice",
+    resource is Invoice
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("write:invoice") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked &&
+    !resource.submitted
+};
+
+forbid (
+    principal is ApiKey,
+    action in [
+        Action::"readDocument",
+        Action::"writeDocument",
+        Action::"deleteDocument",
+        Action::"readInvoice",
+        Action::"writeInvoice"
+    ],
+    resource is Document
+) when {
+    context.now.datetime >= principal.expiresAt
+};
+
+forbid (
+    principal is ApiKey,
+    action in [
+        Action::"readDocument",
+        Action::"writeDocument",
+        Action::"deleteDocument",
+        Action::"readInvoice",
+        Action::"writeInvoice"
+    ],
+    resource is Document
+) when {
+    principal.revoked
+};
+
+forbid (
+    principal is ApiKey,
+    action == Action::"writeInvoice",
+    resource is Invoice
+) when {
+    resource.submitted
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is ApiKey,
+    action == Action::"readDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("read:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"writeDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("write:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"deleteDocument",
+    resource is Document
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("delete:document") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"readInvoice",
+    resource is Invoice
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("read:invoice") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked
+};
+
+permit (
+    principal is ApiKey,
+    action == Action::"writeInvoice",
+    resource is Invoice
+) when {
+    principal.organization == resource.organization &&
+    principal.scopes.contains("write:invoice") &&
+    context.now.datetime < principal.expiresAt &&
+    !principal.revoked &&
+    !resource.submitted
+};
+
+forbid (
+    principal is ApiKey,
+    action in [
+        Action::"readDocument",
+        Action::"writeDocument",
+        Action::"deleteDocument",
+        Action::"readInvoice",
+        Action::"writeInvoice"
+    ],
+    resource is Document
+) when {
+    context.now.datetime >= principal.expiresAt
+};
+
+forbid (
+    principal is ApiKey,
+    action in [
+        Action::"readDocument",
+        Action::"writeDocument",
+        Action::"deleteDocument",
+        Action::"readInvoice",
+        Action::"writeInvoice"
+    ],
+    resource is Document
+) when {
+    principal.revoked
+};
+
+forbid (
+    principal is ApiKey,
+    action == Action::"writeInvoice",
+    resource is Invoice
+) when {
+    resource.submitted
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 14
+solver_time_s: 0.634
+
+semantic check results:
+  - read_document_safety [implies] PASS
+    description: readDocument permitted only when (same org, read:document scope, not expired, not revoked)
+  - write_document_safety [implies] PASS
+    description: writeDocument permitted only when (same org, write:document scope, not expired, not revoked)
+  - delete_document_safety [implies] PASS
+    description: deleteDocument permitted only when (same org, delete:document scope, not expired, not revoked)
+  - read_invoice_safety [implies] PASS
+    description: readInvoice permitted only when (same org, read:invoice scope, not expired, not revoked)
+  - write_invoice_safety [implies] PASS
+    description: writeInvoice permitted only when (same org, write:invoice scope, not expired, not revoked, NOT submitted)
+  - valid_key_must_read_document [implies] PASS
+    description: Active key with read:document scope MUST read a document in same org
+  - valid_key_must_write_document [implies] PASS
+    description: Active key with write:document scope MUST write a document in same org
+  - valid_key_must_read_unsubmitted_invoice [implies] PASS
+    description: Active key with read:invoice scope MUST read an invoice in same org
+  - valid_key_must_write_unsubmitted_invoice [implies] PASS
+    description: Active key with write:invoice scope MUST write an UNSUBMITTED invoice in same org
+  - liveness_read_document [always-denies (liveness)] PASS
+    description: ApiKey+readDocument+Document liveness
+  - liveness_write_document [always-denies (liveness)] PASS
+    description: ApiKey+writeDocument+Document liveness
+  - liveness_delete_document [always-denies (liveness)] PASS
+    description: ApiKey+deleteDocument+Document liveness
+  - liveness_read_invoice [always-denies (liveness)] PASS
+    description: ApiKey+readInvoice+Invoice liveness
+  - liveness_write_invoice [always-denies (liveness)] PASS
+    description: ApiKey+writeInvoice+Invoice liveness
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       3.571
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/run.log

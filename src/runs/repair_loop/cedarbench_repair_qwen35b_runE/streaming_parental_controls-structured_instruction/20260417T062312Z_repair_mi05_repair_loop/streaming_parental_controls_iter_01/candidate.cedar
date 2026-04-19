@@ -1,0 +1,124 @@
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !resource.isEarlyAccess ||
+    context.now.datetime >= resource.releaseDate ||
+    (
+        principal.subscription.tier == "premium" &&
+        context.now.datetime >= resource.releaseDate.offset(duration("-24h"))
+    )
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    resource.isOscarNominated &&
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z")
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    (
+        principal.profile.maxRating == "G" &&
+        resource.rating != "G"
+    ) ||
+    (
+        principal.profile.maxRating == "PG" &&
+        resource.rating != "G" &&
+        resource.rating != "PG"
+    ) ||
+    (
+        principal.profile.maxRating == "PG13" &&
+        resource.rating != "G" &&
+        resource.rating != "PG" &&
+        resource.rating != "PG13"
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    (
+        principal.profile.maxRating == "G" &&
+        resource.rating != "G"
+    ) ||
+    (
+        principal.profile.maxRating == "PG" &&
+        resource.rating != "G" &&
+        resource.rating != "PG"
+    ) ||
+    (
+        principal.profile.maxRating == "PG13" &&
+        resource.rating != "G" &&
+        resource.rating != "PG" &&
+        resource.rating != "PG13"
+    )
+};

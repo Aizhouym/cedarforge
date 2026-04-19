@@ -1,0 +1,326 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+# Multi-Tenant SaaS — Policy Specification
+
+## Context
+
+This policy governs access control for a multi-tenant SaaS platform.
+Every User belongs to a home Tenant (`user.tenant`), and every Resource
+also belongs to a Tenant (`resource.tenant`). The fundamental
+requirement is **tenant isolation**: a user should only be able to see
+or modify resources belonging to their own tenant. The single narrow
+exception is a global-support cross-tenant *read* path, subject to
+tight preconditions.
+
+Three actions: `readResource`, `writeResource`, `deleteResource`. All
+three take a context with `supportSessionActive: Bool` and `ticketId:
+String`.
+
+## Requirements
+
+### 1. Tenant-Owned Same-Tenant Access (Permit)
+- A User may perform any action on a Resource when their `tenant`
+  matches the Resource's `tenant`: `principal.tenant == resource.tenant`.
+- No additional conditions apply to same-tenant access. The context
+  fields (supportSessionActive, ticketId) do not need to be set for
+  same-tenant requests — they are used only for the cross-tenant path.
+- Specifically: permit `readResource`, `writeResource`, `deleteResource`
+  when `principal.tenant == resource.tenant`.
+
+### 2. Global Support Cross-Tenant Read (Permit — Narrow)
+- A User who is on the global support team (`principal.isGlobalSupport
+  == true`) may `readResource` a Resource belonging to any tenant,
+  provided ALL of:
+  - An active support session is in progress: `context.supportSessionActive
+    == true`, AND
+  - A non-empty ticket ID is attached to the request: `context.ticketId
+    != ""`.
+- This path applies ONLY to the `readResource` action. Global support
+  users have no cross-tenant write or delete capability under any
+  circumstance.
+
+### 3. Cross-Tenant Write and Delete — Always Forbidden
+- A User may never `writeResource` or `deleteResource` on a Resource
+  from a different tenant, regardless of global-support status,
+  support-session state, or ticket reference. Cross-tenant mutation is
+  strictly prohibited.
+
+## Notes
+- Tenant isolation is the fundamental SaaS safety property. The
+  global-support cross-tenant read path is a narrow, audited escape
+  hatch — the conditions (global support role, active session, ticket
+  reference) must ALL hold together, and it applies only to read.
+- The permit rules in §1 and §2 grant access. Cedar denies by default,
+  so there is no need for an explicit forbid on cross-tenant
+  read/write/delete — the absence of a matching permit is sufficient.
+  However, a defensive `forbid` on cross-tenant write/delete is also
+  acceptable and gives stronger signal that those actions are
+  intentionally blocked.
+- The context fields `supportSessionActive` and `ticketId` exist on all
+  three actions (per the schema), but they only matter for the
+  global-support read path. Same-tenant access ignores them.
+- Common pitfalls: forgetting to check the support-session state (just
+  checking `isGlobalSupport` is insufficient), authorizing
+  cross-tenant write for global support, or forgetting the ticketId
+  attestation.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Multi-Tenant SaaS — fundamental tenant-isolation pattern for SaaS
+// platforms, with a narrow global-support cross-tenant read path.
+
+entity Tenant;
+
+entity User = {
+    // The user's home tenant. Normal users can only access resources
+    // belonging to this tenant.
+    tenant: Tenant,
+    // Whether this user is on the global support team. Global support
+    // users have a narrow cross-tenant read capability that is gated on
+    // an active support session and a ticket reference.
+    isGlobalSupport: Bool,
+};
+
+// A generic tenant-owned resource. In a real SaaS, this might be
+// Documents, Projects, Invoices, etc. We use a single generic Resource
+// type to keep the scenario focused on the tenant-isolation pattern.
+entity Resource = {
+    tenant: Tenant,
+    owner: User,
+};
+
+// Standard CRUD actions on Resources.
+action readResource appliesTo {
+    principal: [User],
+    resource: [Resource],
+    context: {
+        // Whether the user is currently in an active support session.
+        // Support sessions have audit logging attached; non-session
+        // requests must not get cross-tenant access even for global
+        // support users.
+        supportSessionActive: Bool,
+        // The ticket ID the user is working on. Must be non-empty for
+        // any cross-tenant access.
+        ticketId: String,
+    },
+};
+
+action writeResource, deleteResource appliesTo {
+    principal: [User],
+    resource: [Resource],
+    context: {
+        supportSessionActive: Bool,
+        ticketId: String,
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

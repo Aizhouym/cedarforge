@@ -1,0 +1,336 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 12,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_syntax",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 12,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.409,
+    "checks": [
+      {
+        "name": "create_safety",
+        "description": "create only within budget per tier",
+        "type": "implies",
+        "principal_type": "Tenant",
+        "action": "Action::\"create\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/create_safety.cedar"
+      },
+      {
+        "name": "read_safety",
+        "description": "any tenant can read",
+        "type": "implies",
+        "principal_type": "Tenant",
+        "action": "Action::\"read\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/read_safety.cedar"
+      },
+      {
+        "name": "delete_safety",
+        "description": "any tenant can delete",
+        "type": "implies",
+        "principal_type": "Tenant",
+        "action": "Action::\"delete\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/delete_safety.cedar"
+      },
+      {
+        "name": "upgrade_safety",
+        "description": "upgrade only when pro or enterprise",
+        "type": "implies",
+        "principal_type": "Tenant",
+        "action": "Action::\"upgrade\"",
+        "resource_type": "Resource",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/upgrade_safety.cedar"
+      },
+      {
+        "name": "floor_free_create_under_limit",
+        "description": "free tenant with <5 resources MUST create",
+        "type": "floor",
+        "principal_type": "Tenant",
+        "action": "Action::\"create\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/floor_free_create_under_limit.cedar"
+      },
+      {
+        "name": "floor_enterprise_create",
+        "description": "enterprise tenant MUST always create",
+        "type": "floor",
+        "principal_type": "Tenant",
+        "action": "Action::\"create\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/floor_enterprise_create.cedar"
+      },
+      {
+        "name": "floor_any_read",
+        "description": "any tenant MUST read",
+        "type": "floor",
+        "principal_type": "Tenant",
+        "action": "Action::\"read\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/floor_any_read.cedar"
+      },
+      {
+        "name": "floor_pro_upgrade",
+        "description": "pro tenant MUST upgrade",
+        "type": "floor",
+        "principal_type": "Tenant",
+        "action": "Action::\"upgrade\"",
+        "resource_type": "Resource",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/resource_budget_enforcement-structured_instruction/20260417T063317Z_repair_mi05_repair_loop/resource_budget_enforcement_iter_02/_eval_workspace/references/floor_pro_upgrade.cedar"
+      },
+      {
+        "name": "liveness_create",
+        "description": "at least one create permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Tenant",
+        "action": "Action::\"create\"",
+        "resource_type": "Resource"
+      },
+      {
+        "name": "liveness_read",
+        "description": "at least one read permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Tenant",
+        "action": "Action::\"read\"",
+        "resource_type": "Resource"
+      },
+      {
+        "name": "liveness_delete",
+        "description": "at least one delete permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Tenant",
+        "action": "Action::\"delete\"",
+        "resource_type": "Resource"
+      },
+      {
+        "name": "liveness_upgrade",
+        "description": "at least one upgrade permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Tenant",
+        "action": "Action::\"upgrade\"",
+        "resource_type": "Resource"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "create_safety",
+        "check_type": "implies",
+        "description": "create only within budget per tier",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "read_safety",
+        "check_type": "implies",
+        "description": "any tenant can read",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_safety",
+        "check_type": "implies",
+        "description": "any tenant can delete",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "upgrade_safety",
+        "check_type": "implies",
+        "description": "upgrade only when pro or enterprise",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_free_create_under_limit",
+        "check_type": "implies",
+        "description": "free tenant with <5 resources MUST create",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_enterprise_create",
+        "check_type": "implies",
+        "description": "enterprise tenant MUST always create",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_any_read",
+        "check_type": "implies",
+        "description": "any tenant MUST read",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_pro_upgrade",
+        "check_type": "implies",
+        "description": "pro tenant MUST upgrade",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_create",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one create permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one read permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one delete permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_upgrade",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one upgrade permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 12,
+        "solver_time_s": 0.409,
+        "checks": [
+          {
+            "name": "create_safety",
+            "type": "implies",
+            "description": "create only within budget per tier",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "read_safety",
+            "type": "implies",
+            "description": "any tenant can read",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_safety",
+            "type": "implies",
+            "description": "any tenant can delete",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "upgrade_safety",
+            "type": "implies",
+            "description": "upgrade only when pro or enterprise",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_free_create_under_limit",
+            "type": "implies",
+            "description": "free tenant with <5 resources MUST create",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_enterprise_create",
+            "type": "implies",
+            "description": "enterprise tenant MUST always create",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_any_read",
+            "type": "implies",
+            "description": "any tenant MUST read",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_pro_upgrade",
+            "type": "implies",
+            "description": "pro tenant MUST upgrade",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_create",
+            "type": "always-denies (liveness)",
+            "description": "at least one create permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read",
+            "type": "always-denies (liveness)",
+            "description": "at least one read permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete",
+            "type": "always-denies (liveness)",
+            "description": "at least one delete permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_upgrade",
+            "type": "always-denies (liveness)",
+            "description": "at least one upgrade permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

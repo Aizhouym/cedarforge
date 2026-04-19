@@ -1,0 +1,340 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: matter-based legal access
+difficulty: medium
+features:
+  - set contains for matter assignment
+  - owner-based privileged access
+  - role hierarchy
+domain: legal
+---
+
+# Matter-Based Legal Access -- Policy Specification
+
+## Context
+
+This policy implements a law firm's matter-based access control system.
+Attorneys, paralegals, and staff only see and act on documents belonging
+to matters they are assigned to. Additionally, privileged documents
+(attorney-client privilege) have stricter role requirements.
+
+Principal is `User`; resource is `Document`. Four actions: `view`,
+`edit`, `file`, `redact`.
+
+## Entity Model
+
+### User
+- `role`: String -- one of `"associate"`, `"partner"`, `"paralegal"`,
+  `"admin"`.
+- `assignedMatters`: Set of String -- the set of matter identifiers
+  this user is assigned to.
+
+### Document
+- `matter`: String -- the matter this document belongs to.
+- `isPrivileged`: Bool -- whether this document is protected by
+  attorney-client privilege.
+
+## Requirements
+
+### 1. View Access
+A User may `view` a Document when their `assignedMatters` contains the
+document's `matter`.
+
+**Privileged restriction**: if the document has `isPrivileged == true`,
+only users with role `"partner"` may view it. Associates, paralegals,
+and admins cannot view privileged documents even if assigned to the
+matter.
+
+### 2. Edit Access
+A User may `edit` a Document when:
+- `assignedMatters` contains the document's `matter`, AND
+- role is `"associate"` or `"partner"`.
+
+Paralegals and admins cannot edit documents. Privileged documents
+follow the same restriction as view: only partners may edit them.
+
+### 3. File Access
+A User may `file` a Document (i.e., formally file it into the matter
+record system) when:
+- `assignedMatters` contains the document's `matter`.
+
+Any role (`"paralegal"`, `"associate"`, `"partner"`, `"admin"`) may
+file a document to which they are assigned. Privileged documents follow
+the same restriction: only partners may file privileged documents.
+
+### 4. Redact Access
+A User may `redact` a Document when:
+- `assignedMatters` contains the document's `matter`, AND
+- role is `"partner"`.
+
+Only partners can redact documents. This applies to both privileged
+and non-privileged documents.
+
+## Notes
+
+- Matter assignment is the universal gate: no action is possible on a
+  document whose matter is not in the user's `assignedMatters` set.
+- The privileged-document restriction (partner-only) applies uniformly
+  across all actions. A privileged document can only be viewed, edited,
+  filed, or redacted by a partner assigned to the matter.
+- Cedar's `Set.contains()` is used to test matter membership.
+- Common failure modes: (a) forgetting the matter-assignment check on
+  some action, (b) allowing non-partners to access privileged documents,
+  (c) permitting edit by paralegals or admins.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Matter-Based Legal Access -- law firm document access control where
+// users are assigned to specific legal matters and can only act on
+// documents belonging to those matters. Privileged (attorney-client
+// privilege) documents have additional role restrictions.
+
+entity User = {
+    // One of "associate", "partner", "paralegal", "admin".
+    role: String,
+    // The set of matter identifiers this user is assigned to.
+    assignedMatters: Set<String>,
+};
+
+entity Document = {
+    // The matter this document belongs to.
+    matter: String,
+    // Whether this document is protected by attorney-client privilege.
+    isPrivileged: Bool,
+};
+
+// View a document (read-only access).
+action view appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+
+// Edit a document (modify content).
+action edit appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+
+// File a document into the matter record system.
+action file appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+
+// Redact sensitive content from a document.
+action redact appliesTo {
+    principal: [User],
+    resource: [Document],
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

@@ -1,0 +1,604 @@
+# Role
+You are a **Cedar Policy Syntax Engineer**.
+
+Your only job is to fix a Cedar syntax error in the previous candidate.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic, conditions, or structure.**
+Only fix the specific syntax problem reported below.
+If a statement was nearly correct, adjust punctuation or token placement only.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "full expansion"
+difficulty: hard
+features:
+  - job-level hierarchy
+  - regional segmentation
+  - customer restrictions
+  - all mutations combined
+domain: enterprise sales / CRM
+source: mutation (sales domain)
+---
+
+# Sales Organization Permissions -- Policy Specification (Full Expansion)
+
+## Context
+
+This policy governs access control for a sales organization platform with
+Users, Markets, Presentations, Templates, and Jobs.
+
+Users belong to Markets and have `job: Job`, `customerId: String`, and
+`managedMarkets: Set<Market>`. Presentations have `isArchived: Bool`.
+Templates have `isApproved: Bool`.
+
+## Requirements
+
+### 1. External Presentation View
+- A user may perform **ExternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation) if `principal in resource.viewers`.
+
+### 2. Internal Presentation View
+- A user may perform **InternalPrezViewActions** (viewPresentation,
+  removeSelfAccessFromPresentation, duplicatePresentation) if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 3. Presentation Edit
+- A user may perform **PrezEditActions** if `resource.owner == principal` OR
+  `principal in resource.editors`.
+
+### 4. Customer Sharing Restriction (Deny Rule)
+- **grantViewAccessToPresentation** is **forbidden** unless
+  `context.target.job != Job::"customer"` OR
+  (`principal.job == Job::"distributor"` AND
+   `principal.customerId == context.target.customerId`).
+
+### 5. Internal-Only Edit Sharing (Deny Rule)
+- **grantEditAccessToPresentation** is **forbidden** when
+  `context.target.job != Job::"internal"`.
+
+### 6. Market Template View
+- A user may perform **MarketTemplateViewActions** if `principal in resource.viewerMarkets`.
+
+### 7. Internal Template View
+- A user may perform **InternalTemplateViewActions** if
+  `principal.job == Job::"internal"` AND `principal in resource.viewers`.
+
+### 8. Template Edit
+- A user may perform **TemplateEditActions** if `resource.owner == principal`
+  OR `principal in resource.editors` OR `principal in resource.editorMarkets`.
+
+### 9. Template View Grant Restriction (Deny Rule)
+- **grantViewAccessToTemplate** is **forbidden** when `context has targetUser`
+  AND `context.targetUser.job == Job::"customer"` AND the granting user is
+  not a distributor sharing with their own customer.
+
+### 10. Template Edit Grant Restriction (Deny Rule)
+- **grantEditAccessToTemplate** is **forbidden** when
+  `context has targetUser && context.targetUser.job != Job::"internal"`.
+
+### 11. Delete Presentation (Owner Only)
+- A new **deletePresentation** action is available on Presentations.
+- ONLY the **owner** may delete: `resource.owner == principal`.
+- The archive restriction does NOT block deletePresentation -- owners can
+  delete archived presentations.
+
+### 12. Archived Presentation Block (Deny Rule)
+- If `resource.isArchived == true`, ALL **PrezEditActions** are **forbidden**
+  on that presentation. This blocks editPresentation, grantViewAccessToPresentation,
+  grantEditAccessToPresentation, and the edit-group variants.
+- View actions and deletePresentation are NOT blocked by archive status.
+
+### 13. Regional Manager Template Access
+- A user with `job == Job::"regional_manager"` may perform **TemplateEditActions**
+  on a template if any of the template's `editorMarkets` overlap with the
+  user's `managedMarkets`.
+- This is an additional path to template edit access alongside owner/editors/editorMarkets.
+
+### 14. Unapproved Template Restriction (Deny Rule)
+- If `resource.isApproved == false`, **TemplateEditActions** are **forbidden**
+  for non-internal users (`principal.job != Job::"internal"`).
+- Internal users (including regional managers with `Job::"regional_manager"`,
+  who are considered internal for this purpose) are not affected.
+  Note: if regional managers have their own Job type distinct from `Job::"internal"`,
+  they ARE subject to this restriction. Only users with `job == Job::"internal"`
+  bypass the approval gate.
+
+## Notes
+- This is a complex scenario with 5 forbid rules: customer sharing, internal-only
+  edit, archive block, template approval, and template grant restrictions.
+- Two new features: deletePresentation (owner-only) and regional manager template access.
+- The archive block and approval gate are independent boolean-guarded forbids.
+
+---
+
+# Cedar Schema
+```cedar
+// Sales Organization Permissions -- Cedar Schema (Full Expansion)
+
+entity Job;
+entity User in [Market] {
+  job: Job,
+  customerId: String,
+  managedMarkets: Set<Market>,
+};
+entity Market;
+entity Presentation {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+  isArchived: Bool,
+};
+entity Template {
+  owner: User,
+  viewers: Set<User>,
+  editors: Set<User>,
+  viewerMarkets: Set<Market>,
+  editorMarkets: Set<Market>,
+  isApproved: Bool,
+};
+// Actions -- Presentations
+action InternalPrezViewActions;
+action ExternalPrezViewActions;
+action PrezEditActions;
+action viewPresentation, removeSelfAccessFromPresentation
+    in [InternalPrezViewActions, ExternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action duplicatePresentation in [InternalPrezViewActions, PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action editPresentation in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+action grantViewAccessToPresentation, grantEditAccessToPresentation
+    in [PrezEditActions]
+  appliesTo {
+    principal: User,
+    resource: Presentation,
+    context: { target: User, },
+  };
+action deletePresentation appliesTo {
+    principal: User,
+    resource: Presentation,
+  };
+
+// Actions -- Templates
+action InternalTemplateViewActions;
+action MarketTemplateViewActions;
+action TemplateEditActions;
+action viewTemplate, duplicateTemplate
+   in [InternalTemplateViewActions, TemplateEditActions,
+       MarketTemplateViewActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+  };
+action removeSelfAccessFromTemplate
+   in [InternalTemplateViewActions, TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action editTemplate, removeOthersAccessToTemplate in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template
+  };
+action grantViewAccessToTemplate, grantEditAccessToTemplate
+    in [TemplateEditActions]
+  appliesTo {
+    principal: User,
+    resource: Template,
+    context: { targetMarket?: Market, targetUser?: User },
+  };
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"viewPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromPresentation",
+    resource is Presentation
+) when {
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicatePresentation",
+    resource is Presentation
+) when {
+    principal.job == Job::"internal" &&
+    principal in resource.viewers
+};
+
+permit (
+    principal is User,
+    action == Action::"editPresentation",
+    resource is Presentation
+) when {
+    (resource.owner == principal || principal in resource.editors) &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    (resource.owner == principal || principal in resource.editors) &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    (resource.owner == principal || principal in resource.editors) &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"deletePresentation",
+    resource is Presentation
+) when {
+    resource.owner == principal
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToPresentation",
+    resource is Presentation
+) when {
+    context has target &&
+    (context.target.job != Job::"customer" ||
+     (principal.job == Job::"distributor" &&
+      principal.customerId == context.target.customerId))
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToPresentation",
+    resource is Presentation
+) when {
+    context has target &&
+    context.target.job != Job::"internal"
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"editPresentation",
+        Action::"grantViewAccessToPresentation",
+        Action::"grantEditAccessToPresentation"
+    ],
+    resource is Presentation
+) when {
+    resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"viewTemplate",
+    resource is Template
+) when {
+    (principal.job == Job::"internal" && principal in resource.viewers) ||
+    principal in resource.viewerMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"duplicateTemplate",
+    resource is Template
+) when {
+    (principal.job == Job::"internal" && principal in resource.viewers) ||
+    principal in resource.viewerMarkets
+};
+
+permit (
+    principal is User,
+    action == Action::"removeSelfAccessFromTemplate",
+    resource is Template
+) when {
+    (principal.job == Job::"internal" && principal in resource.viewers) ||
+    (principal.job == Job::"internal" && principal in resource.editors)
+};
+
+permit (
+    principal is User,
+    action == Action::"editTemplate",
+    resource is Template
+) when {
+    (resource.owner == principal ||
+     principal in resource.editors ||
+     (principal.job == Job::"regional_manager" &&
+      principal.managedMarkets.intersects(resource.editorMarkets))) &&
+    (principal.job == Job::"internal" || resource.isApproved)
+};
+
+permit (
+    principal is User,
+    action == Action::"removeOthersAccessToTemplate",
+    resource is Template
+) when {
+    (resource.owner == principal ||
+     principal in resource.editors ||
+     (principal.job == Job::"regional_manager" &&
+      principal.managedMarkets.intersects(resource.editorMarkets))) &&
+    (principal.job == Job::"internal" || resource.isApproved)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    (resource.owner == principal ||
+     principal in resource.editors ||
+     (principal.job == Job::"regional_manager" &&
+      principal.managedMarkets.intersects(resource.editorMarkets))) &&
+    (principal.job == Job::"internal" || resource.isApproved)
+};
+
+permit (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    (resource.owner == principal ||
+     principal in resource.editors ||
+     (principal.job == Job::"regional_manager" &&
+      principal.managedMarkets.intersects(resource.editorMarkets))) &&
+    (principal.job == Job::"internal" || resource.isApproved)
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantViewAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job == Job::"customer" &&
+    !(principal.job == Job::"distributor" &&
+      principal.customerId == context.targetUser.customerId)
+};
+
+forbid (
+    principal is User,
+    action == Action::"grantEditAccessToTemplate",
+    resource is Template
+) when {
+    context has targetUser &&
+    context.targetUser.job != Job::"internal"
+};
+```
+
+---
+
+# Syntax Error
+SYNTAX ERROR — Fix the syntax before addressing anything else.
+
+Summary:       Cedar could not parse the generated policy.
+Likely cause:  The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.
+Suggested fix: Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement.
+
+Raw error:
+× failed to parse policy set
+  ╰─▶ `intersects` is not a valid method
+     ╭─[128:7]
+ 127 │      (principal.job == Job::"regional_manager" &&
+ 128 │       principal.managedMarkets.intersects(resource.editorMarkets))) &&
+     ·       ───────────────────────────────────────────────────────────
+ 129 │     (principal.job == Job::"internal" || resource.isApproved)
+     ╰────
+
+Error: 
+  × `intersects` is not a valid method
+     ╭─[140:7]
+ 139 │      (principal.job == Job::"regional_manager" &&
+ 140 │       principal.managedMarkets.intersects(resource.editorMarkets))) &&
+     ·       ───────────────────────────────────────────────────────────
+ 141 │     (principal.job == Job::"internal" || resource.isApproved)
+     ╰────
+
+Error: 
+  × `intersects` is not a valid method
+     ╭─[152:7]
+ 151 │      (principal.job == Job::"regional_manager" &&
+ 152 │       principal.managedMarkets.intersects(resource.editorMarkets))) &&
+     ·       ───────────────────────────────────────────────────────────
+ 153 │     (principal.job == Job::"internal" || resource.isApproved)
+     ╰────
+
+Error: 
+  × `intersects` is not a valid method
+     ╭─[164:7]
+ 163 │      (principal.job == Job::"regional_manager" &&
+ 164
+...[truncated]...
+
+NOTE: Semantic counterexamples are omitted — they are irrelevant until syntax passes.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

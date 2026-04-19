@@ -1,0 +1,499 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 19,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 19,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 1.302,
+    "checks": [
+      {
+        "name": "view_safety_ceiling",
+        "description": "View access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, and compliant device for HighlyRestricted",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_view.cedar"
+      },
+      {
+        "name": "edit_safety_ceiling",
+        "description": "Edit access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, compliant device for HighlyRestricted, and patient consent required",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_edit.cedar"
+      },
+      {
+        "name": "active_project_gate_view",
+        "description": "View is only allowed when projectStatus is Active",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_active_project_view.cedar"
+      },
+      {
+        "name": "active_project_gate_edit",
+        "description": "Edit is only allowed when projectStatus is Active",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_active_project_edit.cedar"
+      },
+      {
+        "name": "consent_block_edit",
+        "description": "Edit is never allowed when hasPatientConsent is false",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_consent_edit.cedar"
+      },
+      {
+        "name": "device_compliance_highly_restricted_view",
+        "description": "View of HighlyRestricted documents requires compliant device",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_device_view.cedar"
+      },
+      {
+        "name": "device_compliance_highly_restricted_edit",
+        "description": "Edit of HighlyRestricted documents requires compliant device",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_device_edit.cedar"
+      },
+      {
+        "name": "cross_dept_block_view",
+        "description": "View requires department match or GlobalAuditor membership",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_cross_dept_view.cedar"
+      },
+      {
+        "name": "cross_dept_block_edit",
+        "description": "Edit requires department match or GlobalAuditor membership",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_cross_dept_edit.cedar"
+      },
+      {
+        "name": "phase3_restriction_view",
+        "description": "Phase-3 documents can only be viewed by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_phase3_view.cedar"
+      },
+      {
+        "name": "phase3_restriction_edit",
+        "description": "Phase-3 documents can only be edited by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_phase3_edit.cedar"
+      },
+      {
+        "name": "role_gate_view",
+        "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may View",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_role_gate_view.cedar"
+      },
+      {
+        "name": "role_gate_edit",
+        "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may Edit",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/ceiling_role_gate_edit.cedar"
+      },
+      {
+        "name": "floor_pi_view",
+        "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/floor_pi_view.cedar"
+      },
+      {
+        "name": "floor_cr_view",
+        "description": "A ClinicalResearcher with clearance > 3, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/floor_cr_view.cedar"
+      },
+      {
+        "name": "floor_dm_edit",
+        "description": "A DataManager with clearance > 5, matching department, active project, non-Phase3, compliant device, patient consent MUST be able to Edit even HighlyRestricted",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/floor_dm_edit.cedar"
+      },
+      {
+        "name": "floor_global_auditor_pi_view",
+        "description": "A PrincipalInvestigator who is also GlobalAuditor with compliant device and low risk can View cross-department docs",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_full_expansion-structured_instruction/20260417T060435Z_repair_mi05_repair_loop/clinical_full_expansion_iter_01/_eval_workspace/references/floor_auditor_crossdept_view.cedar"
+      },
+      {
+        "name": "liveness_view",
+        "description": "View policy is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"View\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_edit",
+        "description": "Edit policy is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"Edit\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "view_safety_ceiling",
+        "check_type": "implies",
+        "description": "View access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, and compliant device for HighlyRestricted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_safety_ceiling",
+        "check_type": "implies",
+        "description": "Edit access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, compliant device for HighlyRestricted, and patient consent required",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "active_project_gate_view",
+        "check_type": "implies",
+        "description": "View is only allowed when projectStatus is Active",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "active_project_gate_edit",
+        "check_type": "implies",
+        "description": "Edit is only allowed when projectStatus is Active",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "consent_block_edit",
+        "check_type": "implies",
+        "description": "Edit is never allowed when hasPatientConsent is false",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "device_compliance_highly_restricted_view",
+        "check_type": "implies",
+        "description": "View of HighlyRestricted documents requires compliant device",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "device_compliance_highly_restricted_edit",
+        "check_type": "implies",
+        "description": "Edit of HighlyRestricted documents requires compliant device",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "cross_dept_block_view",
+        "check_type": "implies",
+        "description": "View requires department match or GlobalAuditor membership",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "cross_dept_block_edit",
+        "check_type": "implies",
+        "description": "Edit requires department match or GlobalAuditor membership",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "phase3_restriction_view",
+        "check_type": "implies",
+        "description": "Phase-3 documents can only be viewed by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "phase3_restriction_edit",
+        "check_type": "implies",
+        "description": "Phase-3 documents can only be edited by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "role_gate_view",
+        "check_type": "implies",
+        "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may View",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "role_gate_edit",
+        "check_type": "implies",
+        "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may Edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_pi_view",
+        "check_type": "implies",
+        "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_cr_view",
+        "check_type": "implies",
+        "description": "A ClinicalResearcher with clearance > 3, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_dm_edit",
+        "check_type": "implies",
+        "description": "A DataManager with clearance > 5, matching department, active project, non-Phase3, compliant device, patient consent MUST be able to Edit even HighlyRestricted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_global_auditor_pi_view",
+        "check_type": "implies",
+        "description": "A PrincipalInvestigator who is also GlobalAuditor with compliant device and low risk can View cross-department docs",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view",
+        "check_type": "always-denies (liveness)",
+        "description": "View policy is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_edit",
+        "check_type": "always-denies (liveness)",
+        "description": "Edit policy is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 19,
+        "solver_time_s": 1.302,
+        "checks": [
+          {
+            "name": "view_safety_ceiling",
+            "type": "implies",
+            "description": "View access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, and compliant device for HighlyRestricted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_safety_ceiling",
+            "type": "implies",
+            "description": "Edit access is bounded by: active project, one of three roles with their respective constraints, Phase-3 only for PI/DM, department match or GlobalAuditor, compliant device for HighlyRestricted, and patient consent required",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "active_project_gate_view",
+            "type": "implies",
+            "description": "View is only allowed when projectStatus is Active",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "active_project_gate_edit",
+            "type": "implies",
+            "description": "Edit is only allowed when projectStatus is Active",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "consent_block_edit",
+            "type": "implies",
+            "description": "Edit is never allowed when hasPatientConsent is false",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "device_compliance_highly_restricted_view",
+            "type": "implies",
+            "description": "View of HighlyRestricted documents requires compliant device",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "device_compliance_highly_restricted_edit",
+            "type": "implies",
+            "description": "Edit of HighlyRestricted documents requires compliant device",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "cross_dept_block_view",
+            "type": "implies",
+            "description": "View requires department match or GlobalAuditor membership",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "cross_dept_block_edit",
+            "type": "implies",
+            "description": "Edit requires department match or GlobalAuditor membership",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "phase3_restriction_view",
+            "type": "implies",
+            "description": "Phase-3 documents can only be viewed by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "phase3_restriction_edit",
+            "type": "implies",
+            "description": "Phase-3 documents can only be edited by PrincipalInvestigator or DataManager, not ClinicalResearcher",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "role_gate_view",
+            "type": "implies",
+            "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may View",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "role_gate_edit",
+            "type": "implies",
+            "description": "Only ClinicalResearcher, PrincipalInvestigator, or DataManager roles may Edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_pi_view",
+            "type": "implies",
+            "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_cr_view",
+            "type": "implies",
+            "description": "A ClinicalResearcher with clearance > 3, matching department, active project, non-Phase3, non-HighlyRestricted doc MUST be able to View",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_dm_edit",
+            "type": "implies",
+            "description": "A DataManager with clearance > 5, matching department, active project, non-Phase3, compliant device, patient consent MUST be able to Edit even HighlyRestricted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_global_auditor_pi_view",
+            "type": "implies",
+            "description": "A PrincipalInvestigator who is also GlobalAuditor with compliant device and low risk can View cross-department docs",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view",
+            "type": "always-denies (liveness)",
+            "description": "View policy is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_edit",
+            "type": "always-denies (liveness)",
+            "description": "Edit policy is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "loss": 2,
+  "solver_time_s": 0.477,
+  "checks": [
+    {
+      "name": "stream_safety",
+      "description": "stream permitted only when active AND (preview OR plan >= tier)",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"stream\"",
+      "resource_type": "Content",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/stream_safety.cedar"
+    },
+    {
+      "name": "download_safety",
+      "description": "download permitted only when active AND plan in {basic,premium} AND plan >= tier",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"download\"",
+      "resource_type": "Content",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/download_safety.cedar"
+    },
+    {
+      "name": "share_safety",
+      "description": "share permitted only when active AND plan == premium",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"share\"",
+      "resource_type": "Content",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/share_safety.cedar"
+    },
+    {
+      "name": "free_must_stream_preview",
+      "description": "Active free subscriber MUST stream preview content",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"stream\"",
+      "resource_type": "Content",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/free_must_stream_preview.cedar"
+    },
+    {
+      "name": "premium_must_stream_premium",
+      "description": "Active premium subscriber MUST stream premium non-preview content",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"stream\"",
+      "resource_type": "Content",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/premium_must_stream_premium.cedar"
+    },
+    {
+      "name": "basic_must_download_free",
+      "description": "Active basic subscriber MUST download free-tier content",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"download\"",
+      "resource_type": "Content",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/basic_must_download_free.cedar"
+    },
+    {
+      "name": "premium_must_share",
+      "description": "Active premium subscriber MUST share content",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"share\"",
+      "resource_type": "Content",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/subscription_content_gate-structured_instruction/20260417T063344Z_repair_mi05_repair_loop/subscription_content_gate_iter_03/_eval_workspace/references/premium_must_share.cedar"
+    },
+    {
+      "name": "liveness_stream",
+      "description": "Subscriber+stream+Content liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"stream\"",
+      "resource_type": "Content"
+    },
+    {
+      "name": "liveness_download",
+      "description": "Subscriber+download+Content liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"download\"",
+      "resource_type": "Content"
+    },
+    {
+      "name": "liveness_share",
+      "description": "Subscriber+share+Content liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"share\"",
+      "resource_type": "Content"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "stream_safety",
+      "check_type": "implies",
+      "description": "stream permitted only when active AND (preview OR plan >= tier)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "download_safety",
+      "check_type": "implies",
+      "description": "download permitted only when active AND plan in {basic,premium} AND plan >= tier",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "share_safety",
+      "check_type": "implies",
+      "description": "share permitted only when active AND plan == premium",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "free_must_stream_preview",
+      "check_type": "implies",
+      "description": "Active free subscriber MUST stream preview content",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "premium_must_stream_premium",
+      "check_type": "implies",
+      "description": "Active premium subscriber MUST stream premium non-preview content",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "basic_must_download_free",
+      "check_type": "implies",
+      "description": "Active basic subscriber MUST download free-tier content",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"download\", resource: Content::\"\"\ncontext: {}\nentities: [\n  Content::\"\" {\n    isPreview: true,\n    tier: \"free\",\n  },\n  Action::\"share\",\n  Action::\"download\",\n  Subscriber::\"\" {\n    isActive: true,\n    plan: \"basic\",\n  },\n  Action::\"stream\",\n]"
+    },
+    {
+      "check_name": "premium_must_share",
+      "check_type": "implies",
+      "description": "Active premium subscriber MUST share content",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_stream",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+stream+Content liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_download",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+download+Content liveness",
+      "passed": false,
+      "counterexample": "LIVENESS VIOLATION: Policy always denies this action. It must allow at least one scenario."
+    },
+    {
+      "check_name": "liveness_share",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+share+Content liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

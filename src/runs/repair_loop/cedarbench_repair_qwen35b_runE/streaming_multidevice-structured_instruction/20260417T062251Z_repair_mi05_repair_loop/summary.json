@@ -1,0 +1,340 @@
+{
+  "mode": "repair",
+  "run_id": "20260417T062251Z_repair_mi05_repair_loop",
+  "task_id": "streaming_multidevice",
+  "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/streaming_multidevice",
+  "model": "qwen35b",
+  "base_url": "http://g002:8002/v1",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "max_iterations": 5,
+  "stop_reason": "verification_pass",
+  "completed_iterations": 3,
+  "final_verification_pass": true,
+  "best_semantic_accuracy": 1.0,
+  "first_success_iteration": 3,
+  "results": [
+    {
+      "iteration": 1,
+      "is_repair_iteration": false,
+      "prompt_variant": "structured_instruction",
+      "syntax_pass": false,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1,
+      "failed_checks": [
+        "syntax"
+      ],
+      "failed_check_types": [
+        "syntax"
+      ],
+      "duration_s": 4.561,
+      "metrics": {
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": false,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "syntax_error": true,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 1.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 0,
+        "primary_error_type": "syntax",
+        "validation_message": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `time` is not a valid method\n    \u256d\u2500[61:9]\n 60 \u2502     (\n 61 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 62 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[62:9]\n 61 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n 62 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 63 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[73:9]\n 72 \u2502     (\n 73 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 74 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[74:9]\n 73 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n 74 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 75 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?"
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/run.log"
+    },
+    {
+      "iteration": 2,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_syntax",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.8889,
+      "verification_pass": false,
+      "loss": 3,
+      "failed_checks": [
+        "subscriber_show_premium_or_not_early",
+        "kid_bedtime_no_watch_movie",
+        "kid_bedtime_no_watch_show"
+      ],
+      "failed_check_types": [
+        "implies",
+        "implies",
+        "implies"
+      ],
+      "duration_s": 4.105,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_syntax",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.8889,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": true,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 3,
+        "total_check_count": 27,
+        "primary_error_type": "semantic",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/run.log"
+    },
+    {
+      "iteration": 3,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0,
+      "failed_checks": [],
+      "failed_check_types": [],
+      "duration_s": 3.828,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 27,
+        "primary_error_type": "none",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/run.log"
+    }
+  ],
+  "metrics_by_prompt_variant": [
+    {
+      "prompt_variant": "structured_instruction",
+      "run_count": 1,
+      "syntax_pass_rate": 0.0,
+      "schema_pass_rate": 0.0,
+      "semantic_accuracy": 0.0
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_semantic",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 1.0
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_syntax",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 0.8889
+    }
+  ],
+  "metrics_by_iteration": [
+    {
+      "iteration": 1,
+      "syntax_pass": false,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1
+    },
+    {
+      "iteration": 2,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 0.8889,
+      "verification_pass": false,
+      "loss": 3
+    },
+    {
+      "iteration": 3,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0
+    }
+  ],
+  "repair_loop_record": {
+    "run_id": "20260417T062251Z_repair_mi05_repair_loop",
+    "task_id": "streaming_multidevice",
+    "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/streaming_multidevice",
+    "initial_prompt_variant": "structured_instruction",
+    "model": "qwen35b",
+    "base_url": "http://g002:8002/v1",
+    "max_iterations": 5,
+    "completed_iterations": 3,
+    "stop_reason": "verification_pass",
+    "final_syntax_pass": true,
+    "final_schema_pass": true,
+    "final_semantic_accuracy": 1.0,
+    "final_verification_pass": true,
+    "final_loss": 0,
+    "best_semantic_accuracy": 1.0,
+    "best_candidate_iteration": 3,
+    "first_success_iteration": 3,
+    "oscillation_count": 0,
+    "failure_layer_sequence": [
+      "syntax",
+      "semantic",
+      "pass"
+    ],
+    "iterations": [
+      {
+        "iteration": 1,
+        "is_repair_iteration": false,
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": false,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "verification_pass": false,
+        "loss": 1,
+        "failed_checks": [
+          "syntax"
+        ],
+        "failed_check_types": [
+          "syntax"
+        ],
+        "duration_s": 4.561,
+        "metrics": {
+          "prompt_variant": "structured_instruction",
+          "syntax_pass": false,
+          "schema_pass": false,
+          "semantic_accuracy": 0.0,
+          "syntax_error": true,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 1.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 0,
+          "primary_error_type": "syntax",
+          "validation_message": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 `time` is not a valid method\n    \u256d\u2500[61:9]\n 60 \u2502     (\n 61 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 62 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[62:9]\n 61 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n 62 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 63 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[73:9]\n 72 \u2502     (\n 73 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 74 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?\n\nError: \n  \u00d7 `time` is not a valid method\n    \u256d\u2500[74:9]\n 73 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() < duration(\"6h\") ||\n 74 \u2502         context.now.datetime.offset(context.now.localTimeOffset).time() >= duration(\"21h\")\n    \u00b7         \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 75 \u2502     )\n    \u2570\u2500\u2500\u2500\u2500\n  help: did you mean `toTime`?"
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_01/run.log"
+      },
+      {
+        "iteration": 2,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_syntax",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 0.8889,
+        "verification_pass": false,
+        "loss": 3,
+        "failed_checks": [
+          "subscriber_show_premium_or_not_early",
+          "kid_bedtime_no_watch_movie",
+          "kid_bedtime_no_watch_show"
+        ],
+        "failed_check_types": [
+          "implies",
+          "implies",
+          "implies"
+        ],
+        "duration_s": 4.105,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_syntax",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 0.8889,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": true,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 3,
+          "total_check_count": 27,
+          "primary_error_type": "semantic",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_02/run.log"
+      },
+      {
+        "iteration": 3,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_semantic",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "verification_pass": true,
+        "loss": 0,
+        "failed_checks": [],
+        "failed_check_types": [],
+        "duration_s": 3.828,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_semantic",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 1.0,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 27,
+          "primary_error_type": "none",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_multidevice-structured_instruction/20260417T062251Z_repair_mi05_repair_loop/streaming_multidevice_iter_03/run.log"
+      }
+    ]
+  }
+}

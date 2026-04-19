@@ -1,0 +1,504 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.9474,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 19,
+  "failed_checks": [
+    "floor_market_view_template"
+  ],
+  "failed_check_types": [
+    "implies"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.9474,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 1,
+    "total_check_count": 19,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 2.102,
+    "checks": [
+      {
+        "name": "external_prez_view_safety",
+        "description": "ExternalPrezViewActions (viewPresentation) only permitted if principal in resource.viewers OR resource.owner == principal OR principal in resource.editors",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"viewPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_viewPresentation.cedar"
+      },
+      {
+        "name": "duplicate_presentation_safety",
+        "description": "duplicatePresentation only permitted if (principal.job == Job::\"internal\" AND principal in resource.viewers) OR resource.owner == principal OR principal in resource.editors",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"duplicatePresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_duplicatePresentation.cedar"
+      },
+      {
+        "name": "edit_presentation_safety",
+        "description": "editPresentation only permitted if resource.owner == principal OR principal in resource.editors",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"editPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_editPresentation.cedar"
+      },
+      {
+        "name": "grant_view_prez_safety",
+        "description": "grantViewAccessToPresentation only if editor/owner AND customer sharing restriction respected",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantViewAccessToPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_grantViewAccessToPresentation.cedar"
+      },
+      {
+        "name": "grant_edit_prez_safety",
+        "description": "grantEditAccessToPresentation only if editor/owner AND target is internal",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantEditAccessToPresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_grantEditAccessToPresentation.cedar"
+      },
+      {
+        "name": "delete_presentation_safety",
+        "description": "deletePresentation only permitted if resource.owner == principal",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"deletePresentation\"",
+        "resource_type": "Presentation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_deletePresentation.cedar"
+      },
+      {
+        "name": "view_template_safety",
+        "description": "viewTemplate only if (internal AND in viewers) OR (in viewerMarkets) OR owner OR in editors OR in editorMarkets",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"viewTemplate\"",
+        "resource_type": "Template",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_viewTemplate.cedar"
+      },
+      {
+        "name": "edit_template_safety",
+        "description": "editTemplate only if owner OR in editors OR in editorMarkets",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"editTemplate\"",
+        "resource_type": "Template",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_editTemplate.cedar"
+      },
+      {
+        "name": "grant_view_template_safety",
+        "description": "grantViewAccessToTemplate only if editor/owner/editorMarket AND customer restriction respected",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantViewAccessToTemplate\"",
+        "resource_type": "Template",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_grantViewAccessToTemplate.cedar"
+      },
+      {
+        "name": "grant_edit_template_safety",
+        "description": "grantEditAccessToTemplate only if editor/owner/editorMarket AND targetUser (if present) is internal",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantEditAccessToTemplate\"",
+        "resource_type": "Template",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/ceiling_grantEditAccessToTemplate.cedar"
+      },
+      {
+        "name": "floor_owner_edit_presentation",
+        "description": "Owner MUST be able to edit their own presentation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"editPresentation\"",
+        "resource_type": "Presentation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/floor_editPresentation.cedar"
+      },
+      {
+        "name": "floor_viewer_view_presentation",
+        "description": "A viewer MUST be able to view a presentation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"viewPresentation\"",
+        "resource_type": "Presentation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/floor_viewPresentation.cedar"
+      },
+      {
+        "name": "floor_delete_presentation_owner",
+        "description": "Owner MUST be able to delete their own presentation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"deletePresentation\"",
+        "resource_type": "Presentation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/floor_deletePresentation.cedar"
+      },
+      {
+        "name": "floor_market_view_template",
+        "description": "User in viewerMarkets MUST be able to view template",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"viewTemplate\"",
+        "resource_type": "Template",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/floor_viewTemplate_market.cedar"
+      },
+      {
+        "name": "floor_owner_edit_template",
+        "description": "Owner MUST be able to edit their own template",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"editTemplate\"",
+        "resource_type": "Template",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_add_delete-structured_instruction/20260417T061649Z_repair_mi05_repair_loop/sales_add_delete_iter_01/_eval_workspace/references/floor_editTemplate.cedar"
+      },
+      {
+        "name": "liveness_view_presentation",
+        "description": "viewPresentation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"viewPresentation\"",
+        "resource_type": "Presentation"
+      },
+      {
+        "name": "liveness_delete_presentation",
+        "description": "deletePresentation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"deletePresentation\"",
+        "resource_type": "Presentation"
+      },
+      {
+        "name": "liveness_edit_template",
+        "description": "editTemplate is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"editTemplate\"",
+        "resource_type": "Template"
+      },
+      {
+        "name": "liveness_grant_view_prez",
+        "description": "grantViewAccessToPresentation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"grantViewAccessToPresentation\"",
+        "resource_type": "Presentation"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "external_prez_view_safety",
+        "check_type": "implies",
+        "description": "ExternalPrezViewActions (viewPresentation) only permitted if principal in resource.viewers OR resource.owner == principal OR principal in resource.editors",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "duplicate_presentation_safety",
+        "check_type": "implies",
+        "description": "duplicatePresentation only permitted if (principal.job == Job::\"internal\" AND principal in resource.viewers) OR resource.owner == principal OR principal in resource.editors",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_presentation_safety",
+        "check_type": "implies",
+        "description": "editPresentation only permitted if resource.owner == principal OR principal in resource.editors",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grant_view_prez_safety",
+        "check_type": "implies",
+        "description": "grantViewAccessToPresentation only if editor/owner AND customer sharing restriction respected",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grant_edit_prez_safety",
+        "check_type": "implies",
+        "description": "grantEditAccessToPresentation only if editor/owner AND target is internal",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_presentation_safety",
+        "check_type": "implies",
+        "description": "deletePresentation only permitted if resource.owner == principal",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "view_template_safety",
+        "check_type": "implies",
+        "description": "viewTemplate only if (internal AND in viewers) OR (in viewerMarkets) OR owner OR in editors OR in editorMarkets",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_template_safety",
+        "check_type": "implies",
+        "description": "editTemplate only if owner OR in editors OR in editorMarkets",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grant_view_template_safety",
+        "check_type": "implies",
+        "description": "grantViewAccessToTemplate only if editor/owner/editorMarket AND customer restriction respected",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grant_edit_template_safety",
+        "check_type": "implies",
+        "description": "grantEditAccessToTemplate only if editor/owner/editorMarket AND targetUser (if present) is internal",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_owner_edit_presentation",
+        "check_type": "implies",
+        "description": "Owner MUST be able to edit their own presentation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_viewer_view_presentation",
+        "check_type": "implies",
+        "description": "A viewer MUST be able to view a presentation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_delete_presentation_owner",
+        "check_type": "implies",
+        "description": "Owner MUST be able to delete their own presentation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_market_view_template",
+        "check_type": "implies",
+        "description": "User in viewerMarkets MUST be able to view template",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"viewTemplate\", resource: Template::\"\"\ncontext: {}\nentities: [\n  Job::\"internal\",\n  Action::\"grantViewAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"InternalPrezViewActions\",\n  Action::\"TemplateEditActions\",\n  Market::\"\",\n  Job::\"\",\n  User::\"\" in [Market::\"\"] {\n    customerId: \"A\",\n    job: Job::\"\",\n  },\n  Action::\"InternalTemplateViewActions\",\n  Action::\"PrezEditActions\",\n  Action::\"viewPresentation\" in [Action::\"PrezEditActions\", Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\"],\n  Action::\"duplicatePresentation\" in [Action::\"InternalPrezViewActions\", Action::\"PrezEditActions\"],\n  Action::\"viewTemplate\" in [Action::\"InternalTemplateViewActions\", Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"removeSelfAccessFromPresentation\" in [Action::\"PrezEditActions\", Action::\"InternalPrezViewActions\", Action::\"ExternalPrezViewActions\"],\n  Action::\"MarketTemplateViewActions\",\n  Action::\"duplicateTemplate\" in [Action::\"InternalTemplateViewActions\", Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"grantViewAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Market::\"A\",\n  Action::\"editTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"removeOthersAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"grantEditAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"grantEditAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Template::\"\" {\n    editorMarkets: [Market::\"A\"],\n    editors: [User::\"\"],\n    owner: User::\"A\",\n    viewerMarkets: [Market::\"\"],\n    viewers: [],\n  },\n  Action::\"removeSelfAccessFromTemplate\" in [Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  User::\"A\" {\n    customerId: \"A\",\n    job: Job::\"\",\n  },\n  Action::\"editPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"ExternalPrezViewActions\",\n  Action::\"deletePresentation\",\n]"
+      },
+      {
+        "check_name": "floor_owner_edit_template",
+        "check_type": "implies",
+        "description": "Owner MUST be able to edit their own template",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_presentation",
+        "check_type": "always-denies (liveness)",
+        "description": "viewPresentation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete_presentation",
+        "check_type": "always-denies (liveness)",
+        "description": "deletePresentation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_edit_template",
+        "check_type": "always-denies (liveness)",
+        "description": "editTemplate is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_grant_view_prez",
+        "check_type": "always-denies (liveness)",
+        "description": "grantViewAccessToPresentation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 19,
+        "failed_checks": [
+          "floor_market_view_template"
+        ],
+        "solver_time_s": 2.102,
+        "checks": [
+          {
+            "name": "external_prez_view_safety",
+            "type": "implies",
+            "description": "ExternalPrezViewActions (viewPresentation) only permitted if principal in resource.viewers OR resource.owner == principal OR principal in resource.editors",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "duplicate_presentation_safety",
+            "type": "implies",
+            "description": "duplicatePresentation only permitted if (principal.job == Job::\"internal\" AND principal in resource.viewers) OR resource.owner == principal OR principal in resource.editors",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_presentation_safety",
+            "type": "implies",
+            "description": "editPresentation only permitted if resource.owner == principal OR principal in resource.editors",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grant_view_prez_safety",
+            "type": "implies",
+            "description": "grantViewAccessToPresentation only if editor/owner AND customer sharing restriction respected",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grant_edit_prez_safety",
+            "type": "implies",
+            "description": "grantEditAccessToPresentation only if editor/owner AND target is internal",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_presentation_safety",
+            "type": "implies",
+            "description": "deletePresentation only permitted if resource.owner == principal",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "view_template_safety",
+            "type": "implies",
+            "description": "viewTemplate only if (internal AND in viewers) OR (in viewerMarkets) OR owner OR in editors OR in editorMarkets",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_template_safety",
+            "type": "implies",
+            "description": "editTemplate only if owner OR in editors OR in editorMarkets",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grant_view_template_safety",
+            "type": "implies",
+            "description": "grantViewAccessToTemplate only if editor/owner/editorMarket AND customer restriction respected",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grant_edit_template_safety",
+            "type": "implies",
+            "description": "grantEditAccessToTemplate only if editor/owner/editorMarket AND targetUser (if present) is internal",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_owner_edit_presentation",
+            "type": "implies",
+            "description": "Owner MUST be able to edit their own presentation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_viewer_view_presentation",
+            "type": "implies",
+            "description": "A viewer MUST be able to view a presentation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_delete_presentation_owner",
+            "type": "implies",
+            "description": "Owner MUST be able to delete their own presentation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_market_view_template",
+            "type": "implies",
+            "description": "User in viewerMarkets MUST be able to view template",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"viewTemplate\", resource: Template::\"\"\ncontext: {}\nentities: [\n  Job::\"internal\",\n  Action::\"grantViewAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"InternalPrezViewActions\",\n  Action::\"TemplateEditActions\",\n  Market::\"\",\n  Job::\"\",\n  User::\"\" in [Market::\"\"] {\n    customerId: \"A\",\n    job: Job::\"\",\n  },\n  Action::\"InternalTemplateViewActions\",\n  Action::\"PrezEditActions\",\n  Action::\"viewPresentation\" in [Action::\"PrezEditActions\", Action::\"ExternalPrezViewActions\", Action::\"InternalPrezViewActions\"],\n  Action::\"duplicatePresentation\" in [Action::\"InternalPrezViewActions\", Action::\"PrezEditActions\"],\n  Action::\"viewTemplate\" in [Action::\"InternalTemplateViewActions\", Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"removeSelfAccessFromPresentation\" in [Action::\"PrezEditActions\", Action::\"InternalPrezViewActions\", Action::\"ExternalPrezViewActions\"],\n  Action::\"MarketTemplateViewActions\",\n  Action::\"duplicateTemplate\" in [Action::\"InternalTemplateViewActions\", Action::\"MarketTemplateViewActions\", Action::\"TemplateEditActions\"],\n  Action::\"grantViewAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Market::\"A\",\n  Action::\"editTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"removeOthersAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Action::\"grantEditAccessToPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"grantEditAccessToTemplate\" in [Action::\"TemplateEditActions\"],\n  Template::\"\" {\n    editorMarkets: [Market::\"A\"],\n    editors: [User::\"\"],\n    owner: User::\"A\",\n    viewerMarkets: [Market::\"\"],\n    viewers: [],\n  },\n  Action::\"removeSelfAccessFromTemplate\" in [Action::\"TemplateEditActions\", Action::\"InternalTemplateViewActions\"],\n  User::\"A\" {\n    customerId: \"A\",\n    job: Job::\"\",\n  },\n  Action::\"editPresentation\" in [Action::\"PrezEditActions\"],\n  Action::\"ExternalPrezViewActions\",\n  Action::\"deletePresentation\",\n]"
+          },
+          {
+            "name": "floor_owner_edit_template",
+            "type": "implies",
+            "description": "Owner MUST be able to edit their own template",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_presentation",
+            "type": "always-denies (liveness)",
+            "description": "viewPresentation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete_presentation",
+            "type": "always-denies (liveness)",
+            "description": "deletePresentation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_edit_template",
+            "type": "always-denies (liveness)",
+            "description": "editTemplate is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_grant_view_prez",
+            "type": "always-denies (liveness)",
+            "description": "grantViewAccessToPresentation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

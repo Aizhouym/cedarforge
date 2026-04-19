@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 invalid token\n   \u256d\u2500[6:38]\n 5 \u2502 ) when {\n 6 \u2502     principal.assigned_orgs.exists(o |\n   \u00b7                                      \u25b2\n 7 \u2502         o.organization == resource.owner.organization &&\n   \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

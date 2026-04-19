@@ -1,0 +1,243 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.968,
+  "checks": [
+    {
+      "name": "professional_view_safety",
+      "description": "Professional may viewDocument only when (org match AND consent AND sensitivity-HQ)",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/professional_view_safety.cedar"
+    },
+    {
+      "name": "professional_edit_safety",
+      "description": "Professional may editDocument only when (org match AND consent AND sensitivity-HQ)",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/professional_edit_safety.cedar"
+    },
+    {
+      "name": "supervisor_view_safety",
+      "description": "Supervisor may viewDocument only when (supervised_orgs AND consent AND sensitivity-HQ)",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/supervisor_view_safety.cedar"
+    },
+    {
+      "name": "supervisor_edit_safety",
+      "description": "Supervisor may editDocument only when (supervised_orgs AND consent AND sensitivity-HQ)",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/supervisor_edit_safety.cedar"
+    },
+    {
+      "name": "auditor_view_safety",
+      "description": "Auditor may viewDocument only when (auditScope AND consent AND sensitivity-HQ)",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Auditor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/auditor_view_safety.cedar"
+    },
+    {
+      "name": "professional_must_view_non_sensitive",
+      "description": "Professional MUST viewDocument (non-sensitive, org match, consent)",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/professional_must_view_non_sensitive.cedar"
+    },
+    {
+      "name": "professional_must_edit_non_sensitive",
+      "description": "Professional MUST editDocument (non-sensitive, org match, consent)",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/professional_must_edit_non_sensitive.cedar"
+    },
+    {
+      "name": "supervisor_must_view_non_sensitive",
+      "description": "Supervisor MUST viewDocument (non-sensitive, supervised org, consent)",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/supervisor_must_view_non_sensitive.cedar"
+    },
+    {
+      "name": "supervisor_must_edit_non_sensitive",
+      "description": "Supervisor MUST editDocument (non-sensitive, supervised org, consent)",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/supervisor_must_edit_non_sensitive.cedar"
+    },
+    {
+      "name": "auditor_must_view_non_sensitive",
+      "description": "Auditor MUST viewDocument (non-sensitive, auditScope, consent)",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Auditor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_full_expansion-structured_instruction/20260417T062844Z_repair_mi05_repair_loop/tax_full_expansion_iter_02/_eval_workspace/references/auditor_must_view_non_sensitive.cedar"
+    },
+    {
+      "name": "liveness_professional_view",
+      "description": "Professional+viewDocument liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    },
+    {
+      "name": "liveness_professional_edit",
+      "description": "Professional+editDocument liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    },
+    {
+      "name": "liveness_supervisor_view",
+      "description": "Supervisor+viewDocument liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    },
+    {
+      "name": "liveness_supervisor_edit",
+      "description": "Supervisor+editDocument liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Supervisor",
+      "action": "Taxpreparer::Action::\"editDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    },
+    {
+      "name": "liveness_auditor_view",
+      "description": "Auditor+viewDocument liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Auditor",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "professional_view_safety",
+      "check_type": "implies",
+      "description": "Professional may viewDocument only when (org match AND consent AND sensitivity-HQ)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "professional_edit_safety",
+      "check_type": "implies",
+      "description": "Professional may editDocument only when (org match AND consent AND sensitivity-HQ)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "supervisor_view_safety",
+      "check_type": "implies",
+      "description": "Supervisor may viewDocument only when (supervised_orgs AND consent AND sensitivity-HQ)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "supervisor_edit_safety",
+      "check_type": "implies",
+      "description": "Supervisor may editDocument only when (supervised_orgs AND consent AND sensitivity-HQ)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auditor_view_safety",
+      "check_type": "implies",
+      "description": "Auditor may viewDocument only when (auditScope AND consent AND sensitivity-HQ)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "professional_must_view_non_sensitive",
+      "check_type": "implies",
+      "description": "Professional MUST viewDocument (non-sensitive, org match, consent)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "professional_must_edit_non_sensitive",
+      "check_type": "implies",
+      "description": "Professional MUST editDocument (non-sensitive, org match, consent)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "supervisor_must_view_non_sensitive",
+      "check_type": "implies",
+      "description": "Supervisor MUST viewDocument (non-sensitive, supervised org, consent)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "supervisor_must_edit_non_sensitive",
+      "check_type": "implies",
+      "description": "Supervisor MUST editDocument (non-sensitive, supervised org, consent)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auditor_must_view_non_sensitive",
+      "check_type": "implies",
+      "description": "Auditor MUST viewDocument (non-sensitive, auditScope, consent)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_professional_view",
+      "check_type": "always-denies (liveness)",
+      "description": "Professional+viewDocument liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_professional_edit",
+      "check_type": "always-denies (liveness)",
+      "description": "Professional+editDocument liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_supervisor_view",
+      "check_type": "always-denies (liveness)",
+      "description": "Supervisor+viewDocument liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_supervisor_edit",
+      "check_type": "always-denies (liveness)",
+      "description": "Supervisor+editDocument liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_auditor_view",
+      "check_type": "always-denies (liveness)",
+      "description": "Auditor+viewDocument liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

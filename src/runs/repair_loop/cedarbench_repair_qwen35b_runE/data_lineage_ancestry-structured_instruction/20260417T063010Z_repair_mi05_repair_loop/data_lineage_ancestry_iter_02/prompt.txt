@@ -1,0 +1,388 @@
+# Role
+You are a **Cedar Policy Syntax Engineer**.
+
+Your only job is to fix a Cedar syntax error in the previous candidate.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic, conditions, or structure.**
+Only fix the specific syntax problem reported below.
+If a statement was nearly correct, adjust punctuation or token placement only.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: data lineage ancestry
+difficulty: hard
+features:
+  - hierarchical string-enum clearance (public < internal < restricted)
+  - boolean attribute gate (hasPersonalData)
+  - department-scoped actions (derive, delete)
+  - four distinct actions with layered requirements
+domain: data engineering
+---
+
+# Data Lineage Ancestry -- Access Inherits from Data Labels
+
+## Context
+
+A data-engineering platform manages datasets that flow through ETL
+pipelines. Each dataset carries a classification label inherited from
+its upstream lineage: `public`, `internal`, or `restricted`. Users have
+a clearance string at the same three levels. Access to a dataset
+depends on the user's clearance relative to the dataset's
+classification, and some actions impose additional constraints based on
+the dataset's source department or whether it contains personal data.
+
+## Requirements
+
+### Action: query
+
+A user may query a dataset when their clearance is sufficient for the
+dataset's classification level. The hierarchy is:
+
+- `public` datasets: any clearance (`public`, `internal`, `restricted`).
+- `internal` datasets: clearance `internal` or `restricted`.
+- `restricted` datasets: clearance `restricted` only.
+
+### Action: derive (create a derived dataset)
+
+A user may derive from a dataset when ALL of the following hold:
+
+1. The user's clearance is sufficient for the dataset's classification
+   (same hierarchy as query).
+2. The user's department matches the dataset's source department.
+
+### Action: export
+
+A user may export a dataset when ALL of the following hold:
+
+1. The user's clearance is sufficient for the dataset's classification
+   (same hierarchy as query).
+2. The dataset does NOT contain personal data
+   (`resource.hasPersonalData == false`).
+
+### Action: delete
+
+A user may delete a dataset when ALL of the following hold:
+
+1. The user's clearance is `restricted` (highest tier only).
+2. The user's department matches the dataset's source department.
+
+### Liveness
+
+Each of the four actions must permit at least one request.
+
+## Out of scope
+
+- No temporal constraints.
+- No role-based groups or team membership beyond the clearance string.
+- No global forbids -- all restrictions are encoded as conditions on permits.
+
+---
+
+# Cedar Schema
+```cedar
+// Data Lineage Ancestry -- access to datasets depends on the user's
+// clearance relative to the dataset's inherited classification label.
+//
+// Clearance hierarchy: public < internal < restricted.
+// Four actions with layered requirements:
+//   query    -- clearance >= classification
+//   derive   -- clearance >= classification AND department match
+//   export   -- clearance >= classification AND no personal data
+//   delete   -- clearance == restricted AND department match
+
+entity User = {
+    // One of "public", "internal", "restricted".
+    clearance: String,
+    // The user's organizational department (e.g. "engineering", "finance").
+    department: String,
+};
+
+entity Dataset = {
+    // One of "public", "internal", "restricted".
+    // Inherited from upstream lineage -- the highest classification
+    // among all ancestor datasets propagates downward.
+    classification: String,
+    // The department that owns the source pipeline.
+    sourceDepartment: String,
+    // Whether any ancestor (or this dataset itself) contains PII /
+    // personal data.  Once set, it propagates to all descendants.
+    hasPersonalData: Bool,
+};
+
+action query appliesTo {
+    principal: [User],
+    resource: [Dataset],
+};
+
+action derive appliesTo {
+    principal: [User],
+    resource: [Dataset],
+};
+
+action export appliesTo {
+    principal: [User],
+    resource: [Dataset],
+};
+
+action delete appliesTo {
+    principal: [User],
+    resource: [Dataset],
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"query",
+    resource is Dataset
+) when {
+    (principal.clearance == "public" && resource.classification == "public") ||
+    (principal.clearance == "internal" && (resource.classification == "public" || resource.classification == "internal")) ||
+    (principal.clearance == "restricted" && (resource.classification == "public" || resource.classification == "internal" || resource.classification == "restricted"))
+};
+
+permit (
+    principal is User,
+    action == Action::"derive",
+    resource is Dataset
+) when {
+    (principal.clearance == "public" && resource.classification == "public") ||
+    (principal.clearance == "internal" && (resource.classification == "public" || resource.classification == "internal")) ||
+    (principal.clearance == "restricted" && (resource.classification == "public" || resource.classification == "internal" || resource.classification == "restricted"))
+} && {
+    principal.department == resource.sourceDepartment
+};
+
+permit (
+    principal is User,
+    action == Action::"export",
+    resource is Dataset
+) when {
+    (principal.clearance == "public" && resource.classification == "public") ||
+    (principal.clearance == "internal" && (resource.classification == "public" || resource.classification == "internal")) ||
+    (principal.clearance == "restricted" && (resource.classification == "public" || resource.classification == "internal" || resource.classification == "restricted"))
+} && {
+    !resource.hasPersonalData
+};
+
+permit (
+    principal is User,
+    action == Action::"delete",
+    resource is Dataset
+) when {
+    principal.clearance == "restricted"
+} && {
+    principal.department == resource.sourceDepartment
+};
+```
+
+---
+
+# Syntax Error
+SYNTAX ERROR — Fix the syntax before addressing anything else.
+
+Summary:       Cedar could not parse the generated policy.
+Likely cause:  The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.
+Suggested fix: Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement.
+
+Raw error:
+× failed to parse policy set
+  ╰─▶ unexpected token `&&`
+    ╭─[19:3]
+ 18 │     (principal.clearance == "restricted" && (resource.classification == "public" || resource.classification == "internal" || resource.classification == "restricted"))
+ 19 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 20 │     principal.department == resource.sourceDepartment
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[31:3]
+ 30 │     (principal.clearance == "restricted" && (resource.classification == "public" || resource.classification == "internal" || resource.classification == "restricted"))
+ 31 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 32 │     !resource.hasPersonalData
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[41:3]
+ 40 │     principal.clearance == "restricted"
+ 41 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 42 │     principal.department == resource.sourceDepartment
+    ╰────
+
+NOTE: Semantic counterexamples are omitted — they are irrelevant until syntax passes.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

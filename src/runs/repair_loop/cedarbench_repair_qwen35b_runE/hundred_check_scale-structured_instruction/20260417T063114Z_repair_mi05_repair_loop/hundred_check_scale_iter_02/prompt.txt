@@ -1,0 +1,490 @@
+# Role
+You are a **Cedar Policy Syntax Engineer**.
+
+Your only job is to fix a Cedar syntax error in the previous candidate.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic, conditions, or structure.**
+Only fix the specific syntax problem reported below.
+If a statement was nearly correct, adjust punctuation or token placement only.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: large-scale RBAC matrix (harness scale stress test)
+difficulty: hard (scale, not semantics)
+features:
+  - 10-role × 10-action permission matrix
+  - Per-action status constraints (cart / pending / shipped / delivered / refunded)
+  - ~157 verification checks (3-5x larger than any prior scenario)
+domain: e-commerce back-office, meta-harness test
+---
+
+# Hundred-Check Scale — E-Commerce Back-Office Policy
+
+## Context
+
+This policy governs access control for an e-commerce back-office
+platform with ten job roles and ten order-management actions. Each
+(role, action) pair is permitted or denied by a matrix derived from
+business ownership. Some actions also have order-status constraints
+(e.g., you can only ship a pending order, only refund a delivered
+order).
+
+Principal is `User` with a `role: String` attribute. Resource is
+`Order` with `status: String` and `total: Long`. Ten actions:
+`viewOrder`, `listOrders`, `updateCart`, `placeOrder`, `cancelOrder`,
+`refundOrder`, `shipOrder`, `markDelivered`, `modifyPricing`,
+`adminOverride`.
+
+## Role / Action Matrix
+
+| Role              | view | list | updateCart | placeOrder | cancel | refund | ship | delivered | pricing | override |
+|-------------------|:----:|:----:|:----------:|:----------:|:------:|:------:|:----:|:---------:|:-------:|:--------:|
+| viewer            | ✓    | ✓    | ✓          | ✓          |        |        |      |           |         |          |
+| cs_agent          | ✓    | ✓    | ✓          | ✓          | ✓      |        |      |           |         |          |
+| cs_manager        | ✓    | ✓    | ✓          | ✓          | ✓      | ✓      |      |           |         |          |
+| fulfillment       | ✓    | ✓    |            |            |        |        | ✓    | ✓         |         |          |
+| warehouse_lead    | ✓    | ✓    |            |            |        |        | ✓    | ✓         |         |          |
+| returns           | ✓    | ✓    |            |            |        |        |      |           |         |          |
+| finance_ops       | ✓    | ✓    |            |            | ✓      | ✓      |      |           |         |          |
+| finance_manager   | ✓    | ✓    |            |            | ✓      | ✓      |      |           | ✓       |          |
+| platform_admin    | ✓    | ✓    |            |            |        |        |      |           | ✓       | ✓        |
+| security_admin    | ✓    | ✓    |            |            |        |        |      |           |         | ✓        |
+
+## Status Constraints
+
+Some actions are only meaningful in certain order states:
+
+- **updateCart**: requires `status == "cart"`.
+- **placeOrder**: transitions cart → pending; requires `status == "pending"` (the policy is checked post-transition).
+- **cancelOrder**: requires `status == "pending"`.
+- **refundOrder**: requires `status == "delivered"`.
+- **shipOrder**: requires `status == "pending"`.
+- **markDelivered**: requires `status == "shipped"`.
+- **viewOrder**, **listOrders**: any status.
+- **modifyPricing**, **adminOverride**: any status.
+
+## Requirements
+
+For each (role, action) pair marked ✓ in the matrix, the policy must
+permit the action for that role, subject to the status constraint.
+For unmarked pairs, Cedar's default-deny suffices — no explicit
+forbid is required.
+
+The policy must refuse all cross-matrix access: e.g., a `viewer`
+cannot `refundOrder` under any circumstance, regardless of order
+status or any other attribute.
+
+## Notes
+- This is primarily a **scale test** for the harness. The policy
+  semantics are mechanical (a 10x10 permission matrix), but the
+  resulting verification plan has ~157 checks — roughly 3-5x the
+  size of any prior scenario. The test hunts for issues in:
+  - Conversation trimming (keeps first message + last 8 turns; may
+    miss crucial feedback for large plans)
+  - Feedback message length (the check list + counterexamples may
+    exceed a reasonable context budget)
+  - Hash-based oscillation detection (more checks means more unique
+    candidate hashes)
+  - Phase 2 iteration cost (each iteration triggers 157 symcc calls,
+    which compounds wall-clock time)
+- The policy itself is expressible in Cedar without any novel
+  features — just string equality comparisons on role and status.
+  The challenge for Haiku is composing 10+ permit rules correctly,
+  each with its own condition, without cross-contamination.
+
+---
+
+# Cedar Schema
+```cedar
+// Hundred-Check Scale — an e-commerce back-office with 10 roles and
+// 10 actions, producing a 10x10 role/action permission matrix. The
+// goal is to stress-test the harness with a verification plan of
+// ~100 checks (roughly 3x the largest scenario in CedarBench so far)
+// and see whether the conversation trimming, feedback message size,
+// or hash-based oscillation detection breaks at scale.
+
+entity User = {
+    // One of: "viewer", "cs_agent", "cs_manager", "fulfillment",
+    // "warehouse_lead", "returns", "finance_ops", "finance_manager",
+    // "platform_admin", "security_admin".
+    role: String,
+};
+
+entity Order = {
+    total: Long,
+    status: String,  // "cart" | "pending" | "shipped" | "delivered" | "refunded"
+};
+
+// Ten actions spanning CRUD + domain-specific operations.
+action viewOrder, listOrders, updateCart, placeOrder, cancelOrder,
+       refundOrder, shipOrder, markDelivered, modifyPricing, adminOverride
+appliesTo {
+    principal: [User],
+    resource: [Order],
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"viewOrder",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead" ||
+    principal.role == "returns" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"listOrders",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead" ||
+    principal.role == "returns" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"updateCart",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager"
+} && {
+    resource.status == "cart"
+};
+
+permit (
+    principal is User,
+    action == Action::"placeOrder",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"cancelOrder",
+    resource is Order
+) when {
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"refundOrder",
+    resource is Order
+) when {
+    principal.role == "cs_manager" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager"
+} && {
+    resource.status == "delivered"
+};
+
+permit (
+    principal is User,
+    action == Action::"shipOrder",
+    resource is Order
+) when {
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"markDelivered",
+    resource is Order
+) when {
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead"
+} && {
+    resource.status == "shipped"
+};
+
+permit (
+    principal is User,
+    action == Action::"modifyPricing",
+    resource is Order
+) when {
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"adminOverride",
+    resource is Order
+) when {
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};
+```
+
+---
+
+# Syntax Error
+SYNTAX ERROR — Fix the syntax before addressing anything else.
+
+Summary:       Cedar could not parse the generated policy.
+Likely cause:  The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.
+Suggested fix: Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement.
+
+Raw error:
+× failed to parse policy set
+  ╰─▶ unexpected token `&&`
+    ╭─[43:3]
+ 42 │     principal.role == "cs_manager"
+ 43 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 44 │     resource.status == "cart"
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[55:3]
+ 54 │     principal.role == "cs_manager"
+ 55 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 56 │     resource.status == "pending"
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[68:3]
+ 67 │     principal.role == "finance_manager"
+ 68 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 69 │     resource.status == "pending"
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[80:3]
+ 79 │     principal.role == "finance_manager"
+ 80 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 81 │     resource.status == "delivered"
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+    ╭─[91:3]
+ 90 │     principal.role == "warehouse_lead"
+ 91 │ } && {
+    ·   ─┬
+    ·    ╰── expected `;` or identifier
+ 92 │     resource.status == "pending"
+    ╰────
+
+Error: 
+  × unexpected token `&&`
+     ╭─[102:3]
+ 101 │     principal.role == "warehouse_lead"
+ 102 │ } && {
+     ·   ─┬
+     ·    ╰── expected `;` or ide
+...[truncated]...
+
+NOTE: Semantic counterexamples are omitted — they are irrelevant until syntax passes.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

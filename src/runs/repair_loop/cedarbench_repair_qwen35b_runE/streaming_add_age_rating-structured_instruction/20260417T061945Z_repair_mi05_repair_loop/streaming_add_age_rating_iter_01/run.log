@@ -1,0 +1,568 @@
+========================================================================
+ITERATION START
+task:       streaming_add_age_rating
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "add constraint"
+difficulty: medium
+features:
+  - subscription tiers
+  - datetime-based content windows
+  - parental controls
+  - age rating numeric check
+domain: media / streaming
+source: mutation (streaming domain)
+---
+
+# Streaming Service — Policy Specification
+
+## Context
+
+This policy governs access control for a streaming video platform with
+FreeMember and Subscriber principals, and Movie and Show resources.
+
+Subscribers have a `subscription` with a `tier` (e.g. "standard", "premium")
+and a `profile` with an `isKid` boolean.
+
+## Requirements
+
+### 1. Subscriber Watch Permissions
+- A **Subscriber** may **watch** any Show, UNLESS the show has `isEarlyAccess == true`
+  AND the current time (`context.now.datetime`) is before the show's `releaseDate`.
+- A **Subscriber** may **watch** any Movie, UNLESS the movie has `needsRentOrBuy == true`.
+
+### 2. FreeMember Watch Permissions
+- A **FreeMember** may **watch** any Movie where `isFree == true`.
+- A **FreeMember** may **watch** any Show where `isFree == true`.
+
+### 3. Oscar Promo (Rent/Buy Window)
+- A **Subscriber** may **rent** or **buy** a Movie IF the movie has `isOscarNominated == true`
+  AND the current time is within the Oscar promo window:
+  `datetime("2025-02-01T00:00:00Z")` to `datetime("2025-03-31T23:59:59Z")`.
+
+### 4. Early Access for Premium Subscribers
+- A **Subscriber** with `subscription.tier == "premium"` may **watch** a Show
+  that has `isEarlyAccess == true` even before the `releaseDate`, as long as
+  the current time is within 24 hours before the `releaseDate`
+  (i.e. `context.now.datetime >= resource.releaseDate.offset(duration("-24h"))`).
+
+### 5. Kid Bedtime Restriction (Deny Rule)
+- If a Subscriber's `profile.isKid == true`, the **watch** action is forbidden
+  outside of 6:00 AM to 9:00 PM local time.
+  Local time is computed using `context.now.datetime.offset(context.now.localTimeOffset)`.
+  Specifically, forbid watch when the local time-of-day is before 06:00 or at/after 21:00.
+
+## Notes
+- Cedar denies by default — no explicit deny-by-default needed.
+- Temporal comparisons use Cedar's `datetime` and `duration` extension types.
+- The bedtime rule is a `forbid` that overrides any `permit`.
+### 6. Age Rating Restriction (Deny Rule)
+- Each Movie and Show has a `rating: String` attribute with values: `"G"`, `"PG"`, `"PG13"`, or `"R"`.
+- If a Subscriber's `profile.isKid == true`, the **watch** action is forbidden
+  on content where `rating` is NOT `"G"` and NOT `"PG"`.
+  (Kid profiles can only watch G or PG rated content.)
+- Non-kid Subscribers and FreeMember principals are NOT restricted by rating.
+
+## Notes (Age Rating)
+- This interacts with the bedtime rule — kid profiles have both time-based and rating-based restrictions.
+- The rating check uses string equality: `resource.rating != "G" && resource.rating != "PG"`.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Streaming Service — Cedar Schema
+
+// Types
+type Subscription = {
+    tier: String,
+};
+type Profile = {
+    isKid: Bool,
+};
+
+// Entities
+entity FreeMember;
+entity Subscriber = {
+    subscription: Subscription,
+    profile: Profile,
+};
+entity Movie = {
+    isFree: Bool,
+    needsRentOrBuy: Bool,
+    isOscarNominated: Bool,
+rating: String,
+};
+entity Show = {
+    isFree: Bool,
+    releaseDate: datetime,
+    isEarlyAccess: Bool,
+rating: String,
+};
+
+// Actions for content in general
+action watch appliesTo {
+    principal: [FreeMember, Subscriber],
+    resource: [Movie, Show],
+    context: {
+        now: {
+            datetime: datetime,
+            localTimeOffset: duration,
+        },
+    },
+};
+
+// Actions for movies only
+action rent, buy appliesTo {
+    principal: [FreeMember, Subscriber],
+    resource: [Movie],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy &&
+    !(principal.profile.isKid && (resource.rating != "G" && resource.rating != "PG"))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !(resource.isEarlyAccess && context.now.datetime < resource.releaseDate) ||
+    (principal.subscription.tier == "premium" &&
+     context.now.datetime >= resource.releaseDate.offset(duration("-24h"))) &&
+    !(principal.profile.isKid && (resource.rating != "G" && resource.rating != "PG"))
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z") &&
+    resource.isOscarNominated
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z") &&
+    resource.isOscarNominated
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy &&
+    !(principal.profile.isKid && (resource.rating != "G" && resource.rating != "PG"))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !(resource.isEarlyAccess && context.now.datetime < resource.releaseDate) ||
+    (principal.subscription.tier == "premium" &&
+     context.now.datetime >= resource.releaseDate.offset(duration("-24h"))) &&
+    !(principal.profile.isKid && (resource.rating != "G" && resource.rating != "PG"))
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"rent",
+    resource is Movie
+) when {
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z") &&
+    resource.isOscarNominated
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"buy",
+    resource is Movie
+) when {
+    context.now.datetime >= datetime("2025-02-01T00:00:00Z") &&
+    context.now.datetime <= datetime("2025-03-31T23:59:59Z") &&
+    resource.isOscarNominated
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+        context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    )
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=fail passed=False
+message: Cedar parsing/DSL validation failed.
+explanation:
+  summary: Cedar could not parse the generated policy.
+  likely_cause: The statement structure is malformed, such as misplaced `when`, missing punctuation, or invalid Cedar syntax.
+  suggested_fix: Check statement boundaries, parentheses, braces, and semicolons. Keep `when` clauses attached to the same policy statement.
+raw_error:
+× failed to parse policy set
+  ╰─▶ `hour` is not a valid method
+    ╭─[64:9]
+ 63 │     (
+ 64 │         context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+    ·         ───────────────────────────────────────────────────────────────
+ 65 │         context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    ╰────
+
+Error: 
+  × `hour` is not a valid method
+    ╭─[65:9]
+ 64 │         context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+ 65 │         context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    ·         ───────────────────────────────────────────────────────────────
+ 66 │     )
+    ╰────
+
+Error: 
+  × `hour` is not a valid method
+    ╭─[76:9]
+ 75 │     (
+ 76 │         context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+    ·         ───────────────────────────────────────────────────────────────
+ 77 │         context.now.datetime.offset(context.now.localTimeOffset).hour() >= 21
+    ╰────
+
+Error: 
+  × `hour` is not a valid method
+    ╭─[77:9]
+ 76 │         context.now.datetime.offset(context.now.localTimeOffset).hour() < 6 ||
+ 77 │         context.now.datetime.offset(context.now.localTimeOff
+...[truncated]...
+
+[SCHEMA]
+status=skipped passed=False
+message: Skipped because syntax validation failed.
+
+[SEMANTIC]
+status=skipped passed=False
+message: Skipped because syntax validation failed.
+
+--- Metrics ---
+SyntaxPass:        False
+SchemaPass:        False
+SemanticAccuracy:  0.0
+VerificationPass:  False
+Loss:              1
+FailedChecks:      syntax
+DurationSec:       4.305
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_age_rating-structured_instruction/20260417T061945Z_repair_mi05_repair_loop/streaming_add_age_rating_iter_01/run.log

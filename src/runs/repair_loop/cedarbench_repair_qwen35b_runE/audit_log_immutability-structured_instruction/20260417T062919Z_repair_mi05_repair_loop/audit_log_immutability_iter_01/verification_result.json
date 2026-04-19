@@ -1,0 +1,149 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.303,
+  "checks": [
+    {
+      "name": "append_safety",
+      "description": "append only when service",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"append\"",
+      "resource_type": "AuditEntry",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/append_safety.cedar"
+    },
+    {
+      "name": "read_safety",
+      "description": "read only when analyst/auditor/admin",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "AuditEntry",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "export_safety",
+      "description": "export only when auditor",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "AuditEntry",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/export_safety.cedar"
+    },
+    {
+      "name": "floor_service_append",
+      "description": "service MUST append",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"append\"",
+      "resource_type": "AuditEntry",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/floor_service_append.cedar"
+    },
+    {
+      "name": "floor_analyst_read",
+      "description": "analyst MUST read",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "AuditEntry",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/floor_analyst_read.cedar"
+    },
+    {
+      "name": "floor_auditor_export",
+      "description": "auditor MUST export",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "AuditEntry",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/audit_log_immutability-structured_instruction/20260417T062919Z_repair_mi05_repair_loop/audit_log_immutability_iter_01/_eval_workspace/references/floor_auditor_export.cedar"
+    },
+    {
+      "name": "liveness_append",
+      "description": "at least one append permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"append\"",
+      "resource_type": "AuditEntry"
+    },
+    {
+      "name": "liveness_read",
+      "description": "at least one read permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "AuditEntry"
+    },
+    {
+      "name": "liveness_export",
+      "description": "at least one export permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"export\"",
+      "resource_type": "AuditEntry"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "append_safety",
+      "check_type": "implies",
+      "description": "append only when service",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "read only when analyst/auditor/admin",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "export_safety",
+      "check_type": "implies",
+      "description": "export only when auditor",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_service_append",
+      "check_type": "implies",
+      "description": "service MUST append",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_analyst_read",
+      "check_type": "implies",
+      "description": "analyst MUST read",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_auditor_export",
+      "check_type": "implies",
+      "description": "auditor MUST export",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_append",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one append permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_read",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one read permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_export",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one export permitted",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

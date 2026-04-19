@@ -1,0 +1,291 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 10,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 10,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.404,
+    "checks": [
+      {
+        "name": "backup_safety",
+        "description": "backup only when engineer/sre/admin",
+        "type": "implies",
+        "principal_type": "Operator",
+        "action": "Action::\"backup\"",
+        "resource_type": "System",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/backup_safety.cedar"
+      },
+      {
+        "name": "restore_safety",
+        "description": "restore only when sre/admin with env gate",
+        "type": "implies",
+        "principal_type": "Operator",
+        "action": "Action::\"restore\"",
+        "resource_type": "System",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/restore_safety.cedar"
+      },
+      {
+        "name": "verify_safety",
+        "description": "verify only when engineer/sre/admin",
+        "type": "implies",
+        "principal_type": "Operator",
+        "action": "Action::\"verify\"",
+        "resource_type": "System",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/verify_safety.cedar"
+      },
+      {
+        "name": "floor_engineer_backup",
+        "description": "engineer MUST backup",
+        "type": "floor",
+        "principal_type": "Operator",
+        "action": "Action::\"backup\"",
+        "resource_type": "System",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/floor_engineer_backup.cedar"
+      },
+      {
+        "name": "floor_sre_restore_staging",
+        "description": "sre MUST restore staging",
+        "type": "floor",
+        "principal_type": "Operator",
+        "action": "Action::\"restore\"",
+        "resource_type": "System",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/floor_sre_restore_staging.cedar"
+      },
+      {
+        "name": "floor_oncall_sre_restore_prod",
+        "description": "on-call sre MUST restore production",
+        "type": "floor",
+        "principal_type": "Operator",
+        "action": "Action::\"restore\"",
+        "resource_type": "System",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/floor_oncall_sre_restore_prod.cedar"
+      },
+      {
+        "name": "floor_admin_restore_prod",
+        "description": "admin MUST restore production",
+        "type": "floor",
+        "principal_type": "Operator",
+        "action": "Action::\"restore\"",
+        "resource_type": "System",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/backup_restore_asymmetric-structured_instruction/20260417T062925Z_repair_mi05_repair_loop/backup_restore_asymmetric_iter_01/_eval_workspace/references/floor_admin_restore_prod.cedar"
+      },
+      {
+        "name": "liveness_backup",
+        "description": "at least one backup permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Operator",
+        "action": "Action::\"backup\"",
+        "resource_type": "System"
+      },
+      {
+        "name": "liveness_restore",
+        "description": "at least one restore permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Operator",
+        "action": "Action::\"restore\"",
+        "resource_type": "System"
+      },
+      {
+        "name": "liveness_verify",
+        "description": "at least one verify permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Operator",
+        "action": "Action::\"verify\"",
+        "resource_type": "System"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "backup_safety",
+        "check_type": "implies",
+        "description": "backup only when engineer/sre/admin",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "restore_safety",
+        "check_type": "implies",
+        "description": "restore only when sre/admin with env gate",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "verify_safety",
+        "check_type": "implies",
+        "description": "verify only when engineer/sre/admin",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_engineer_backup",
+        "check_type": "implies",
+        "description": "engineer MUST backup",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_sre_restore_staging",
+        "check_type": "implies",
+        "description": "sre MUST restore staging",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_oncall_sre_restore_prod",
+        "check_type": "implies",
+        "description": "on-call sre MUST restore production",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_admin_restore_prod",
+        "check_type": "implies",
+        "description": "admin MUST restore production",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_backup",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one backup permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_restore",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one restore permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_verify",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one verify permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 10,
+        "solver_time_s": 0.404,
+        "checks": [
+          {
+            "name": "backup_safety",
+            "type": "implies",
+            "description": "backup only when engineer/sre/admin",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "restore_safety",
+            "type": "implies",
+            "description": "restore only when sre/admin with env gate",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "verify_safety",
+            "type": "implies",
+            "description": "verify only when engineer/sre/admin",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_engineer_backup",
+            "type": "implies",
+            "description": "engineer MUST backup",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_sre_restore_staging",
+            "type": "implies",
+            "description": "sre MUST restore staging",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_oncall_sre_restore_prod",
+            "type": "implies",
+            "description": "on-call sre MUST restore production",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_admin_restore_prod",
+            "type": "implies",
+            "description": "admin MUST restore production",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_backup",
+            "type": "always-denies (liveness)",
+            "description": "at least one backup permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_restore",
+            "type": "always-denies (liveness)",
+            "description": "at least one restore permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_verify",
+            "type": "always-denies (liveness)",
+            "description": "at least one verify permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

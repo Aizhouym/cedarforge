@@ -1,0 +1,414 @@
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: "base MLS"
+difficulty: easy
+features:
+  - role-clearance hierarchy
+  - document sensitivity levels
+  - consent-based access
+domain: healthcare / clinical trials
+source: mutation (clinical domain)
+---
+
+# Policy Specification — Clinical Trial Data Platform
+
+Write Cedar policies to control **View** and **Edit** actions on Documents in a clinical trial system.
+
+## Entity Model
+
+- **User** has `department` (String), `clearanceLevel` (Long). Users are members of Roles.
+- **Role** — named roles: `ClinicalResearcher`, `PrincipalInvestigator`, `GlobalAuditor`.
+- **Project** has `status` (String) and `managingDepartment` (String).
+- **Document** has `classification` (String). Documents belong to Projects (hierarchy). `projectStatus` and `projectManagingDepartment` are denormalized from the parent Project for policy access.
+- **Context** carries `networkRiskScore` (Long) and `isCompliantDevice` (Bool).
+
+## Access Control Requirements
+
+### 1. Active Project Gate
+A User can only View or Edit a Document if that Document's project currently has status `"Active"` (`resource.projectStatus == "Active"`).
+
+### 2. Role Gate
+The User must be a member of either `Role::"ClinicalResearcher"` or `Role::"PrincipalInvestigator"`.
+
+### 3. Clinical Researcher Conditions
+If the user is a Clinical Researcher, they can access the document **only if**:
+- Their `clearanceLevel` is **strictly greater than 3** (`principal.clearanceLevel > 3`)
+- AND the Document's `classification` is **not** `"HighlyRestricted"`
+
+### 4. Principal Investigator Conditions
+If the user is a Principal Investigator, they bypass clearance and classification checks. However:
+- The request context must show `networkRiskScore < 20`
+- AND `isCompliantDevice == true`
+
+### 5. Cross-Departmental Block (Strict Deny)
+**Regardless of any permits above**, write an explicit `forbid` policy that denies access if the User's `department` does not match the Document's `projectManagingDepartment`.
+
+### 6. Auditor Loophole
+The **only** exception to rule 5: if the user is a member of `Role::"GlobalAuditor"`, the cross-departmental block does not apply. Auditors still cannot access non-Active projects (rule 1 still applies).
+
+## Difficulty Analysis
+- **Forbid/permit interaction**: Cedar forbid always wins, so the cross-departmental forbid overrides even valid permits. The `unless` clause must be used for the auditor exception.
+- **Multi-role membership**: A User can be both a GlobalAuditor and a ClinicalResearcher.
+- **Numeric comparisons**: Strictly greater than 3 (not ≥ 3) and strictly less than 20.
+- **4-dimensional constraint space**: role × clearance × classification × project status × department match × context.
+
+---
+
+# Cedar Schema
+```cedar
+// Clinical Trial Data Platform — Cedar Schema
+//
+// Design note: Cedar cannot traverse entity hierarchies to access
+// parent attributes (e.g., no resource.parent.status). To reference
+// Project attributes in policies, projectStatus and projectManagingDepartment
+// are denormalized onto Document. The application ensures these stay in sync.
+
+entity Role;
+
+entity User in [Role] {
+    department: String,
+    clearanceLevel: Long,
+};
+
+entity Project {
+    status: String,
+    managingDepartment: String,
+};
+
+entity Document in [Project] {
+    classification: String,
+    projectStatus: String,
+    projectManagingDepartment: String,
+};
+
+action "View" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+    },
+};
+
+action "Edit" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+    },
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    resource.projectStatus == "Active" &&
+    (principal in Role::"ClinicalResearcher" || principal in Role::"PrincipalInvestigator")
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    resource.projectStatus == "Active" &&
+    (principal in Role::"ClinicalResearcher" || principal in Role::"PrincipalInvestigator")
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) unless {
+    principal in Role::"GlobalAuditor"
+} when {
+    principal.department != resource.projectManagingDepartment
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 2 of 13 check(s) failed.
+
+--- Check 1: view_safety_ceiling [implies] ---
+Description: View access is only permitted when: project is Active, user is in CR or PI role, CR conditions (clearance>3, not HighlyRestricted) or PI conditions (riskScore<20, compliant device), and department matches or user is GlobalAuditor
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (ceiling_view.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    resource.projectStatus == "Active" &&
+    (
+        (
+            principal in Role::"ClinicalResearcher" &&
+            principal.clearanceLevel > 3 &&
+            resource.classification != "HighlyRestricted" &&
+            (principal.department == resource.projectManagingDepartment || principal in Role::"GlobalAuditor")
+        ) ||
+        (
+            principal in Role::"PrincipalInvestigator" &&
+            context.networkRiskScore < 20 &&
+            context.isCompliantDevice == true &&
+...[truncated]...
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"View", resource: Document::""
+context: {isCompliantDevice: true, networkRiskScore: -1}
+entities: [
+  Role::"ClinicalResearcher",
+  Action::"Edit",
+  Action::"View",
+  Role::"PrincipalInvestigator",
+  User::"" in [Role::"ClinicalResearcher", Role::"GlobalAuditor"] {
+    clearanceLevel: -
+...[truncated]...
+
+--- Check 2: edit_safety_ceiling [implies] ---
+Description: Edit access is only permitted under the same conditions as View: Active project, CR or PI role with respective conditions, department match or GlobalAuditor
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (ceiling_edit.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    resource.projectStatus == "Active" &&
+    (
+        (
+            principal in Role::"ClinicalResearcher" &&
+            principal.clearanceLevel > 3 &&
+            resource.classification != "HighlyRestricted" &&
+            (principal.department == resource.projectManagingDepartment || principal in Role::"GlobalAuditor")
+        ) ||
+        (
+            principal in Role::"PrincipalInvestigator" &&
+            context.networkRiskScore < 20 &&
+            context.isCompliantDevice == true &&
+...[truncated]...
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"Edit", resource: Document::""
+context: {isCompliantDevice: true, networkRiskScore: -1}
+entities: [
+  User::"" in [Role::"GlobalAuditor", Role::"ClinicalResearcher"] {
+    clearanceLevel: -1,
+    department: "Active",
+  },
+  Action::"View",
+  Document::"" {
+    classification: "HighlyRes
+...[truncated]...
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

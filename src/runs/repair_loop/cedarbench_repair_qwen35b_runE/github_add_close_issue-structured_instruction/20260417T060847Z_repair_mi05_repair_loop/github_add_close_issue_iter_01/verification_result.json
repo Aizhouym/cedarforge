@@ -1,0 +1,87 @@
+{
+  "loss": 2,
+  "solver_time_s": 0.604,
+  "checks": [
+    {
+      "name": "ceiling_close_issue",
+      "description": "close_issue only if (reader + reporter) OR writer",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"close_issue\"",
+      "resource_type": "Issue",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_01/_eval_workspace/references/ceiling_close_issue.cedar"
+    },
+    {
+      "name": "ceiling_push",
+      "description": "Push access only for writers, blocked if repo is archived",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"push\"",
+      "resource_type": "Repository",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_01/_eval_workspace/references/ceiling_push.cedar"
+    },
+    {
+      "name": "ceiling_edit_issue",
+      "description": "Edit issue only if (reader + reporter) OR writer",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"edit_issue\"",
+      "resource_type": "Issue",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_01/_eval_workspace/references/ceiling_edit_issue.cedar"
+    },
+    {
+      "name": "floor_reporter_close",
+      "description": "Readers who ARE the reporter MUST be able to close their own issue",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"close_issue\"",
+      "resource_type": "Issue",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/github_add_close_issue-structured_instruction/20260417T060847Z_repair_mi05_repair_loop/github_add_close_issue_iter_01/_eval_workspace/references/floor_reporter_close.cedar"
+    },
+    {
+      "name": "liveness_close_issue",
+      "description": "close_issue is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"close_issue\"",
+      "resource_type": "Issue"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "ceiling_close_issue",
+      "check_type": "implies",
+      "description": "close_issue only if (reader + reporter) OR writer",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"close_issue\", resource: Issue::\"\"\ncontext: {}\nentities: [\n  Action::\"assign_issue\",\n  Action::\"edit_issue\",\n  Repository::\"\" {\n    admins: UserGroup::\"B\",\n    isArchived: true,\n    maintainers: UserGroup::\"C\",\n    readers: UserGroup::\"\",\n    triagers: UserGroup::\"D\",\n    writers: UserGroup::\"A\",\n  },\n  Action::\"delete_issue\",\n  User::\"\",\n  UserGroup::\"B\",\n  UserGroup::\"D\",\n  Action::\"add_admin\",\n  Issue::\"\" {\n    repo: Repository::\"\",\n    reporter: User::\"\",\n  },\n  Action::\"push\",\n  Action::\"add_triager\",\n  Action::\"fork\",\n  Action::\"add_reader\",\n  Action::\"add_maintainer\",\n  UserGroup::\"C\",\n  Action::\"close_issue\",\n  Action::\"add_writer\",\n  UserGroup::\"\",\n  Action::\"pull\",\n  UserGroup::\"A\",\n]"
+    },
+    {
+      "check_name": "ceiling_push",
+      "check_type": "implies",
+      "description": "Push access only for writers, blocked if repo is archived",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "ceiling_edit_issue",
+      "check_type": "implies",
+      "description": "Edit issue only if (reader + reporter) OR writer",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"edit_issue\", resource: Issue::\"\"\ncontext: {}\nentities: [\n  UserGroup::\"\",\n  Action::\"add_writer\",\n  Action::\"add_triager\",\n  Action::\"add_maintainer\",\n  User::\"\",\n  Action::\"delete_issue\",\n  UserGroup::\"A\",\n  Repository::\"\" {\n    admins: UserGroup::\"B\",\n    isArchived: true,\n    maintainers: UserGroup::\"C\",\n    readers: UserGroup::\"\",\n    triagers: UserGroup::\"D\",\n    writers: UserGroup::\"A\",\n  },\n  Action::\"pull\",\n  Action::\"push\",\n  Action::\"assign_issue\",\n  UserGroup::\"D\",\n  Action::\"close_issue\",\n  Action::\"fork\",\n  UserGroup::\"B\",\n  UserGroup::\"C\",\n  Action::\"add_reader\",\n  Action::\"add_admin\",\n  Issue::\"\" {\n    repo: Repository::\"\",\n    reporter: User::\"\",\n  },\n  Action::\"edit_issue\",\n]"
+    },
+    {
+      "check_name": "floor_reporter_close",
+      "check_type": "implies",
+      "description": "Readers who ARE the reporter MUST be able to close their own issue",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_close_issue",
+      "check_type": "always-denies (liveness)",
+      "description": "close_issue is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

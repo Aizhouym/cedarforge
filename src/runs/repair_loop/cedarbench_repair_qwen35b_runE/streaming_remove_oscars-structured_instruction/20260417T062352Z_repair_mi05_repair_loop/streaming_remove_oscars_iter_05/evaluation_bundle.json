@@ -1,0 +1,441 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.8125,
+  "verification_pass": false,
+  "loss": 3,
+  "total_check_count": 16,
+  "failed_checks": [
+    "subscriber_must_watch_show_not_early_no_kid",
+    "subscriber_must_watch_show_post_release_no_kid",
+    "premium_must_watch_show_early_no_kid"
+  ],
+  "failed_check_types": [
+    "implies",
+    "implies",
+    "implies"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.8125,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 3,
+    "total_check_count": 16,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 3,
+    "solver_time_s": 2.766,
+    "checks": [
+      {
+        "name": "freemember_movie_only_free",
+        "description": "FreeMember may watch a Movie only when isFree",
+        "type": "implies",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/freemember_movie_only_free.cedar"
+      },
+      {
+        "name": "freemember_show_only_free",
+        "description": "FreeMember may watch a Show only when isFree",
+        "type": "implies",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/freemember_show_only_free.cedar"
+      },
+      {
+        "name": "subscriber_movie_no_rent_buy",
+        "description": "Subscriber may watch a Movie only when !needsRentOrBuy",
+        "type": "implies",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/subscriber_movie_no_rent_buy.cedar"
+      },
+      {
+        "name": "subscriber_show_release_or_premium_early",
+        "description": "Subscriber may watch a Show only when (!isEarlyAccess) OR (now >= releaseDate) OR (premium AND now >= releaseDate-24h)",
+        "type": "implies",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/subscriber_show_release_or_premium_early.cedar"
+      },
+      {
+        "name": "kid_bedtime_no_watch_movie",
+        "description": "Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)",
+        "type": "implies",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/kid_bedtime_no_watch_movie.cedar"
+      },
+      {
+        "name": "kid_bedtime_no_watch_show",
+        "description": "Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)",
+        "type": "implies",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/kid_bedtime_no_watch_show.cedar"
+      },
+      {
+        "name": "freemember_must_watch_free_movie",
+        "description": "FreeMember MUST be permitted to watch any free Movie",
+        "type": "floor",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/freemember_must_watch_free_movie.cedar"
+      },
+      {
+        "name": "freemember_must_watch_free_show",
+        "description": "FreeMember MUST be permitted to watch any free Show",
+        "type": "floor",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/freemember_must_watch_free_show.cedar"
+      },
+      {
+        "name": "subscriber_must_watch_movie_no_rent_no_kid",
+        "description": "Non-kid Subscriber MUST be permitted to watch any !needsRentOrBuy Movie",
+        "type": "floor",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/subscriber_must_watch_movie_no_rent_no_kid.cedar"
+      },
+      {
+        "name": "subscriber_must_watch_show_not_early_no_kid",
+        "description": "Non-kid Subscriber MUST be permitted to watch any !isEarlyAccess Show",
+        "type": "floor",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/subscriber_must_watch_show_not_early_no_kid.cedar"
+      },
+      {
+        "name": "subscriber_must_watch_show_post_release_no_kid",
+        "description": "Non-kid Subscriber MUST be permitted to watch a Show post-release",
+        "type": "floor",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/subscriber_must_watch_show_post_release_no_kid.cedar"
+      },
+      {
+        "name": "premium_must_watch_show_early_no_kid",
+        "description": "Non-kid premium Subscriber MUST be permitted to watch early-access Show in 24h pre-release window",
+        "type": "floor",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_remove_oscars-structured_instruction/20260417T062352Z_repair_mi05_repair_loop/streaming_remove_oscars_iter_05/_eval_workspace/references/premium_must_watch_show_early_no_kid.cedar"
+      },
+      {
+        "name": "liveness_freemember_watch_movie",
+        "description": "FreeMember+watch+Movie has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie"
+      },
+      {
+        "name": "liveness_freemember_watch_show",
+        "description": "FreeMember+watch+Show has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "FreeMember",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show"
+      },
+      {
+        "name": "liveness_subscriber_watch_movie",
+        "description": "Subscriber+watch+Movie has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Movie"
+      },
+      {
+        "name": "liveness_subscriber_watch_show",
+        "description": "Subscriber+watch+Show has at least one permitted request",
+        "type": "always-denies-liveness",
+        "principal_type": "Subscriber",
+        "action": "Action::\"watch\"",
+        "resource_type": "Show"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "freemember_movie_only_free",
+        "check_type": "implies",
+        "description": "FreeMember may watch a Movie only when isFree",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "freemember_show_only_free",
+        "check_type": "implies",
+        "description": "FreeMember may watch a Show only when isFree",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "subscriber_movie_no_rent_buy",
+        "check_type": "implies",
+        "description": "Subscriber may watch a Movie only when !needsRentOrBuy",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "subscriber_show_release_or_premium_early",
+        "check_type": "implies",
+        "description": "Subscriber may watch a Show only when (!isEarlyAccess) OR (now >= releaseDate) OR (premium AND now >= releaseDate-24h)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "kid_bedtime_no_watch_movie",
+        "check_type": "implies",
+        "description": "Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "kid_bedtime_no_watch_show",
+        "check_type": "implies",
+        "description": "Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "freemember_must_watch_free_movie",
+        "check_type": "implies",
+        "description": "FreeMember MUST be permitted to watch any free Movie",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "freemember_must_watch_free_show",
+        "check_type": "implies",
+        "description": "FreeMember MUST be permitted to watch any free Show",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "subscriber_must_watch_movie_no_rent_no_kid",
+        "check_type": "implies",
+        "description": "Non-kid Subscriber MUST be permitted to watch any !needsRentOrBuy Movie",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "subscriber_must_watch_show_not_early_no_kid",
+        "check_type": "implies",
+        "description": "Non-kid Subscriber MUST be permitted to watch any !isEarlyAccess Show",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"\"},\n  },\n  Show::\"\" {\n    isEarlyAccess: false,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036835483649ms\")),\n  },\n]"
+      },
+      {
+        "check_name": "subscriber_must_watch_show_post_release_no_kid",
+        "check_type": "implies",
+        "description": "Non-kid Subscriber MUST be permitted to watch a Show post-release",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Show::\"\" {\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")),\n  },\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"premium\"},\n  },\n]"
+      },
+      {
+        "check_name": "premium_must_watch_show_early_no_kid",
+        "check_type": "implies",
+        "description": "Non-kid premium Subscriber MUST be permitted to watch early-access Show in 24h pre-release window",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Show::\"\" {\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036768375807ms\")),\n  },\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"premium\"},\n  },\n]"
+      },
+      {
+        "check_name": "liveness_freemember_watch_movie",
+        "check_type": "always-denies (liveness)",
+        "description": "FreeMember+watch+Movie has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_freemember_watch_show",
+        "check_type": "always-denies (liveness)",
+        "description": "FreeMember+watch+Show has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_subscriber_watch_movie",
+        "check_type": "always-denies (liveness)",
+        "description": "Subscriber+watch+Movie has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_subscriber_watch_show",
+        "check_type": "always-denies (liveness)",
+        "description": "Subscriber+watch+Show has at least one permitted request",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 16,
+        "failed_checks": [
+          "subscriber_must_watch_show_not_early_no_kid",
+          "subscriber_must_watch_show_post_release_no_kid",
+          "premium_must_watch_show_early_no_kid"
+        ],
+        "solver_time_s": 2.766,
+        "checks": [
+          {
+            "name": "freemember_movie_only_free",
+            "type": "implies",
+            "description": "FreeMember may watch a Movie only when isFree",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "freemember_show_only_free",
+            "type": "implies",
+            "description": "FreeMember may watch a Show only when isFree",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "subscriber_movie_no_rent_buy",
+            "type": "implies",
+            "description": "Subscriber may watch a Movie only when !needsRentOrBuy",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "subscriber_show_release_or_premium_early",
+            "type": "implies",
+            "description": "Subscriber may watch a Show only when (!isEarlyAccess) OR (now >= releaseDate) OR (premium AND now >= releaseDate-24h)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "kid_bedtime_no_watch_movie",
+            "type": "implies",
+            "description": "Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "kid_bedtime_no_watch_show",
+            "type": "implies",
+            "description": "Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "freemember_must_watch_free_movie",
+            "type": "implies",
+            "description": "FreeMember MUST be permitted to watch any free Movie",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "freemember_must_watch_free_show",
+            "type": "implies",
+            "description": "FreeMember MUST be permitted to watch any free Show",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "subscriber_must_watch_movie_no_rent_no_kid",
+            "type": "implies",
+            "description": "Non-kid Subscriber MUST be permitted to watch any !needsRentOrBuy Movie",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "subscriber_must_watch_show_not_early_no_kid",
+            "type": "implies",
+            "description": "Non-kid Subscriber MUST be permitted to watch any !isEarlyAccess Show",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"\"},\n  },\n  Show::\"\" {\n    isEarlyAccess: false,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036835483649ms\")),\n  },\n]"
+          },
+          {
+            "name": "subscriber_must_watch_show_post_release_no_kid",
+            "type": "implies",
+            "description": "Non-kid Subscriber MUST be permitted to watch a Show post-release",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Show::\"\" {\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")),\n  },\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"premium\"},\n  },\n]"
+          },
+          {
+            "name": "premium_must_watch_show_early_no_kid",
+            "type": "implies",
+            "description": "Non-kid premium Subscriber MUST be permitted to watch early-access Show in 24h pre-release window",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775807ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}}\nentities: [\n  Show::\"\" {\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036768375807ms\")),\n  },\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": false},\n    subscription: {\"tier\": \"premium\"},\n  },\n]"
+          },
+          {
+            "name": "liveness_freemember_watch_movie",
+            "type": "always-denies (liveness)",
+            "description": "FreeMember+watch+Movie has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_freemember_watch_show",
+            "type": "always-denies (liveness)",
+            "description": "FreeMember+watch+Show has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_subscriber_watch_movie",
+            "type": "always-denies (liveness)",
+            "description": "Subscriber+watch+Movie has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_subscriber_watch_show",
+            "type": "always-denies (liveness)",
+            "description": "Subscriber+watch+Show has at least one permitted request",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

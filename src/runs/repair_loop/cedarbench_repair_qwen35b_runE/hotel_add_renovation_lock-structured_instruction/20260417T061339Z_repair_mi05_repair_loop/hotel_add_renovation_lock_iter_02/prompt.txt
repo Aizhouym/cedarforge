@@ -1,0 +1,473 @@
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: "add constraint"
+difficulty: medium
+features:
+  - franchise hierarchy
+  - viewer/member/admin roles
+  - loyalty tiers
+  - renovation lock flag
+domain: hospitality / hotel chains
+source: mutation (hotel domain)
+---
+
+# Hotel Chain Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a hotel chain management platform with
+Hotels, Properties, Reservations, and Users.
+
+Hotels can contain other Hotels (sub-brands) and Properties. Properties belong
+to Hotels. Reservations belong to Properties. This creates a 3-level hierarchy:
+Hotel -> Property -> Reservation.
+
+Users have three permission tiers, each represented by a PermissionsMap containing
+Sets of Hotels and Properties:
+- **viewPermissions**: read-only access
+- **memberPermissions**: read + write access
+- **hotelAdminPermissions** / **propertyAdminPermissions**: full admin access
+
+PermissionsMap is a record with `hotelReservations: Set<Hotel>` and
+`propertyReservations: Set<Property>`.
+
+## Requirements
+
+### 1. Viewer Permissions (Reservations)
+- A user may **viewReservation** if the reservation's property (or hotel) is in
+  the user's `viewPermissions.hotelReservations` or `viewPermissions.propertyReservations`.
+
+### 2. Member Permissions (Reservations)
+- A user may **viewReservation**, **updateReservation**, or **createReservation**
+  if the resource is in the user's `memberPermissions.hotelReservations` or
+  `memberPermissions.propertyReservations`.
+
+### 3. Admin Permissions (Reservations)
+- A user may **viewReservation**, **updateReservation**, **createReservation**, and
+  **grantAccessReservation** if the resource is in the user's `hotelAdminPermissions`
+  or `propertyAdminPermissions`.
+
+### 4. Viewer Permissions (Properties & Hotels)
+- A user may **viewProperty** or **viewHotel** if the resource is in the user's
+  `viewPermissions.hotelReservations`, or (for Properties only) in
+  `viewPermissions.propertyReservations`.
+
+### 5. Member Permissions (Properties & Hotels)
+- A user may **viewProperty**, **updateProperty**, **createProperty**, **viewHotel**,
+  **updateHotel**, **createHotel** if the resource is in the user's
+  `memberPermissions.hotelReservations`, or (for Properties only) in
+  `memberPermissions.propertyReservations`.
+
+### 6. Admin Permissions (Properties & Hotels)
+- A user may perform all property/hotel actions including **grantAccessProperty**
+  and **grantAccessHotel** if the resource is in the user's `hotelAdminPermissions`,
+  or (for Properties only) in `propertyAdminPermissions`.
+
+## Notes
+- Hierarchy membership is checked via `resource in principal.<permissions>.<set>`.
+- Properties use an additional `resource is Property` guard before checking
+  property-specific permission sets.
+- Cedar denies by default; no explicit deny-by-default rule is needed.
+### 7. Renovation Lock (Deny Rule with Admin Override)
+- Property now has an `isUnderRenovation: Bool` attribute.
+- If a property has `isUnderRenovation == true`, the **createReservation** action is
+  **forbidden** on that property.
+- **Exception**: Users with admin permissions for that property
+  (`resource in principal.hotelAdminPermissions || resource in principal.propertyAdminPermissions`)
+  bypass this restriction and may still create reservations on renovating properties.
+- All other actions (viewProperty, updateProperty, grantAccessProperty, viewReservation, etc.)
+  are unaffected by the renovation flag.
+
+## Notes (Renovation Lock)
+- The forbid rule must use an `unless` clause to allow admin override.
+- The forbid applies to the `createReservation` action which targets Property resources.
+
+---
+
+# Cedar Schema
+```cedar
+// Hotel Chain Permissions -- Cedar Schema
+
+type PermissionsMap = {
+  hotelReservations: Set<Hotel>,
+  propertyReservations: Set<Property>,
+};
+entity User {
+  viewPermissions: PermissionsMap,
+  memberPermissions: PermissionsMap,
+  hotelAdminPermissions: Set<Hotel>,
+  propertyAdminPermissions: Set<Property>,
+};
+entity Property in [Hotel] {
+  isUnderRenovation: Bool,
+};
+entity Hotel in [Hotel];
+entity Reservation in [Property];
+
+// ACTIONS: Reservations
+action viewReservation, updateReservation, grantAccessReservation
+  appliesTo {
+    principal: User,
+    resource: Reservation,
+  };
+
+// ACTIONS: Properties (plus, CreateReservation for a Property)
+action createReservation, viewProperty, updateProperty, grantAccessProperty
+  appliesTo {
+    principal: User,
+    resource: Property,
+  };
+
+// ACTIONS: Hotels (plus, CreateProperty for a Hotel)
+action createProperty, createHotel, viewHotel, updateHotel, grantAccessHotel
+  appliesTo {
+    principal: User,
+    resource: Hotel,
+  };
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"viewReservation",
+    resource is Reservation
+) when {
+    resource in principal.viewPermissions.hotelReservations ||
+    resource in principal.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateReservation",
+    resource is Reservation
+) when {
+    resource in principal.memberPermissions.hotelReservations ||
+    resource in principal.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Property
+) when {
+    resource in principal.memberPermissions.hotelReservations ||
+    resource in principal.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessReservation",
+    resource is Reservation
+) when {
+    resource in principal.hotelAdminPermissions ||
+    resource in principal.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"viewProperty",
+    resource is Property
+) when {
+    resource in principal.viewPermissions.hotelReservations ||
+    resource in principal.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateProperty",
+    resource is Property
+) when {
+    resource in principal.memberPermissions.hotelReservations ||
+    resource in principal.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessProperty",
+    resource is Property
+) when {
+    resource in principal.hotelAdminPermissions ||
+    resource in principal.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"createProperty",
+    resource is Hotel
+) when {
+    resource in principal.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createHotel",
+    resource is Hotel
+) when {
+    resource in principal.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"viewHotel",
+    resource is Hotel
+) when {
+    resource in principal.viewPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateHotel",
+    resource is Hotel
+) when {
+    resource in principal.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessHotel",
+    resource is Hotel
+) when {
+    resource in principal.hotelAdminPermissions
+};
+
+forbid (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Property
+) when {
+    resource.isUnderRenovation
+} unless {
+    resource in principal.hotelAdminPermissions ||
+    resource in principal.propertyAdminPermissions
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 1 of 26 check(s) failed.
+
+--- Check 1: floor_admin_createReservation_renovation [implies] ---
+Description: Admins MUST be able to createReservation even on renovating properties
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (floor_admin_createReservation_renovation.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Property
+) when {
+    resource in principal.hotelAdminPermissions ||
+    resource in principal.propertyAdminPermissions
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"createReservation", resource: Property::""
+context: {}
+entities: [
+  Action::"viewReservation",
+  User::"" {
+    hotelAdminPermissions: [Hotel::""],
+    memberPermissions: {"hotelReservations": [], "propertyReservations": []},
+    propertyAdminPermissions: [Property::""],
+    viewPermis
+...[truncated]...
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

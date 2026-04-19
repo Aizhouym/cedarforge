@@ -1,0 +1,59 @@
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    !resource.needsRentOrBuy
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    !resource.isEarlyAccess ||
+    (
+        principal.subscription.tier == "premium" &&
+        context.now.datetime >= resource.releaseDate.offset(duration("-24h"))
+    )
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    resource.isFree
+};
+
+permit (
+    principal is FreeMember,
+    action == Action::"watch",
+    resource is Show
+) when {
+    resource.isFree
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Movie
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).time() < duration("6h") ||
+        context.now.datetime.offset(context.now.localTimeOffset).time() >= duration("21h")
+    )
+};
+
+forbid (
+    principal is Subscriber,
+    action == Action::"watch",
+    resource is Show
+) when {
+    principal.profile.isKid &&
+    (
+        context.now.datetime.offset(context.now.localTimeOffset).time() < duration("6h") ||
+        context.now.datetime.offset(context.now.localTimeOffset).time() >= duration("21h")
+    )
+};

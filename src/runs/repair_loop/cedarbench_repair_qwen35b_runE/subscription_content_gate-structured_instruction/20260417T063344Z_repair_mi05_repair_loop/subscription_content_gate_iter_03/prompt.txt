@@ -1,0 +1,424 @@
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 3
+
+WARNING: Oscillation detected (#1). You have been alternating between error types without converging.
+Rules for this attempt:
+1. Ensure syntax is correct FIRST — do not change policy logic while fixing syntax.
+2. Once syntax passes, address semantic issues separately.
+3. Do not revert to a candidate that failed syntax.
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: subscription content gate
+difficulty: medium
+features:
+  - string-enum hierarchy (plan vs content tier)
+  - preview bypass (content flag overrides tier check)
+  - action variants with different plan requirements
+  - disjunctive tier encoding (no enum ordering in Cedar)
+domain: streaming, SaaS
+---
+
+# Subscription Content Gate -- Policy Specification
+
+## Context
+
+This policy implements a subscription-based content access pattern
+common in streaming services and SaaS platforms. Every Subscriber has
+a `plan` (one of `"free"`, `"basic"`, `"premium"`) and an `isActive`
+flag. Every Content item has a `tier` (one of `"free"`, `"basic"`,
+`"premium"`) and an `isPreview` flag.
+
+Three actions exist: `stream`, `download`, and `share`. Each action
+has different plan requirements, and all require the subscriber to be
+active.
+
+## Plan / Tier Hierarchy
+
+The ordering is `free < basic < premium`. A subscriber's plan
+"dominates" a content tier when the plan is at least as high as the
+tier. Because Cedar has no enum ordering, this must be expressed as
+explicit string disjunctions.
+
+| Content tier | Plans that dominate |
+|--------------|---------------------|
+| free         | free, basic, premium |
+| basic        | basic, premium       |
+| premium      | premium only         |
+
+## Requirements
+
+### 1. Stream Access
+
+A Subscriber may `stream` Content when:
+- The subscriber is active (`isActive == true`), AND
+- EITHER the content is a preview (`isPreview == true`), OR the
+  subscriber's plan dominates the content's tier.
+
+The preview flag allows any active subscriber to stream preview
+content regardless of plan. Non-preview content requires plan
+dominance.
+
+### 2. Download Access
+
+A Subscriber may `download` Content when:
+- The subscriber is active (`isActive == true`), AND
+- The subscriber's plan is `"basic"` or `"premium"` (free-plan
+  subscribers cannot download anything), AND
+- The subscriber's plan dominates the content's tier.
+
+Note: the preview flag does NOT bypass the download restriction.
+Free-plan subscribers cannot download even preview content.
+
+### 3. Share Access
+
+A Subscriber may `share` Content when:
+- The subscriber is active (`isActive == true`), AND
+- The subscriber's plan is `"premium"`.
+
+Sharing is unrestricted by content tier -- premium subscribers may
+share any content. But only premium subscribers have this capability.
+
+### 4. Inactive Subscribers
+
+Inactive subscribers (`isActive == false`) are denied ALL actions
+regardless of plan or content tier. This is enforced by requiring
+`isActive == true` in every permit rule; Cedar's default-deny
+behavior handles the rest.
+
+## Notes
+
+- The plan-dominance check uses explicit disjunctions because Cedar
+  has no built-in enum ordering. For example, the stream permit for
+  `tier == "basic"` content requires
+  `principal.plan == "basic" || principal.plan == "premium"`.
+- The preview bypass applies ONLY to streaming, not downloading or
+  sharing. This is a deliberate design choice reflecting a "try
+  before you buy" pattern.
+- Common failure modes: (a) allowing free-plan downloads, (b)
+  applying the preview bypass to download, (c) forgetting the
+  isActive gate, (d) inverting the tier hierarchy.
+
+---
+
+# Cedar Schema
+```cedar
+// Subscription Content Gate -- subscription-based content access for
+// streaming / SaaS platforms. Subscribers have a plan tier and active
+// flag; Content items have a tier and preview flag.
+
+entity Subscriber = {
+    // One of "free", "basic", "premium".
+    plan: String,
+    // Whether the subscription is currently active. Inactive
+    // subscribers are denied all actions.
+    isActive: Bool,
+};
+
+entity Content = {
+    // One of "free", "basic", "premium" -- the minimum plan required
+    // for non-preview access.
+    tier: String,
+    // Preview content can be streamed by any active subscriber
+    // regardless of plan, but cannot be downloaded by free-plan users.
+    isPreview: Bool,
+};
+
+// Streaming: requires active + (preview OR plan >= tier).
+action stream appliesTo {
+    principal: [Subscriber],
+    resource: [Content],
+};
+
+// Downloading: requires active + plan in {basic, premium} + plan >= tier.
+// Preview flag does NOT bypass the download gate.
+action download appliesTo {
+    principal: [Subscriber],
+    resource: [Content],
+};
+
+// Sharing: requires active + plan == premium. No tier restriction.
+action share appliesTo {
+    principal: [Subscriber],
+    resource: [Content],
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is Subscriber,
+    action == Action::"stream",
+    resource is Content
+) when {
+    principal.isActive &&
+    (resource.isPreview ||
+     (principal.plan == "free" && resource.tier == "free") ||
+     (principal.plan == "basic" && (resource.tier == "free" || resource.tier == "basic")) ||
+     (principal.plan == "premium" &&
+      (resource.tier == "free" || resource.tier == "basic" || resource.tier == "premium")))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"download",
+    resource is Content
+) when {
+    principal.isActive &&
+    (principal.plan == "basic" || principal.plan == "premium") &&
+    (principal.plan == "basic" && (resource.tier == "free" || resource.tier == "basic")) &&
+    (principal.plan == "premium" &&
+     (resource.tier == "free" || resource.tier == "basic" || resource.tier == "premium"))
+};
+
+permit (
+    principal is Subscriber,
+    action == Action::"share",
+    resource is Content
+) when {
+    principal.isActive &&
+    principal.plan == "premium"
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 2 of 10 check(s) failed.
+
+--- Check 1: basic_must_download_free [implies] ---
+Description: Active basic subscriber MUST download free-tier content
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (basic_must_download_free.cedar):
+```cedar
+// Floor: an active basic-plan subscriber MUST be able to download
+// free-tier content. Tests that basic plan can download and that
+// plan dominance works for download action.
+permit (
+    principal is Subscriber,
+    action == Action::"download",
+    resource is Content
+)
+when {
+    principal.isActive
+    && principal.plan == "basic"
+    && resource.tier == "free"
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Subscriber::"", action: Action::"download", resource: Content::""
+context: {}
+entities: [
+  Content::"" {
+    isPreview: true,
+    tier: "free",
+  },
+  Action::"stream",
+  Subscriber::"" {
+    isActive: true,
+    plan: "basic",
+  },
+  Action::"share",
+  Action::"download",
+]
+
+--- Check 2: liveness_download [always-denies (liveness)] ---
+Description: Subscriber+download+Content liveness
+
+Direction: ADD PERMIT — your policy always denies this action. Add a permit rule.
+
+Counterexample:
+LIVENESS VIOLATION: Policy always denies this action. It must allow at least one scenario.
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

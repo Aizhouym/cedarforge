@@ -1,0 +1,423 @@
+========================================================================
+ITERATION START
+task:       iot_device_auth
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: IoT device authorization (capability-based)
+difficulty: medium
+features:
+  - non-User principal (Device entity)
+  - capability set for action scoping
+  - device status flag for revocation
+  - owner-based management path
+domain: IoT / smart home
+---
+
+# IoT Device Authorization — Policy Specification
+
+## Context
+
+A smart home platform where `Device` principals interact with
+`Endpoint` resources (e.g. thermostat, lock, camera). Devices have a
+set of `capabilities` (strings like `"read_sensor"`, `"actuate"`,
+`"stream"`) and an `isActive` boolean. Each Endpoint has an `owner`
+(a `User` entity).
+
+This scenario tests non-User principals (devices as first-class
+Cedar entities) with capability-based scoping.
+
+## Requirements
+
+### 1. Telemetry — Active Devices with read_sensor
+A Device may `telemetry` an Endpoint when:
+- The device is active (`principal.isActive == true`), AND
+- The device's capabilities contain `"read_sensor"`.
+
+### 2. Control — Active Devices with actuate
+A Device may `control` an Endpoint when:
+- The device is active, AND
+- The device's capabilities contain `"actuate"`.
+
+### 3. Stream — Active Devices with stream
+A Device may `stream` an Endpoint when:
+- The device is active, AND
+- The device's capabilities contain `"stream"`.
+
+### 4. Manage — Owner Only
+A User may `manage` an Endpoint when:
+- `principal == resource.owner`.
+
+Only the endpoint's owner can manage it (configure, provision, etc.).
+
+### 5. Default Deny
+All other requests are denied. Inactive devices cannot perform any
+action. Devices without the required capability are denied.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// IoT Device Authorization — capability-based device access.
+// Tests non-User principals (Device) with set-contains for capability checks.
+
+entity User;
+
+entity Device = {
+    capabilities: Set<String>,   // e.g. "read_sensor", "actuate", "stream"
+    isActive: Bool,
+};
+
+entity Endpoint = {
+    owner: User,
+};
+
+action telemetry, control, stream appliesTo {
+    principal: [Device],
+    resource: [Endpoint],
+    context: {},
+};
+
+action manage appliesTo {
+    principal: [User],
+    resource: [Endpoint],
+    context: {},
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is Device,
+    action == Action::"telemetry",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("read_sensor")
+};
+
+permit (
+    principal is Device,
+    action == Action::"control",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("actuate")
+};
+
+permit (
+    principal is Device,
+    action == Action::"stream",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("stream")
+};
+
+permit (
+    principal is User,
+    action == Action::"manage",
+    resource is Endpoint
+) when {
+    principal == resource.owner
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is Device,
+    action == Action::"telemetry",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("read_sensor")
+};
+
+permit (
+    principal is Device,
+    action == Action::"control",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("actuate")
+};
+
+permit (
+    principal is Device,
+    action == Action::"stream",
+    resource is Endpoint
+) when {
+    principal.isActive &&
+    principal.capabilities.contains("stream")
+};
+
+permit (
+    principal is User,
+    action == Action::"manage",
+    resource is Endpoint
+) when {
+    principal == resource.owner
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 10
+solver_time_s: 0.312
+
+semantic check results:
+  - telemetry_safety [implies] PASS
+    description: telemetry only when active + read_sensor cap
+  - control_safety [implies] PASS
+    description: control only when active + actuate cap
+  - stream_safety [implies] PASS
+    description: stream only when active + stream cap
+  - manage_safety [implies] PASS
+    description: manage only when owner
+  - floor_active_telemetry [implies] PASS
+    description: active device with read_sensor MUST telemetry
+  - floor_active_control [implies] PASS
+    description: active device with actuate MUST control
+  - floor_owner_manage [implies] PASS
+    description: owner MUST manage
+  - liveness_telemetry [always-denies (liveness)] PASS
+    description: at least one telemetry permitted
+  - liveness_control [always-denies (liveness)] PASS
+    description: at least one control permitted
+  - liveness_manage [always-denies (liveness)] PASS
+    description: at least one manage permitted
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       1.773
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/iot_device_auth-structured_instruction/20260417T063151Z_repair_mi05_repair_loop/iot_device_auth_iter_01/run.log

@@ -1,0 +1,540 @@
+========================================================================
+ITERATION START
+task:       clinical_temporal_embargo
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: "add temporal"
+difficulty: hard
+features:
+  - role-clearance hierarchy
+  - document sensitivity levels
+  - consent-based access
+  - datetime-based embargo
+domain: healthcare / clinical trials
+source: mutation (clinical domain)
+---
+
+# Clinical Trial Data Platform -- Policy Specification
+
+## Context
+
+This policy governs access control for a clinical trial data platform with
+Users, Roles, Projects, and Documents. Users belong to Roles (e.g.,
+ClinicalResearcher, PrincipalInvestigator, GlobalAuditor). Documents
+belong to Projects. Project attributes (status, managingDepartment)
+are denormalized onto Document for policy evaluation.
+
+## Requirements
+
+### 1. Active Project Gate
+- A user may only **View** or **Edit** a document if the document's
+  `projectStatus == "Active"`. Documents in non-active projects are
+  inaccessible.
+
+### 2. Role Gate
+- Only users in the **ClinicalResearcher** or **PrincipalInvestigator**
+  role may View or Edit documents. All other users are denied by default.
+
+### 3. Clinical Researcher Constraints
+- A ClinicalResearcher may View/Edit a document only if:
+  - `principal.clearanceLevel > 3`, AND
+  - `resource.classification != "HighlyRestricted"`.
+
+### 4. Principal Investigator Constraints
+- A PrincipalInvestigator may View/Edit a document only if:
+  - `context.networkRiskScore < 20`, AND
+  - `context.isCompliantDevice == true`.
+
+### 5. Cross-Departmental Block (Forbid)
+- **Forbid** any View or Edit if the user's `department` does not match
+  the document's `projectManagingDepartment`.
+- This forbid overrides all permit rules.
+
+### 6. Auditor Loophole
+- The **GlobalAuditor** role is exempt from the cross-departmental block
+  (via an `unless` clause on the forbid rule). GlobalAuditors may access
+  documents outside their department, provided they otherwise qualify
+  under the permit rules.
+
+## Notes
+- Roles are checked via entity group membership: `principal in Role::"ClinicalResearcher"`.
+- Cedar denies by default; no explicit deny-all policy is needed.
+- The forbid/unless pattern is the key complexity driver in this scenario.
+### 7. Temporal Embargo (Forbid with Exception)
+- Documents now have an `embargoUntil` attribute (Long, representing a
+  Unix epoch timestamp).
+- A new context field `requestTime` (Long, Unix epoch timestamp) is added
+  to both View and Edit actions.
+- **Forbid** any View or Edit if `context.requestTime < resource.embargoUntil`
+  (i.e., the request is made before the embargo lifts).
+- **Exception**: PrincipalInvestigators (`principal in Role::"PrincipalInvestigator"`)
+  are exempt from this embargo via an `unless` clause. PIs can access
+  embargoed documents early.
+- This forbid is independent of the cross-departmental block. Both may
+  apply simultaneously.
+
+## Notes (Temporal Embargo)
+- The embargo uses Long (integer) timestamps rather than a dedicated datetime
+  type for Cedar compatibility.
+- The embargo forbid uses a numeric less-than comparison on context vs resource.
+- Two forbid rules now exist, each with different `unless` exceptions:
+  cross-dept block (unless GlobalAuditor) and embargo (unless PI).
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Clinical Trial Data Platform -- Cedar Schema
+//
+// Design note: Cedar cannot traverse entity hierarchies to access
+// parent attributes (e.g., no resource.parent.status). To reference
+// Project attributes in policies, projectStatus and projectManagingDepartment
+// are denormalized onto Document. The application ensures these stay in sync.
+
+entity Role;
+
+entity User in [Role] {
+    department: String,
+    clearanceLevel: Long,
+};
+
+entity Project {
+    status: String,
+    managingDepartment: String,
+};
+
+entity Document in [Project] {
+    classification: String,
+    projectStatus: String,
+    projectManagingDepartment: String,
+embargoUntil: Long,
+};
+
+action "View" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+        requestTime: Long,
+    },
+
+};
+
+action "Edit" appliesTo {
+    principal: [User],
+    resource: [Document],
+    context: {
+        networkRiskScore: Long,
+        isCompliantDevice: Bool,
+        requestTime: Long,
+    },
+
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) when {
+    principal.department != resource.projectManagingDepartment
+} unless {
+    principal in Role::"GlobalAuditor"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) when {
+    context.requestTime < resource.embargoUntil
+} unless {
+    principal in Role::"PrincipalInvestigator"
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.networkRiskScore < 20 &&
+    context.isCompliantDevice &&
+    resource.projectStatus == "Active"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) when {
+    principal.department != resource.projectManagingDepartment
+} unless {
+    principal in Role::"GlobalAuditor"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit"],
+    resource is Document
+) when {
+    context.requestTime < resource.embargoUntil
+} unless {
+    principal in Role::"PrincipalInvestigator"
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 15
+solver_time_s: 1.226
+
+semantic check results:
+  - view_safety_ceiling [implies] PASS
+    description: View is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI
+  - edit_safety_ceiling [implies] PASS
+    description: Edit is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI
+  - active_project_gate_view [implies] PASS
+    description: View is denied when projectStatus is not Active — no permit should fire for non-active projects
+  - active_project_gate_edit [implies] PASS
+    description: Edit is denied when projectStatus is not Active — no permit should fire for non-active projects
+  - cross_dept_block_view [implies] PASS
+    description: View is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor
+  - cross_dept_block_edit [implies] PASS
+    description: Edit is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor
+  - embargo_block_view [implies] PASS
+    description: View is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator
+  - embargo_block_edit [implies] PASS
+    description: Edit is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator
+  - floor_clinical_researcher_view [implies] PASS
+    description: A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to View
+  - floor_clinical_researcher_edit [implies] PASS
+    description: A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to Edit
+  - floor_pi_view [implies] PASS
+    description: A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to View (even if embargoed, since PI is exempt)
+  - floor_pi_edit [implies] PASS
+    description: A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to Edit (even if embargoed, since PI is exempt)
+  - floor_auditor_cross_dept_view [implies] PASS
+    description: A GlobalAuditor who is also a ClinicalResearcher with clearanceLevel > 3, on an Active non-HighlyRestricted non-embargoed document in a different department MUST be able to View (auditor exemption from cross-dept block)
+  - liveness_view [always-denies (liveness)] PASS
+    description: View policy is not trivially deny-all
+  - liveness_edit [always-denies (liveness)] PASS
+    description: Edit policy is not trivially deny-all
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       3.061
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/run.log

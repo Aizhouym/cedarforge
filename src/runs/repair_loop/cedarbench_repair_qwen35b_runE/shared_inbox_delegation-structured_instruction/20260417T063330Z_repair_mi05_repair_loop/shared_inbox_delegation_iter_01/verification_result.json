@@ -1,0 +1,196 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.467,
+  "checks": [
+    {
+      "name": "readMail_safety",
+      "description": "readMail only when owner OR delegate OR member",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"readMail\"",
+      "resource_type": "Mailbox",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/readMail_safety.cedar"
+    },
+    {
+      "name": "sendAs_safety",
+      "description": "sendAs only when owner OR delegate (not members)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"sendAs\"",
+      "resource_type": "Mailbox",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/sendAs_safety.cedar"
+    },
+    {
+      "name": "manageFolders_safety",
+      "description": "manageFolders only when owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"manageFolders\"",
+      "resource_type": "Mailbox",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/manageFolders_safety.cedar"
+    },
+    {
+      "name": "grantAccess_safety",
+      "description": "grantAccess only when owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"grantAccess\"",
+      "resource_type": "Mailbox",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/grantAccess_safety.cedar"
+    },
+    {
+      "name": "floor_owner_readMail",
+      "description": "owner MUST be able to readMail",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readMail\"",
+      "resource_type": "Mailbox",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/floor_owner_readMail.cedar"
+    },
+    {
+      "name": "floor_member_readMail",
+      "description": "member MUST be able to readMail",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readMail\"",
+      "resource_type": "Mailbox",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/floor_member_readMail.cedar"
+    },
+    {
+      "name": "floor_delegate_sendAs",
+      "description": "delegate MUST be able to sendAs",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"sendAs\"",
+      "resource_type": "Mailbox",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/floor_delegate_sendAs.cedar"
+    },
+    {
+      "name": "floor_owner_manageFolders",
+      "description": "owner MUST be able to manageFolders",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"manageFolders\"",
+      "resource_type": "Mailbox",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/shared_inbox_delegation-structured_instruction/20260417T063330Z_repair_mi05_repair_loop/shared_inbox_delegation_iter_01/_eval_workspace/references/floor_owner_manageFolders.cedar"
+    },
+    {
+      "name": "liveness_readMail",
+      "description": "at least one readMail must be permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"readMail\"",
+      "resource_type": "Mailbox"
+    },
+    {
+      "name": "liveness_sendAs",
+      "description": "at least one sendAs must be permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"sendAs\"",
+      "resource_type": "Mailbox"
+    },
+    {
+      "name": "liveness_manageFolders",
+      "description": "at least one manageFolders must be permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"manageFolders\"",
+      "resource_type": "Mailbox"
+    },
+    {
+      "name": "liveness_grantAccess",
+      "description": "at least one grantAccess must be permitted",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"grantAccess\"",
+      "resource_type": "Mailbox"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "readMail_safety",
+      "check_type": "implies",
+      "description": "readMail only when owner OR delegate OR member",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "sendAs_safety",
+      "check_type": "implies",
+      "description": "sendAs only when owner OR delegate (not members)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "manageFolders_safety",
+      "check_type": "implies",
+      "description": "manageFolders only when owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "grantAccess_safety",
+      "check_type": "implies",
+      "description": "grantAccess only when owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_readMail",
+      "check_type": "implies",
+      "description": "owner MUST be able to readMail",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_member_readMail",
+      "check_type": "implies",
+      "description": "member MUST be able to readMail",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_delegate_sendAs",
+      "check_type": "implies",
+      "description": "delegate MUST be able to sendAs",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_manageFolders",
+      "check_type": "implies",
+      "description": "owner MUST be able to manageFolders",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_readMail",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one readMail must be permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_sendAs",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one sendAs must be permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_manageFolders",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one manageFolders must be permitted",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_grantAccess",
+      "check_type": "always-denies (liveness)",
+      "description": "at least one grantAccess must be permitted",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

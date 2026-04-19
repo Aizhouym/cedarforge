@@ -1,0 +1,685 @@
+{
+  "loss": 2,
+  "solver_time_s": 12.704,
+  "checks": [
+    {
+      "name": "auth_gate_forbid_create_document",
+      "description": "CreateDocument is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"CreateDocument\"",
+      "resource_type": "Drive",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_create_document.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_view_document_user",
+      "description": "ViewDocument by User is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_view_document_user.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_view_document_public",
+      "description": "ViewDocument by Public is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "Public",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_view_document_public.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_modify_document",
+      "description": "ModifyDocument is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_modify_document.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_delete_document",
+      "description": "DeleteDocument is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"DeleteDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_delete_document.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_edit_is_private",
+      "description": "EditIsPrivate is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"EditIsPrivate\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_edit_is_private.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_add_to_share_acl",
+      "description": "AddToShareACL is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"AddToShareACL\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_add_to_share_acl.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_edit_public_access",
+      "description": "EditPublicAccess is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"EditPublicAccess\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_edit_public_access.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_create_group",
+      "description": "CreateGroup is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"CreateGroup\"",
+      "resource_type": "Drive",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_create_group.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_modify_group",
+      "description": "ModifyGroup is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyGroup\"",
+      "resource_type": "Group",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_modify_group.cedar"
+    },
+    {
+      "name": "auth_gate_forbid_delete_group",
+      "description": "DeleteGroup is forbidden when is_authenticated is false",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"DeleteGroup\"",
+      "resource_type": "Group",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_delete_group.cedar"
+    },
+    {
+      "name": "delete_document_owner_only",
+      "description": "DeleteDocument is only allowed for the document owner (ceiling)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"DeleteDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_delete_document.cedar"
+    },
+    {
+      "name": "edit_is_private_owner_only",
+      "description": "EditIsPrivate is only allowed for the document owner (ceiling)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"EditIsPrivate\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_edit_is_private.cedar"
+    },
+    {
+      "name": "modify_group_owner_only",
+      "description": "ModifyGroup is only allowed for the group owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyGroup\"",
+      "resource_type": "Group",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_modify_group.cedar"
+    },
+    {
+      "name": "delete_group_owner_only",
+      "description": "DeleteGroup is only allowed for the group owner",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"DeleteGroup\"",
+      "resource_type": "Group",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_delete_group.cedar"
+    },
+    {
+      "name": "view_document_user_ceiling",
+      "description": "ViewDocument by User is allowed only if owner or in viewACL (and not private), with auth and no blocking",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_view_document_user.cedar"
+    },
+    {
+      "name": "view_document_public_ceiling",
+      "description": "ViewDocument by Public only when publicAccess is view or edit and not private, with auth",
+      "type": "implies",
+      "principal_type": "Public",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_view_document_public.cedar"
+    },
+    {
+      "name": "modify_document_ceiling",
+      "description": "ModifyDocument allowed only if owner or in modifyACL (and not private), with auth and no blocking",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_modify_document.cedar"
+    },
+    {
+      "name": "add_to_share_acl_ceiling",
+      "description": "AddToShareACL allowed only if owner or in manageACL, with auth and no blocking",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"AddToShareACL\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_add_to_share_acl.cedar"
+    },
+    {
+      "name": "edit_public_access_ceiling",
+      "description": "EditPublicAccess allowed only if owner or in manageACL, with auth and no blocking",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"EditPublicAccess\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_edit_public_access.cedar"
+    },
+    {
+      "name": "private_doc_guard_view",
+      "description": "Private documents cannot be viewed by non-owners (forbid guard rail)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_view_document_user.cedar"
+    },
+    {
+      "name": "private_doc_guard_modify",
+      "description": "Private documents cannot be modified by non-owners",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/ceiling_modify_document.cedar"
+    },
+    {
+      "name": "floor_create_document",
+      "description": "Any authenticated User MUST be able to CreateDocument on Drive",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"CreateDocument\"",
+      "resource_type": "Drive",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_create_document.cedar"
+    },
+    {
+      "name": "floor_create_group",
+      "description": "Any authenticated User MUST be able to CreateGroup on Drive",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"CreateGroup\"",
+      "resource_type": "Drive",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_create_group.cedar"
+    },
+    {
+      "name": "floor_owner_view",
+      "description": "An authenticated document owner MUST be able to ViewDocument (even if private), assuming no self-block",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_view.cedar"
+    },
+    {
+      "name": "floor_owner_modify",
+      "description": "An authenticated document owner MUST be able to ModifyDocument",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_modify.cedar"
+    },
+    {
+      "name": "floor_owner_delete",
+      "description": "An authenticated document owner MUST be able to DeleteDocument",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"DeleteDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_delete.cedar"
+    },
+    {
+      "name": "floor_owner_edit_is_private",
+      "description": "An authenticated document owner MUST be able to EditIsPrivate",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"EditIsPrivate\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_edit_is_private.cedar"
+    },
+    {
+      "name": "floor_owner_add_to_share_acl",
+      "description": "An authenticated document owner MUST be able to AddToShareACL",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"AddToShareACL\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_add_to_share_acl.cedar"
+    },
+    {
+      "name": "floor_owner_edit_public_access",
+      "description": "An authenticated document owner MUST be able to EditPublicAccess",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"EditPublicAccess\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_owner_edit_public_access.cedar"
+    },
+    {
+      "name": "floor_group_owner_modify_group",
+      "description": "An authenticated group owner MUST be able to ModifyGroup",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"ModifyGroup\"",
+      "resource_type": "Group",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_modify_group.cedar"
+    },
+    {
+      "name": "floor_group_owner_delete_group",
+      "description": "An authenticated group owner MUST be able to DeleteGroup",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"DeleteGroup\"",
+      "resource_type": "Group",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_base-structured_instruction/20260417T055929Z_repair_mi05_repair_loop/doccloud_base_iter_01/_eval_workspace/references/floor_delete_group.cedar"
+    },
+    {
+      "name": "liveness_create_document",
+      "description": "CreateDocument policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"CreateDocument\"",
+      "resource_type": "Drive"
+    },
+    {
+      "name": "liveness_view_document_user",
+      "description": "ViewDocument by User is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_view_document_public",
+      "description": "ViewDocument by Public is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "Public",
+      "action": "Action::\"ViewDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_modify_document",
+      "description": "ModifyDocument policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"ModifyDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_delete_document",
+      "description": "DeleteDocument policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"DeleteDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_edit_is_private",
+      "description": "EditIsPrivate policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"EditIsPrivate\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_add_to_share_acl",
+      "description": "AddToShareACL policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"AddToShareACL\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_edit_public_access",
+      "description": "EditPublicAccess policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"EditPublicAccess\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_create_group",
+      "description": "CreateGroup policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"CreateGroup\"",
+      "resource_type": "Drive"
+    },
+    {
+      "name": "liveness_modify_group",
+      "description": "ModifyGroup policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"ModifyGroup\"",
+      "resource_type": "Group"
+    },
+    {
+      "name": "liveness_delete_group",
+      "description": "DeleteGroup policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"DeleteGroup\"",
+      "resource_type": "Group"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "auth_gate_forbid_create_document",
+      "check_type": "implies",
+      "description": "CreateDocument is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_view_document_user",
+      "check_type": "implies",
+      "description": "ViewDocument by User is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_view_document_public",
+      "check_type": "implies",
+      "description": "ViewDocument by Public is forbidden when is_authenticated is false",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Public::\"\", action: Action::\"ViewDocument\", resource: Document::\"\"\ncontext: {is_authenticated: false}\nentities: [\n  Action::\"DeleteGroup\",\n  Action::\"EditPublicAccess\",\n  Document::\"\" {\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"A\",\n    owner: User::\"\",\n    publicAccess: \"view\",\n    viewACL: DocumentShare::\"B\",\n  },\n  Action::\"AddToShareACL\",\n  DocumentShare::\"B\",\n  Action::\"EditIsPrivate\",\n  Action::\"ModifyGroup\",\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"CreateDocument\",\n  Public::\"\",\n  Action::\"DeleteDocument\",\n  Action::\"CreateGroup\",\n  Action::\"ViewDocument\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"ModifyDocument\",\n  DocumentShare::\"\",\n  DocumentShare::\"A\",\n]"
+    },
+    {
+      "check_name": "auth_gate_forbid_modify_document",
+      "check_type": "implies",
+      "description": "ModifyDocument is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_delete_document",
+      "check_type": "implies",
+      "description": "DeleteDocument is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_edit_is_private",
+      "check_type": "implies",
+      "description": "EditIsPrivate is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_add_to_share_acl",
+      "check_type": "implies",
+      "description": "AddToShareACL is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_edit_public_access",
+      "check_type": "implies",
+      "description": "EditPublicAccess is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_create_group",
+      "check_type": "implies",
+      "description": "CreateGroup is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_modify_group",
+      "check_type": "implies",
+      "description": "ModifyGroup is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "auth_gate_forbid_delete_group",
+      "check_type": "implies",
+      "description": "DeleteGroup is forbidden when is_authenticated is false",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "delete_document_owner_only",
+      "check_type": "implies",
+      "description": "DeleteDocument is only allowed for the document owner (ceiling)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_is_private_owner_only",
+      "check_type": "implies",
+      "description": "EditIsPrivate is only allowed for the document owner (ceiling)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "modify_group_owner_only",
+      "check_type": "implies",
+      "description": "ModifyGroup is only allowed for the group owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "delete_group_owner_only",
+      "check_type": "implies",
+      "description": "DeleteGroup is only allowed for the group owner",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "view_document_user_ceiling",
+      "check_type": "implies",
+      "description": "ViewDocument by User is allowed only if owner or in viewACL (and not private), with auth and no blocking",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "view_document_public_ceiling",
+      "check_type": "implies",
+      "description": "ViewDocument by Public only when publicAccess is view or edit and not private, with auth",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Public::\"\", action: Action::\"ViewDocument\", resource: Document::\"\"\ncontext: {is_authenticated: false}\nentities: [\n  Action::\"CreateGroup\",\n  Action::\"ModifyDocument\",\n  Action::\"CreateDocument\",\n  Action::\"DeleteDocument\",\n  Public::\"\",\n  Action::\"EditPublicAccess\",\n  DocumentShare::\"\",\n  Action::\"EditIsPrivate\",\n  Action::\"AddToShareACL\",\n  Action::\"ModifyGroup\",\n  Document::\"\" {\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"A\",\n    owner: User::\"\",\n    publicAccess: \"view\",\n    viewACL: DocumentShare::\"B\",\n  },\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  DocumentShare::\"A\",\n  DocumentShare::\"B\",\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"DeleteGroup\",\n  Action::\"ViewDocument\",\n]"
+    },
+    {
+      "check_name": "modify_document_ceiling",
+      "check_type": "implies",
+      "description": "ModifyDocument allowed only if owner or in modifyACL (and not private), with auth and no blocking",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "add_to_share_acl_ceiling",
+      "check_type": "implies",
+      "description": "AddToShareACL allowed only if owner or in manageACL, with auth and no blocking",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_public_access_ceiling",
+      "check_type": "implies",
+      "description": "EditPublicAccess allowed only if owner or in manageACL, with auth and no blocking",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "private_doc_guard_view",
+      "check_type": "implies",
+      "description": "Private documents cannot be viewed by non-owners (forbid guard rail)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "private_doc_guard_modify",
+      "check_type": "implies",
+      "description": "Private documents cannot be modified by non-owners",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_create_document",
+      "check_type": "implies",
+      "description": "Any authenticated User MUST be able to CreateDocument on Drive",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_create_group",
+      "check_type": "implies",
+      "description": "Any authenticated User MUST be able to CreateGroup on Drive",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_view",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to ViewDocument (even if private), assuming no self-block",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_modify",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to ModifyDocument",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_delete",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to DeleteDocument",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_edit_is_private",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to EditIsPrivate",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_add_to_share_acl",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to AddToShareACL",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_owner_edit_public_access",
+      "check_type": "implies",
+      "description": "An authenticated document owner MUST be able to EditPublicAccess",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_group_owner_modify_group",
+      "check_type": "implies",
+      "description": "An authenticated group owner MUST be able to ModifyGroup",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_group_owner_delete_group",
+      "check_type": "implies",
+      "description": "An authenticated group owner MUST be able to DeleteGroup",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_create_document",
+      "check_type": "always-denies (liveness)",
+      "description": "CreateDocument policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_view_document_user",
+      "check_type": "always-denies (liveness)",
+      "description": "ViewDocument by User is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_view_document_public",
+      "check_type": "always-denies (liveness)",
+      "description": "ViewDocument by Public is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_modify_document",
+      "check_type": "always-denies (liveness)",
+      "description": "ModifyDocument policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete_document",
+      "check_type": "always-denies (liveness)",
+      "description": "DeleteDocument policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit_is_private",
+      "check_type": "always-denies (liveness)",
+      "description": "EditIsPrivate policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_add_to_share_acl",
+      "check_type": "always-denies (liveness)",
+      "description": "AddToShareACL policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit_public_access",
+      "check_type": "always-denies (liveness)",
+      "description": "EditPublicAccess policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_create_group",
+      "check_type": "always-denies (liveness)",
+      "description": "CreateGroup policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_modify_group",
+      "check_type": "always-denies (liveness)",
+      "description": "ModifyGroup policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete_group",
+      "check_type": "always-denies (liveness)",
+      "description": "DeleteGroup policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

@@ -1,0 +1,276 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.771,
+  "checks": [
+    {
+      "name": "create_safety",
+      "description": "create permitted only when role == physician",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"create\"",
+      "resource_type": "Prescription",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/create_safety.cedar"
+    },
+    {
+      "name": "review_safety",
+      "description": "review permitted only when (pharmacist) OR (physician + own prescription) OR (patient + own prescription)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"review\"",
+      "resource_type": "Prescription",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/review_safety.cedar"
+    },
+    {
+      "name": "fill_safety",
+      "description": "fill permitted only when (pharmacist AND !isFilled AND (!isControlled OR controlledSubstanceVerified))",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"fill\"",
+      "resource_type": "Prescription",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/fill_safety.cedar"
+    },
+    {
+      "name": "viewHistory_safety",
+      "description": "viewHistory permitted only when (patient + own) OR (physician + own as prescriber) OR nurse",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"viewHistory\"",
+      "resource_type": "Prescription",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/viewHistory_safety.cedar"
+    },
+    {
+      "name": "physician_must_create",
+      "description": "Physician MUST be permitted to create prescriptions",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"create\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/physician_must_create.cedar"
+    },
+    {
+      "name": "pharmacist_must_review",
+      "description": "Pharmacist MUST be permitted to review any prescription",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"review\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/pharmacist_must_review.cedar"
+    },
+    {
+      "name": "physician_must_review_own",
+      "description": "Physician MUST be permitted to review prescriptions they wrote",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"review\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/physician_must_review_own.cedar"
+    },
+    {
+      "name": "patient_must_review_own",
+      "description": "Patient MUST be permitted to review their own prescriptions",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"review\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/patient_must_review_own.cedar"
+    },
+    {
+      "name": "pharmacist_must_fill_noncontrolled",
+      "description": "Pharmacist MUST be permitted to fill an unfilled non-controlled prescription",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"fill\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/pharmacist_must_fill_noncontrolled.cedar"
+    },
+    {
+      "name": "pharmacist_must_fill_controlled_verified",
+      "description": "Pharmacist MUST be permitted to fill an unfilled controlled prescription when verification is attested",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"fill\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/pharmacist_must_fill_controlled_verified.cedar"
+    },
+    {
+      "name": "patient_must_viewHistory_own",
+      "description": "Patient MUST be permitted to view history of their own prescriptions",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewHistory\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/patient_must_viewHistory_own.cedar"
+    },
+    {
+      "name": "physician_must_viewHistory_own",
+      "description": "Physician MUST be permitted to view history of prescriptions they wrote",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewHistory\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/physician_must_viewHistory_own.cedar"
+    },
+    {
+      "name": "nurse_must_viewHistory",
+      "description": "Nurse MUST be permitted to view history of any prescription",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"viewHistory\"",
+      "resource_type": "Prescription",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/medical_prescription_workflow-structured_instruction/20260417T063217Z_repair_mi05_repair_loop/medical_prescription_workflow_iter_01/_eval_workspace/references/nurse_must_viewHistory.cedar"
+    },
+    {
+      "name": "liveness_create",
+      "description": "User+create+Prescription liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"create\"",
+      "resource_type": "Prescription"
+    },
+    {
+      "name": "liveness_review",
+      "description": "User+review+Prescription liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"review\"",
+      "resource_type": "Prescription"
+    },
+    {
+      "name": "liveness_fill",
+      "description": "User+fill+Prescription liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"fill\"",
+      "resource_type": "Prescription"
+    },
+    {
+      "name": "liveness_viewHistory",
+      "description": "User+viewHistory+Prescription liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"viewHistory\"",
+      "resource_type": "Prescription"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "create_safety",
+      "check_type": "implies",
+      "description": "create permitted only when role == physician",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "review_safety",
+      "check_type": "implies",
+      "description": "review permitted only when (pharmacist) OR (physician + own prescription) OR (patient + own prescription)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "fill_safety",
+      "check_type": "implies",
+      "description": "fill permitted only when (pharmacist AND !isFilled AND (!isControlled OR controlledSubstanceVerified))",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "viewHistory_safety",
+      "check_type": "implies",
+      "description": "viewHistory permitted only when (patient + own) OR (physician + own as prescriber) OR nurse",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "physician_must_create",
+      "check_type": "implies",
+      "description": "Physician MUST be permitted to create prescriptions",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "pharmacist_must_review",
+      "check_type": "implies",
+      "description": "Pharmacist MUST be permitted to review any prescription",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "physician_must_review_own",
+      "check_type": "implies",
+      "description": "Physician MUST be permitted to review prescriptions they wrote",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "patient_must_review_own",
+      "check_type": "implies",
+      "description": "Patient MUST be permitted to review their own prescriptions",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "pharmacist_must_fill_noncontrolled",
+      "check_type": "implies",
+      "description": "Pharmacist MUST be permitted to fill an unfilled non-controlled prescription",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "pharmacist_must_fill_controlled_verified",
+      "check_type": "implies",
+      "description": "Pharmacist MUST be permitted to fill an unfilled controlled prescription when verification is attested",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "patient_must_viewHistory_own",
+      "check_type": "implies",
+      "description": "Patient MUST be permitted to view history of their own prescriptions",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "physician_must_viewHistory_own",
+      "check_type": "implies",
+      "description": "Physician MUST be permitted to view history of prescriptions they wrote",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "nurse_must_viewHistory",
+      "check_type": "implies",
+      "description": "Nurse MUST be permitted to view history of any prescription",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_create",
+      "check_type": "always-denies (liveness)",
+      "description": "User+create+Prescription liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_review",
+      "check_type": "always-denies (liveness)",
+      "description": "User+review+Prescription liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_fill",
+      "check_type": "always-denies (liveness)",
+      "description": "User+fill+Prescription liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_viewHistory",
+      "check_type": "always-denies (liveness)",
+      "description": "User+viewHistory+Prescription liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

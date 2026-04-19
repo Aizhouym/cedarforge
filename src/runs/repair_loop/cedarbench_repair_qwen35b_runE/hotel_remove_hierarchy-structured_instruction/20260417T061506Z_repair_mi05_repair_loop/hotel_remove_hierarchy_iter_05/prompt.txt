@@ -1,0 +1,289 @@
+# Role
+You are a **Cedar Policy Schema Engineer**.
+
+Your only job is to fix schema grounding errors in the previous candidate.
+The policy parses correctly but references entity types, attributes, or actions that do not exist in the schema.
+
+---
+
+# Critical Rule
+
+**Do NOT change any policy logic or conditions.**
+Only replace incorrect identifiers with the correct ones from the schema.
+Check every entity type, action, and attribute reference against the schema below.
+
+---
+
+# Repair Context
+
+Current repair iteration: 5
+
+
+
+---
+
+# Policy Specification (for reference only — do not re-derive policy logic)
+---
+pattern: "remove constraint"
+difficulty: medium
+features:
+  - franchise hierarchy
+  - viewer/member/admin roles
+  - loyalty tiers
+  - remove hierarchy level
+domain: hospitality / hotel chains
+source: mutation (hotel domain)
+---
+
+# Hotel Chain Permissions -- Policy Specification (Flat Hierarchy)
+
+## Context
+
+This policy governs access control for a hotel chain management platform with
+Hotels, Properties, Reservations, and Users.
+
+Properties are now **standalone entities** -- they do NOT belong to Hotels via
+the entity hierarchy. Hotels can still contain other Hotels (sub-brands).
+Reservations still belong to Properties.
+
+Users have the same three permission tiers as before.
+
+## Requirements
+
+### 1. Viewer Permissions (Reservations)
+- A user may **viewReservation** if the reservation's property is in
+  the user's `viewPermissions.propertyReservations`.
+- Hotel-level viewer permissions (`viewPermissions.hotelReservations`) still
+  apply but NO LONGER cascade to properties since Property is not in Hotel.
+
+### 2. Member Permissions (Reservations)
+- A user may **viewReservation**, **updateReservation**, or **createReservation**
+  if the resource is in the user's `memberPermissions.propertyReservations`.
+- Hotel-level member permissions still apply but do not cascade to properties.
+
+### 3. Admin Permissions (Reservations)
+- A user may **viewReservation**, **updateReservation**, **createReservation**, and
+  **grantAccessReservation** if the resource is in the user's `propertyAdminPermissions`.
+- Hotel-level admin permissions still apply but do not cascade to properties.
+
+### 4. Viewer Permissions (Properties & Hotels)
+- A user may **viewProperty** if the property is in `viewPermissions.propertyReservations`.
+- A user may **viewHotel** if the hotel is in `viewPermissions.hotelReservations`.
+- Hotel viewer permissions do NOT grant property viewing since Property is no longer in Hotel.
+
+### 5. Member Permissions (Properties & Hotels)
+- Same pattern: property-level and hotel-level permissions are checked independently.
+  Hotel membership no longer cascades to properties.
+
+### 6. Admin Permissions (Properties & Hotels)
+- Same pattern: `hotelAdminPermissions` only covers Hotels, `propertyAdminPermissions`
+  only covers Properties. No cascade between the two.
+
+## Notes
+- The key difference from the base scenario: `Property` has no `in [Hotel]` clause.
+- Permissions that relied on hotel-level sets cascading to property-level resources
+  through the hierarchy will no longer work. Each level must be granted independently.
+
+---
+
+# Cedar Schema
+```cedar
+// Hotel Chain Permissions -- Cedar Schema (Flat)
+
+type PermissionsMap = {
+  hotelReservations: Set<Hotel>,
+  propertyReservations: Set<Property>,
+};
+entity User {
+  viewPermissions: PermissionsMap,
+  memberPermissions: PermissionsMap,
+  hotelAdminPermissions: Set<Hotel>,
+  propertyAdminPermissions: Set<Property>,
+};
+entity Property;
+entity Hotel in [Hotel];
+entity Reservation in [Property];
+
+// ACTIONS: Reservations
+action viewReservation, updateReservation, grantAccessReservation
+  appliesTo {
+    principal: User,
+    resource: Reservation,
+  };
+
+// ACTIONS: Properties (plus, CreateReservation for a Property)
+action createReservation, viewProperty, updateProperty, grantAccessProperty
+  appliesTo {
+    principal: User,
+    resource: Property,
+  };
+
+// ACTIONS: Hotels (plus, CreateProperty for a Hotel)
+action createProperty, createHotel, viewHotel, updateHotel, grantAccessHotel
+  appliesTo {
+    principal: User,
+    resource: Hotel,
+  };
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"viewReservation",
+    resource is Reservation
+) when {
+    principal in resource.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateReservation",
+    resource is Reservation
+) when {
+    principal in resource.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createReservation",
+    resource is Property
+) when {
+    principal in resource.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessReservation",
+    resource is Reservation
+) when {
+    principal in resource.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"viewProperty",
+    resource is Property
+) when {
+    principal in resource.viewPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateProperty",
+    resource is Property
+) when {
+    principal in resource.memberPermissions.propertyReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessProperty",
+    resource is Property
+) when {
+    principal in resource.propertyAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"viewHotel",
+    resource is Hotel
+) when {
+    principal in resource.viewPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"updateHotel",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"grantAccessHotel",
+    resource is Hotel
+) when {
+    principal in resource.hotelAdminPermissions
+};
+
+permit (
+    principal is User,
+    action == Action::"createProperty",
+    resource is Hotel
+) when {
+    principal in resource.memberPermissions.hotelReservations
+};
+
+permit (
+    principal is User,
+    action == Action::"createHotel",
+    resource is Hotel
+) when {
+    principal in resource.hotelAdminPermissions
+};
+```
+
+---
+
+# Schema Error
+SCHEMA ERROR — The policy parses but uses identifiers not present in the schema.
+
+Summary:       The policy references an attribute not defined on `Reservation`.
+Likely cause:  The model used `viewPermissions`, but that attribute does not exist on `Reservation` in the schema.
+Suggested fix: Replace `viewPermissions` with a real attribute from the schema for `Reservation`.
+
+Raw error:
+× policy set validation failed
+  ╰─▶ for policy `policy0`, attribute `viewPermissions` on entity type `Reservation` not found
+   ╭─[6:18]
+ 5 │ ) when {
+ 6 │     principal in resource.viewPermissions.propertyReservations
+   ·                  ─────────────────────────────────────────────
+ 7 │ };
+   ╰────
+
+Error: 
+  × for policy `policy1`, attribute `memberPermissions` on entity type `Reservation` not found
+    ╭─[14:18]
+ 13 │ ) when {
+ 14 │     principal in resource.memberPermissions.propertyReservations
+    ·                  ───────────────────────────────────────────────
+ 15 │ };
+    ╰────
+
+Error: 
+  × for policy `policy2`, attribute `memberPermissions` on entity type `Property` not found
+    ╭─[22:18]
+ 21 │ ) when {
+ 22 │     principal in resource.memberPermissions.propertyReservations
+    ·                  ───────────────────────────────────────────────
+ 23 │ };
+    ╰────
+
+Error: 
+  × for policy `policy3`, attribute `propertyAdminPermissions` on entity type `Reservation` not found
+    ╭─[30:18]
+ 29 │ ) when {
+ 30 │     principal in resource.propertyAdminPermissions
+    ·                  ─────────────────────────────────
+ 31 │ };
+    ╰────
+
+Error: 
+  × for policy `policy4`, at
+...[truncated]...
+
+NOTE: Only fix identifier names. Do not change policy logic or conditions.
+
+---
+
+# Output Format
+Only output the corrected Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

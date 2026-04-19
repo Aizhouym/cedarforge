@@ -1,0 +1,100 @@
+permit (
+    principal is User,
+    action == Action::"pull",
+    resource is Repository
+) when {
+    principal in resource.readers
+};
+
+permit (
+    principal is User,
+    action == Action::"fork",
+    resource is Repository
+) when {
+    principal in resource.readers &&
+    !resource.isPrivate
+};
+
+permit (
+    principal is User,
+    action == Action::"push",
+    resource is Repository
+) when {
+    principal in resource.writers &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"assign_issue",
+    resource is Issue
+) when {
+    principal in resource.repo.triagers
+};
+
+permit (
+    principal is User,
+    action == Action::"edit_issue",
+    resource is Issue
+) when {
+    (principal in resource.repo.writers &&
+     !resource.repo.isArchived) ||
+    (principal == resource.reporter &&
+     !resource.repo.isArchived)
+};
+
+permit (
+    principal is User,
+    action == Action::"delete_issue",
+    resource is Issue
+) when {
+    (principal in resource.repo.maintainers &&
+     !resource.repo.isArchived) ||
+    (principal == resource.reporter &&
+     !resource.repo.isArchived)
+};
+
+permit (
+    principal is User,
+    action == Action::"add_reader",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_writer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_maintainer",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_admin",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};
+
+permit (
+    principal is User,
+    action == Action::"add_triager",
+    resource is Repository
+) when {
+    principal in resource.admins &&
+    !resource.isArchived
+};

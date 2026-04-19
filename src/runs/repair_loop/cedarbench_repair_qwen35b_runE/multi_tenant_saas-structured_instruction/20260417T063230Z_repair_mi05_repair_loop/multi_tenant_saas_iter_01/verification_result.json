@@ -1,0 +1,165 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.375,
+  "checks": [
+    {
+      "name": "read_safety",
+      "description": "readResource permitted only when (same tenant OR (global support AND session active AND ticket non-empty))",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"readResource\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "write_safety",
+      "description": "writeResource permitted only when same tenant (no cross-tenant writes)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"writeResource\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/write_safety.cedar"
+    },
+    {
+      "name": "delete_safety",
+      "description": "deleteResource permitted only when same tenant (no cross-tenant deletes)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"deleteResource\"",
+      "resource_type": "Resource",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/delete_safety.cedar"
+    },
+    {
+      "name": "same_tenant_read_must_permit",
+      "description": "User MUST read a resource in the same tenant",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readResource\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/same_tenant_read_must_permit.cedar"
+    },
+    {
+      "name": "same_tenant_write_must_permit",
+      "description": "User MUST write a resource in the same tenant",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"writeResource\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/same_tenant_write_must_permit.cedar"
+    },
+    {
+      "name": "same_tenant_delete_must_permit",
+      "description": "User MUST delete a resource in the same tenant",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"deleteResource\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/same_tenant_delete_must_permit.cedar"
+    },
+    {
+      "name": "global_support_cross_tenant_read_must_permit",
+      "description": "Global-support user with active session AND ticketId MUST read a cross-tenant resource",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readResource\"",
+      "resource_type": "Resource",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_tenant_saas-structured_instruction/20260417T063230Z_repair_mi05_repair_loop/multi_tenant_saas_iter_01/_eval_workspace/references/global_support_cross_tenant_read_must_permit.cedar"
+    },
+    {
+      "name": "liveness_read_resource",
+      "description": "User+readResource+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"readResource\"",
+      "resource_type": "Resource"
+    },
+    {
+      "name": "liveness_write_resource",
+      "description": "User+writeResource+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"writeResource\"",
+      "resource_type": "Resource"
+    },
+    {
+      "name": "liveness_delete_resource",
+      "description": "User+deleteResource+Resource liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"deleteResource\"",
+      "resource_type": "Resource"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "readResource permitted only when (same tenant OR (global support AND session active AND ticket non-empty))",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "write_safety",
+      "check_type": "implies",
+      "description": "writeResource permitted only when same tenant (no cross-tenant writes)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "delete_safety",
+      "check_type": "implies",
+      "description": "deleteResource permitted only when same tenant (no cross-tenant deletes)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "same_tenant_read_must_permit",
+      "check_type": "implies",
+      "description": "User MUST read a resource in the same tenant",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "same_tenant_write_must_permit",
+      "check_type": "implies",
+      "description": "User MUST write a resource in the same tenant",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "same_tenant_delete_must_permit",
+      "check_type": "implies",
+      "description": "User MUST delete a resource in the same tenant",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "global_support_cross_tenant_read_must_permit",
+      "check_type": "implies",
+      "description": "Global-support user with active session AND ticketId MUST read a cross-tenant resource",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_read_resource",
+      "check_type": "always-denies (liveness)",
+      "description": "User+readResource+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_write_resource",
+      "check_type": "always-denies (liveness)",
+      "description": "User+writeResource+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete_resource",
+      "check_type": "always-denies (liveness)",
+      "description": "User+deleteResource+Resource liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

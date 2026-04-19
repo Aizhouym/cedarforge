@@ -1,0 +1,782 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.9032,
+  "verification_pass": false,
+  "loss": 3,
+  "total_check_count": 31,
+  "failed_checks": [
+    "delete_safety",
+    "auth_required_delete",
+    "liveness_view_public"
+  ],
+  "failed_check_types": [
+    "implies",
+    "implies",
+    "always-denies (liveness)"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_syntax",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.9032,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 3,
+    "total_check_count": 31,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 3,
+    "solver_time_s": 3.507,
+    "checks": [
+      {
+        "name": "owner_view_safety",
+        "description": "ViewDocument by User is only allowed if: owner, in viewACL, in modifyACL (through manage/modify paths), publicAccess is view/edit, or manageACL membership \u2014 but always bounded by owner OR viewACL OR modifyACL OR manageACL OR publicAccess",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_view_user.cedar"
+      },
+      {
+        "name": "public_view_safety",
+        "description": "ViewDocument by Public is only allowed if publicAccess is view or edit",
+        "type": "implies",
+        "principal_type": "Public",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_view_public.cedar"
+      },
+      {
+        "name": "modify_safety",
+        "description": "ModifyDocument is only allowed if owner, in modifyACL, or publicAccess == edit",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_modify.cedar"
+      },
+      {
+        "name": "delete_safety",
+        "description": "DeleteDocument is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_delete.cedar"
+      },
+      {
+        "name": "edit_private_safety",
+        "description": "EditIsPrivate is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"EditIsPrivate\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_edit_private.cedar"
+      },
+      {
+        "name": "edit_public_access_safety",
+        "description": "EditPublicAccess is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"EditPublicAccess\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_edit_public_access.cedar"
+      },
+      {
+        "name": "add_share_acl_safety",
+        "description": "AddToShareACL is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_add_share_acl.cedar"
+      },
+      {
+        "name": "delete_group_safety",
+        "description": "DeleteGroup is only allowed if principal is the group owner and is authenticated",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_delete_group.cedar"
+      },
+      {
+        "name": "modify_group_safety",
+        "description": "ModifyGroup is only allowed if principal is the group owner and is authenticated",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyGroup\"",
+        "resource_type": "Group",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_modify_group.cedar"
+      },
+      {
+        "name": "auth_required_view",
+        "description": "Unauthenticated users must be denied ViewDocument",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_auth_view.cedar"
+      },
+      {
+        "name": "auth_required_modify",
+        "description": "Unauthenticated users must be denied ModifyDocument",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_auth_modify.cedar"
+      },
+      {
+        "name": "auth_required_delete",
+        "description": "Unauthenticated users must be denied DeleteDocument",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_auth_delete.cedar"
+      },
+      {
+        "name": "block_view_safety",
+        "description": "ViewDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set (for Users)",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_block_view.cedar"
+      },
+      {
+        "name": "block_modify_safety",
+        "description": "ModifyDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_block_modify.cedar"
+      },
+      {
+        "name": "owner_view_floor",
+        "description": "Owner who is authenticated, not blocked, and document not expired MUST be able to ViewDocument",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_owner_view.cedar"
+      },
+      {
+        "name": "owner_delete_floor",
+        "description": "Owner who is authenticated MUST be able to DeleteDocument even on expired documents",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_owner_delete.cedar"
+      },
+      {
+        "name": "view_acl_floor",
+        "description": "User in viewACL who is authenticated, not blocked, and doc not expired MUST be able to ViewDocument",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_view_acl.cedar"
+      },
+      {
+        "name": "modify_acl_floor",
+        "description": "User in modifyACL who is authenticated, not blocked, and doc not expired MUST be able to ModifyDocument",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_modify_acl.cedar"
+      },
+      {
+        "name": "group_owner_delete_floor",
+        "description": "Group owner who is authenticated MUST be able to DeleteGroup",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_group_owner_delete.cedar"
+      },
+      {
+        "name": "group_owner_modify_floor",
+        "description": "Group owner who is authenticated MUST be able to ModifyGroup",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ModifyGroup\"",
+        "resource_type": "Group",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/floor_group_owner_modify.cedar"
+      },
+      {
+        "name": "liveness_view_user",
+        "description": "ViewDocument for User is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_view_public",
+        "description": "ViewDocument for Public is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "Public",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_modify",
+        "description": "ModifyDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete",
+        "description": "DeleteDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_add_share",
+        "description": "AddToShareACL is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete_group",
+        "description": "DeleteGroup is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group"
+      },
+      {
+        "name": "liveness_create_document",
+        "description": "CreateDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"CreateDocument\"",
+        "resource_type": "Drive"
+      },
+      {
+        "name": "liveness_create_group",
+        "description": "CreateGroup is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"CreateGroup\"",
+        "resource_type": "Drive"
+      },
+      {
+        "name": "expiry_deny_view_safety",
+        "description": "Expired documents: non-owner Users cannot ViewDocument",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_expiry_view.cedar"
+      },
+      {
+        "name": "expiry_deny_modify_safety",
+        "description": "Expired documents: non-owner Users cannot ModifyDocument",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_expiry_modify.cedar"
+      },
+      {
+        "name": "expiry_deny_add_share_safety",
+        "description": "Expired documents: non-owner Users cannot AddToShareACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_expiry-structured_instruction/20260417T060602Z_repair_mi05_repair_loop/doccloud_add_expiry_iter_02/_eval_workspace/references/ceiling_expiry_add_share.cedar"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "owner_view_safety",
+        "check_type": "implies",
+        "description": "ViewDocument by User is only allowed if: owner, in viewACL, in modifyACL (through manage/modify paths), publicAccess is view/edit, or manageACL membership \u2014 but always bounded by owner OR viewACL OR modifyACL OR manageACL OR publicAccess",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "public_view_safety",
+        "check_type": "implies",
+        "description": "ViewDocument by Public is only allowed if publicAccess is view or edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_safety",
+        "check_type": "implies",
+        "description": "ModifyDocument is only allowed if owner, in modifyACL, or publicAccess == edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_safety",
+        "check_type": "implies",
+        "description": "DeleteDocument is only allowed if owner or in manageACL",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"DeleteDocument\", resource: Document::\"\"\ncontext: {currentTime: 0, is_authenticated: false}\nentities: [\n  Action::\"EditIsPrivate\",\n  Action::\"EditPublicAccess\",\n  Action::\"ModifyDocument\",\n  Action::\"ModifyGroup\",\n  Action::\"ViewDocument\",\n  DocumentShare::\"\",\n  Document::\"\" {\n    expiryDate: 0,\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"\",\n  },\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"CreateDocument\",\n  Action::\"DeleteGroup\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"AddToShareACL\",\n  Action::\"CreateGroup\",\n  Action::\"DeleteDocument\",\n]"
+      },
+      {
+        "check_name": "edit_private_safety",
+        "check_type": "implies",
+        "description": "EditIsPrivate is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_public_access_safety",
+        "check_type": "implies",
+        "description": "EditPublicAccess is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "add_share_acl_safety",
+        "check_type": "implies",
+        "description": "AddToShareACL is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_group_safety",
+        "check_type": "implies",
+        "description": "DeleteGroup is only allowed if principal is the group owner and is authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_group_safety",
+        "check_type": "implies",
+        "description": "ModifyGroup is only allowed if principal is the group owner and is authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_view",
+        "check_type": "implies",
+        "description": "Unauthenticated users must be denied ViewDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_modify",
+        "check_type": "implies",
+        "description": "Unauthenticated users must be denied ModifyDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_delete",
+        "check_type": "implies",
+        "description": "Unauthenticated users must be denied DeleteDocument",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"DeleteDocument\", resource: Document::\"\"\ncontext: {currentTime: 0, is_authenticated: false}\nentities: [\n  Action::\"CreateGroup\",\n  Action::\"DeleteGroup\",\n  Action::\"ModifyGroup\",\n  Action::\"AddToShareACL\",\n  Document::\"\" {\n    expiryDate: 0,\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"\",\n  },\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"ViewDocument\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"EditPublicAccess\",\n  Action::\"CreateDocument\",\n  Action::\"EditIsPrivate\",\n  Action::\"ModifyDocument\",\n  DocumentShare::\"\",\n  Action::\"DeleteDocument\",\n]"
+      },
+      {
+        "check_name": "block_view_safety",
+        "check_type": "implies",
+        "description": "ViewDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set (for Users)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "block_modify_safety",
+        "check_type": "implies",
+        "description": "ModifyDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "owner_view_floor",
+        "check_type": "implies",
+        "description": "Owner who is authenticated, not blocked, and document not expired MUST be able to ViewDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "owner_delete_floor",
+        "check_type": "implies",
+        "description": "Owner who is authenticated MUST be able to DeleteDocument even on expired documents",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "view_acl_floor",
+        "check_type": "implies",
+        "description": "User in viewACL who is authenticated, not blocked, and doc not expired MUST be able to ViewDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_acl_floor",
+        "check_type": "implies",
+        "description": "User in modifyACL who is authenticated, not blocked, and doc not expired MUST be able to ModifyDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "group_owner_delete_floor",
+        "check_type": "implies",
+        "description": "Group owner who is authenticated MUST be able to DeleteGroup",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "group_owner_modify_floor",
+        "check_type": "implies",
+        "description": "Group owner who is authenticated MUST be able to ModifyGroup",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_user",
+        "check_type": "always-denies (liveness)",
+        "description": "ViewDocument for User is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_public",
+        "check_type": "always-denies (liveness)",
+        "description": "ViewDocument for Public is not trivially deny-all",
+        "passed": false,
+        "counterexample": "LIVENESS VIOLATION: Policy always denies this action. It must allow at least one scenario."
+      },
+      {
+        "check_name": "liveness_modify",
+        "check_type": "always-denies (liveness)",
+        "description": "ModifyDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete",
+        "check_type": "always-denies (liveness)",
+        "description": "DeleteDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_add_share",
+        "check_type": "always-denies (liveness)",
+        "description": "AddToShareACL is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete_group",
+        "check_type": "always-denies (liveness)",
+        "description": "DeleteGroup is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_create_document",
+        "check_type": "always-denies (liveness)",
+        "description": "CreateDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_create_group",
+        "check_type": "always-denies (liveness)",
+        "description": "CreateGroup is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "expiry_deny_view_safety",
+        "check_type": "implies",
+        "description": "Expired documents: non-owner Users cannot ViewDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "expiry_deny_modify_safety",
+        "check_type": "implies",
+        "description": "Expired documents: non-owner Users cannot ModifyDocument",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "expiry_deny_add_share_safety",
+        "check_type": "implies",
+        "description": "Expired documents: non-owner Users cannot AddToShareACL",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 31,
+        "failed_checks": [
+          "delete_safety",
+          "auth_required_delete",
+          "liveness_view_public"
+        ],
+        "solver_time_s": 3.507,
+        "checks": [
+          {
+            "name": "owner_view_safety",
+            "type": "implies",
+            "description": "ViewDocument by User is only allowed if: owner, in viewACL, in modifyACL (through manage/modify paths), publicAccess is view/edit, or manageACL membership \u2014 but always bounded by owner OR viewACL OR modifyACL OR manageACL OR publicAccess",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "public_view_safety",
+            "type": "implies",
+            "description": "ViewDocument by Public is only allowed if publicAccess is view or edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_safety",
+            "type": "implies",
+            "description": "ModifyDocument is only allowed if owner, in modifyACL, or publicAccess == edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_safety",
+            "type": "implies",
+            "description": "DeleteDocument is only allowed if owner or in manageACL",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"DeleteDocument\", resource: Document::\"\"\ncontext: {currentTime: 0, is_authenticated: false}\nentities: [\n  Action::\"EditIsPrivate\",\n  Action::\"EditPublicAccess\",\n  Action::\"ModifyDocument\",\n  Action::\"ModifyGroup\",\n  Action::\"ViewDocument\",\n  DocumentShare::\"\",\n  Document::\"\" {\n    expiryDate: 0,\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"\",\n  },\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"CreateDocument\",\n  Action::\"DeleteGroup\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"AddToShareACL\",\n  Action::\"CreateGroup\",\n  Action::\"DeleteDocument\",\n]"
+          },
+          {
+            "name": "edit_private_safety",
+            "type": "implies",
+            "description": "EditIsPrivate is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_public_access_safety",
+            "type": "implies",
+            "description": "EditPublicAccess is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "add_share_acl_safety",
+            "type": "implies",
+            "description": "AddToShareACL is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_group_safety",
+            "type": "implies",
+            "description": "DeleteGroup is only allowed if principal is the group owner and is authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_group_safety",
+            "type": "implies",
+            "description": "ModifyGroup is only allowed if principal is the group owner and is authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_view",
+            "type": "implies",
+            "description": "Unauthenticated users must be denied ViewDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_modify",
+            "type": "implies",
+            "description": "Unauthenticated users must be denied ModifyDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_delete",
+            "type": "implies",
+            "description": "Unauthenticated users must be denied DeleteDocument",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"DeleteDocument\", resource: Document::\"\"\ncontext: {currentTime: 0, is_authenticated: false}\nentities: [\n  Action::\"CreateGroup\",\n  Action::\"DeleteGroup\",\n  Action::\"ModifyGroup\",\n  Action::\"AddToShareACL\",\n  Document::\"\" {\n    expiryDate: 0,\n    isPrivate: false,\n    manageACL: DocumentShare::\"\",\n    modifyACL: DocumentShare::\"\",\n    owner: User::\"\",\n    publicAccess: \"\",\n    viewACL: DocumentShare::\"\",\n  },\n  User::\"\" {\n    blocked: [],\n    personalGroup: Group::\"\",\n  },\n  Action::\"ViewDocument\",\n  Group::\"\" {\n    owner: User::\"\",\n  },\n  Action::\"EditPublicAccess\",\n  Action::\"CreateDocument\",\n  Action::\"EditIsPrivate\",\n  Action::\"ModifyDocument\",\n  DocumentShare::\"\",\n  Action::\"DeleteDocument\",\n]"
+          },
+          {
+            "name": "block_view_safety",
+            "type": "implies",
+            "description": "ViewDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set (for Users)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "block_modify_safety",
+            "type": "implies",
+            "description": "ModifyDocument must be denied if principal is in owner's blocked set or owner is in principal's blocked set",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "owner_view_floor",
+            "type": "implies",
+            "description": "Owner who is authenticated, not blocked, and document not expired MUST be able to ViewDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "owner_delete_floor",
+            "type": "implies",
+            "description": "Owner who is authenticated MUST be able to DeleteDocument even on expired documents",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "view_acl_floor",
+            "type": "implies",
+            "description": "User in viewACL who is authenticated, not blocked, and doc not expired MUST be able to ViewDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_acl_floor",
+            "type": "implies",
+            "description": "User in modifyACL who is authenticated, not blocked, and doc not expired MUST be able to ModifyDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "group_owner_delete_floor",
+            "type": "implies",
+            "description": "Group owner who is authenticated MUST be able to DeleteGroup",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "group_owner_modify_floor",
+            "type": "implies",
+            "description": "Group owner who is authenticated MUST be able to ModifyGroup",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_user",
+            "type": "always-denies (liveness)",
+            "description": "ViewDocument for User is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_public",
+            "type": "always-denies (liveness)",
+            "description": "ViewDocument for Public is not trivially deny-all",
+            "passed": false,
+            "counterexample": "LIVENESS VIOLATION: Policy always denies this action. It must allow at least one scenario."
+          },
+          {
+            "name": "liveness_modify",
+            "type": "always-denies (liveness)",
+            "description": "ModifyDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete",
+            "type": "always-denies (liveness)",
+            "description": "DeleteDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_add_share",
+            "type": "always-denies (liveness)",
+            "description": "AddToShareACL is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete_group",
+            "type": "always-denies (liveness)",
+            "description": "DeleteGroup is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_create_document",
+            "type": "always-denies (liveness)",
+            "description": "CreateDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_create_group",
+            "type": "always-denies (liveness)",
+            "description": "CreateGroup is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "expiry_deny_view_safety",
+            "type": "implies",
+            "description": "Expired documents: non-owner Users cannot ViewDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "expiry_deny_modify_safety",
+            "type": "implies",
+            "description": "Expired documents: non-owner Users cannot ModifyDocument",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "expiry_deny_add_share_safety",
+            "type": "implies",
+            "description": "Expired documents: non-owner Users cannot AddToShareACL",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

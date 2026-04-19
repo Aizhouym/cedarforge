@@ -1,0 +1,434 @@
+{
+  "loss": 3,
+  "solver_time_s": 7.799,
+  "checks": [
+    {
+      "name": "freemember_movie_only_free",
+      "description": "FreeMember may watch a Movie only when isFree",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_movie_only_free.cedar"
+    },
+    {
+      "name": "freemember_show_only_free",
+      "description": "FreeMember may watch a Show only when isFree",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_show_only_free.cedar"
+    },
+    {
+      "name": "subscriber_movie_no_rent_buy",
+      "description": "Subscriber may watch a Movie only when !needsRentOrBuy",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_movie_no_rent_buy.cedar"
+    },
+    {
+      "name": "subscriber_show_premium_or_not_early",
+      "description": "Subscriber may watch a Show only when !isEarlyAccess OR tier==premium",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_show_premium_or_not_early.cedar"
+    },
+    {
+      "name": "kid_bedtime_no_watch_movie",
+      "description": "Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/kid_bedtime_no_watch_movie.cedar"
+    },
+    {
+      "name": "kid_bedtime_no_watch_show",
+      "description": "Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/kid_bedtime_no_watch_show.cedar"
+    },
+    {
+      "name": "geo_freemember_movie_in_region",
+      "description": "FreeMember may watch a Movie only when allowedRegions contains context.region",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/geo_freemember_movie_in_region.cedar"
+    },
+    {
+      "name": "geo_freemember_show_in_region",
+      "description": "FreeMember may watch a Show only when allowedRegions contains context.region",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/geo_freemember_show_in_region.cedar"
+    },
+    {
+      "name": "geo_subscriber_movie_in_region",
+      "description": "Subscriber may watch a Movie only when allowedRegions contains context.region",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/geo_subscriber_movie_in_region.cedar"
+    },
+    {
+      "name": "geo_subscriber_show_in_region",
+      "description": "Subscriber may watch a Show only when allowedRegions contains context.region",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/geo_subscriber_show_in_region.cedar"
+    },
+    {
+      "name": "freemember_must_watch_free_movie_in_region",
+      "description": "FreeMember in-region MUST watch any free Movie",
+      "type": "floor",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_must_watch_free_movie.cedar"
+    },
+    {
+      "name": "freemember_must_watch_free_show_in_region",
+      "description": "FreeMember in-region MUST watch any free Show",
+      "type": "floor",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_must_watch_free_show.cedar"
+    },
+    {
+      "name": "subscriber_must_watch_movie_no_rent_no_kid_in_region",
+      "description": "Non-kid in-region Subscriber MUST watch any !needsRentOrBuy Movie",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_must_watch_movie_no_rent_no_kid_in_region.cedar"
+    },
+    {
+      "name": "subscriber_must_watch_show_not_early_no_kid_in_region",
+      "description": "Non-kid in-region Subscriber MUST watch any !isEarlyAccess Show",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_must_watch_show_not_early_no_kid_in_region.cedar"
+    },
+    {
+      "name": "premium_must_watch_show_early_no_kid_in_region",
+      "description": "Non-kid in-region premium Subscriber MUST watch early-access Show in 24h pre-release",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/premium_must_watch_show_early_no_kid_in_region.cedar"
+    },
+    {
+      "name": "freemember_no_rent",
+      "description": "FreeMember can NEVER rent (empty ceiling)",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"rent\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_no_rent.cedar"
+    },
+    {
+      "name": "subscriber_rent_oscar_in_window_safety",
+      "description": "Subscriber may rent only when oscar AND in window",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"rent\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_rent_oscar_in_window_safety.cedar"
+    },
+    {
+      "name": "subscriber_must_rent_oscar_in_window",
+      "description": "Subscriber MUST rent any oscar movie in window",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"rent\"",
+      "resource_type": "Movie",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_must_rent_oscar_in_window.cedar"
+    },
+    {
+      "name": "freemember_no_buy",
+      "description": "FreeMember can NEVER buy (empty ceiling)",
+      "type": "implies",
+      "principal_type": "FreeMember",
+      "action": "Action::\"buy\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/freemember_no_buy.cedar"
+    },
+    {
+      "name": "subscriber_buy_oscar_in_window_safety",
+      "description": "Subscriber may buy only when oscar AND in window",
+      "type": "implies",
+      "principal_type": "Subscriber",
+      "action": "Action::\"buy\"",
+      "resource_type": "Movie",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_buy_oscar_in_window_safety.cedar"
+    },
+    {
+      "name": "subscriber_must_buy_oscar_in_window",
+      "description": "Subscriber MUST buy any oscar movie in window",
+      "type": "floor",
+      "principal_type": "Subscriber",
+      "action": "Action::\"buy\"",
+      "resource_type": "Movie",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/streaming_add_geo_restriction-structured_instruction/20260417T062101Z_repair_mi05_repair_loop/streaming_add_geo_restriction_iter_02/_eval_workspace/references/subscriber_must_buy_oscar_in_window.cedar"
+    },
+    {
+      "name": "liveness_freemember_watch_movie",
+      "description": "FreeMember+watch+Movie liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie"
+    },
+    {
+      "name": "liveness_freemember_watch_show",
+      "description": "FreeMember+watch+Show liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "FreeMember",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show"
+    },
+    {
+      "name": "liveness_subscriber_watch_movie",
+      "description": "Subscriber+watch+Movie liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Movie"
+    },
+    {
+      "name": "liveness_subscriber_watch_show",
+      "description": "Subscriber+watch+Show liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"watch\"",
+      "resource_type": "Show"
+    },
+    {
+      "name": "liveness_subscriber_rent_movie",
+      "description": "Subscriber+rent+Movie liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"rent\"",
+      "resource_type": "Movie"
+    },
+    {
+      "name": "liveness_subscriber_buy_movie",
+      "description": "Subscriber+buy+Movie liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Subscriber",
+      "action": "Action::\"buy\"",
+      "resource_type": "Movie"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "freemember_movie_only_free",
+      "check_type": "implies",
+      "description": "FreeMember may watch a Movie only when isFree",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "freemember_show_only_free",
+      "check_type": "implies",
+      "description": "FreeMember may watch a Show only when isFree",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_movie_no_rent_buy",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Movie only when !needsRentOrBuy",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_show_premium_or_not_early",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Show only when !isEarlyAccess OR tier==premium",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036835484672ms\")), localTimeOffset: duration(\"-19291137ms\")}, region: \"\"}\nentities: [\n  Action::\"rent\",\n  Show::\"\" {\n    allowedRegions: [\"\"],\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036835484672ms\")),\n  },\n  Subscriber::\"\" {\n    profile: {\"isKid\": true},\n    subscription: {\"tier\": \"\"},\n  },\n  Action::\"watch\",\n  Action::\"buy\",\n]"
+    },
+    {
+      "check_name": "kid_bedtime_no_watch_movie",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Movie only when NOT (isKid AND localTime in bedtime)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Movie::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036854775808ms\")), localTimeOffset: duration(\"-1ms\")}, region: \"\"}\nentities: [\n  Action::\"rent\",\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": true},\n    subscription: {\"tier\": \"\"},\n  },\n  Movie::\"\" {\n    allowedRegions: [\"\"],\n    isFree: true,\n    isOscarNominated: true,\n    needsRentOrBuy: false,\n  },\n  Action::\"buy\",\n]"
+    },
+    {
+      "check_name": "kid_bedtime_no_watch_show",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Show only when NOT (isKid AND localTime in bedtime)",
+      "passed": false,
+      "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: Subscriber::\"\", action: Action::\"watch\", resource: Show::\"\"\ncontext: {now: {datetime: (datetime(\"1970-01-01\")).offset(duration(\"-4611686018427387904ms\")), localTimeOffset: duration(\"-4611686018427387905ms\")}, region: \"\"}\nentities: [\n  Action::\"buy\",\n  Action::\"rent\",\n  Show::\"\" {\n    allowedRegions: [\"\"],\n    isEarlyAccess: true,\n    isFree: true,\n    releaseDate: (datetime(\"1970-01-01\")).offset(duration(\"-9223372036835483649ms\")),\n  },\n  Action::\"watch\",\n  Subscriber::\"\" {\n    profile: {\"isKid\": true},\n    subscription: {\"tier\": \"\"},\n  },\n]"
+    },
+    {
+      "check_name": "geo_freemember_movie_in_region",
+      "check_type": "implies",
+      "description": "FreeMember may watch a Movie only when allowedRegions contains context.region",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "geo_freemember_show_in_region",
+      "check_type": "implies",
+      "description": "FreeMember may watch a Show only when allowedRegions contains context.region",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "geo_subscriber_movie_in_region",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Movie only when allowedRegions contains context.region",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "geo_subscriber_show_in_region",
+      "check_type": "implies",
+      "description": "Subscriber may watch a Show only when allowedRegions contains context.region",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "freemember_must_watch_free_movie_in_region",
+      "check_type": "implies",
+      "description": "FreeMember in-region MUST watch any free Movie",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "freemember_must_watch_free_show_in_region",
+      "check_type": "implies",
+      "description": "FreeMember in-region MUST watch any free Show",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_must_watch_movie_no_rent_no_kid_in_region",
+      "check_type": "implies",
+      "description": "Non-kid in-region Subscriber MUST watch any !needsRentOrBuy Movie",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_must_watch_show_not_early_no_kid_in_region",
+      "check_type": "implies",
+      "description": "Non-kid in-region Subscriber MUST watch any !isEarlyAccess Show",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "premium_must_watch_show_early_no_kid_in_region",
+      "check_type": "implies",
+      "description": "Non-kid in-region premium Subscriber MUST watch early-access Show in 24h pre-release",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "freemember_no_rent",
+      "check_type": "implies",
+      "description": "FreeMember can NEVER rent (empty ceiling)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_rent_oscar_in_window_safety",
+      "check_type": "implies",
+      "description": "Subscriber may rent only when oscar AND in window",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_must_rent_oscar_in_window",
+      "check_type": "implies",
+      "description": "Subscriber MUST rent any oscar movie in window",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "freemember_no_buy",
+      "check_type": "implies",
+      "description": "FreeMember can NEVER buy (empty ceiling)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_buy_oscar_in_window_safety",
+      "check_type": "implies",
+      "description": "Subscriber may buy only when oscar AND in window",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "subscriber_must_buy_oscar_in_window",
+      "check_type": "implies",
+      "description": "Subscriber MUST buy any oscar movie in window",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_freemember_watch_movie",
+      "check_type": "always-denies (liveness)",
+      "description": "FreeMember+watch+Movie liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_freemember_watch_show",
+      "check_type": "always-denies (liveness)",
+      "description": "FreeMember+watch+Show liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_subscriber_watch_movie",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+watch+Movie liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_subscriber_watch_show",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+watch+Show liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_subscriber_rent_movie",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+rent+Movie liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_subscriber_buy_movie",
+      "check_type": "always-denies (liveness)",
+      "description": "Subscriber+buy+Movie liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

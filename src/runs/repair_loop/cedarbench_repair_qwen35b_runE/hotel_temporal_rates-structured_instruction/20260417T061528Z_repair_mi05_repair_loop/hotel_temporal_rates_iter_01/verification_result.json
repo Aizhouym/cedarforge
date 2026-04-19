@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy2`, unable to find an applicable action given the policy scope constraints\n    \u256d\u2500[19:1]\n 18 \u2502     \n 19 \u2502 \u256d\u2500\u25b6 permit (\n 20 \u2502 \u2502       principal is User,\n 21 \u2502 \u2502       action == Action::\"createReservation\",\n 22 \u2502 \u2502       resource is Reservation\n 23 \u2502 \u2502   ) when {\n 24 \u2502 \u2502       resource in principal.memberPermissions.hotelReservations ||\n 25 \u2502 \u2502       resource in principal.memberPermissions.propertyReservations\n 26 \u2502 \u2570\u2500\u25b6 };\n 27 \u2502     \n    \u2570\u2500\u2500\u2500\u2500\n\nWarning: \n  \u26a0 for policy `policy2`, policy is impossible: the policy expression evaluates to false for all valid requests\n    \u256d\u2500[19:1]\n 18 \u2502     \n 19 \u2502 \u256d\u2500\u25b6 permit (\n 20 \u2502 \u2502       principal is User,\n 21 \u2502 \u2502       action == Action::\"createReservation\",\n 22 \u2502 \u2502       resource is Reservation\n 23 \u2502 \u2502   ) when {\n 24 \u2502 \u2502       resource in principal.memberPermissions.hotelReservations ||\n 25 \u2502 \u2502       resource in principal.memberPermissions.propertyReservations\n 26 \u2502 \u2570\u2500\u25b6 };\n 27 \u2502     \n    \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

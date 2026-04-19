@@ -1,0 +1,246 @@
+{
+  "loss": 0,
+  "solver_time_s": 1.226,
+  "checks": [
+    {
+      "name": "view_safety_ceiling",
+      "description": "View is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_view.cedar"
+    },
+    {
+      "name": "edit_safety_ceiling",
+      "description": "Edit is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_edit.cedar"
+    },
+    {
+      "name": "active_project_gate_view",
+      "description": "View is denied when projectStatus is not Active \u2014 no permit should fire for non-active projects",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_active_gate_view.cedar"
+    },
+    {
+      "name": "active_project_gate_edit",
+      "description": "Edit is denied when projectStatus is not Active \u2014 no permit should fire for non-active projects",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_active_gate_edit.cedar"
+    },
+    {
+      "name": "cross_dept_block_view",
+      "description": "View is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_cross_dept_view.cedar"
+    },
+    {
+      "name": "cross_dept_block_edit",
+      "description": "Edit is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_cross_dept_edit.cedar"
+    },
+    {
+      "name": "embargo_block_view",
+      "description": "View is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_embargo_view.cedar"
+    },
+    {
+      "name": "embargo_block_edit",
+      "description": "Edit is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/ceiling_embargo_edit.cedar"
+    },
+    {
+      "name": "floor_clinical_researcher_view",
+      "description": "A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to View",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/floor_clinical_researcher_view.cedar"
+    },
+    {
+      "name": "floor_clinical_researcher_edit",
+      "description": "A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to Edit",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/floor_clinical_researcher_edit.cedar"
+    },
+    {
+      "name": "floor_pi_view",
+      "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to View (even if embargoed, since PI is exempt)",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/floor_pi_view.cedar"
+    },
+    {
+      "name": "floor_pi_edit",
+      "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to Edit (even if embargoed, since PI is exempt)",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/floor_pi_edit.cedar"
+    },
+    {
+      "name": "floor_auditor_cross_dept_view",
+      "description": "A GlobalAuditor who is also a ClinicalResearcher with clearanceLevel > 3, on an Active non-HighlyRestricted non-embargoed document in a different department MUST be able to View (auditor exemption from cross-dept block)",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/clinical_temporal_embargo-structured_instruction/20260417T060508Z_repair_mi05_repair_loop/clinical_temporal_embargo_iter_01/_eval_workspace/references/floor_auditor_cross_dept_view.cedar"
+    },
+    {
+      "name": "liveness_view",
+      "description": "View policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"View\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_edit",
+      "description": "Edit policy is not trivially deny-all",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"Edit\"",
+      "resource_type": "Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "view_safety_ceiling",
+      "check_type": "implies",
+      "description": "View is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_safety_ceiling",
+      "check_type": "implies",
+      "description": "Edit is only permitted when projectStatus is Active, principal is ClinicalResearcher or PrincipalInvestigator with their respective constraints, department matches or principal is GlobalAuditor, and embargo is not active or principal is PI",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "active_project_gate_view",
+      "check_type": "implies",
+      "description": "View is denied when projectStatus is not Active \u2014 no permit should fire for non-active projects",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "active_project_gate_edit",
+      "check_type": "implies",
+      "description": "Edit is denied when projectStatus is not Active \u2014 no permit should fire for non-active projects",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "cross_dept_block_view",
+      "check_type": "implies",
+      "description": "View is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "cross_dept_block_edit",
+      "check_type": "implies",
+      "description": "Edit is forbidden when department != projectManagingDepartment unless principal is GlobalAuditor",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "embargo_block_view",
+      "check_type": "implies",
+      "description": "View is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "embargo_block_edit",
+      "check_type": "implies",
+      "description": "Edit is forbidden when requestTime < embargoUntil unless principal is PrincipalInvestigator",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_clinical_researcher_view",
+      "check_type": "implies",
+      "description": "A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to View",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_clinical_researcher_edit",
+      "check_type": "implies",
+      "description": "A ClinicalResearcher with clearanceLevel > 3, matching department, on an Active non-HighlyRestricted non-embargoed document MUST be able to Edit",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_pi_view",
+      "check_type": "implies",
+      "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to View (even if embargoed, since PI is exempt)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_pi_edit",
+      "check_type": "implies",
+      "description": "A PrincipalInvestigator with compliant device, low risk score, matching department, on an Active document MUST be able to Edit (even if embargoed, since PI is exempt)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_auditor_cross_dept_view",
+      "check_type": "implies",
+      "description": "A GlobalAuditor who is also a ClinicalResearcher with clearanceLevel > 3, on an Active non-HighlyRestricted non-embargoed document in a different department MUST be able to View (auditor exemption from cross-dept block)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_view",
+      "check_type": "always-denies (liveness)",
+      "description": "View policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit",
+      "check_type": "always-denies (liveness)",
+      "description": "Edit policy is not trivially deny-all",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

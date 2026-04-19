@@ -1,0 +1,55 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.076,
+  "checks": [
+    {
+      "name": "org_match_safety",
+      "description": "Professional may viewDocument only when org match holds",
+      "type": "implies",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_remove_consent-structured_instruction/20260417T062858Z_repair_mi05_repair_loop/tax_remove_consent_iter_02/_eval_workspace/references/org_match_safety.cedar"
+    },
+    {
+      "name": "must_view_on_org_match",
+      "description": "Professional MUST viewDocument when org match holds",
+      "type": "floor",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_remove_consent-structured_instruction/20260417T062858Z_repair_mi05_repair_loop/tax_remove_consent_iter_02/_eval_workspace/references/must_view_on_org_match.cedar"
+    },
+    {
+      "name": "liveness_view_document",
+      "description": "Professional+viewDocument+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "Taxpreparer::Professional",
+      "action": "Taxpreparer::Action::\"viewDocument\"",
+      "resource_type": "Taxpreparer::Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "org_match_safety",
+      "check_type": "implies",
+      "description": "Professional may viewDocument only when org match holds",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "must_view_on_org_match",
+      "check_type": "implies",
+      "description": "Professional MUST viewDocument when org match holds",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_view_document",
+      "check_type": "always-denies (liveness)",
+      "description": "Professional+viewDocument+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

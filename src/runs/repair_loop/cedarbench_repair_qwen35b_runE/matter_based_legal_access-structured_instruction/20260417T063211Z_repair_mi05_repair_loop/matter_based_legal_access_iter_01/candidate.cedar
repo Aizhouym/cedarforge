@@ -1,0 +1,42 @@
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal.assignedMatters.contains(resource.matter)
+};
+
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal.assignedMatters.contains(resource.matter) &&
+    (principal.role == "associate" || principal.role == "partner")
+};
+
+permit (
+    principal is User,
+    action == Action::"file",
+    resource is Document
+) when {
+    principal.assignedMatters.contains(resource.matter)
+};
+
+permit (
+    principal is User,
+    action == Action::"redact",
+    resource is Document
+) when {
+    principal.assignedMatters.contains(resource.matter) &&
+    principal.role == "partner"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"view", Action::"edit", Action::"file", Action::"redact"],
+    resource is Document
+) when {
+    resource.isPrivileged &&
+    principal.role != "partner"
+};

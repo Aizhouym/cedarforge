@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 unexpected token `&&`\n    \u256d\u2500[19:3]\n 18 \u2502     (principal.clearance == \"restricted\" && (resource.classification == \"public\" || resource.classification == \"internal\" || resource.classification == \"restricted\"))\n 19 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 20 \u2502     principal.department == resource.sourceDepartment\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[31:3]\n 30 \u2502     (principal.clearance == \"restricted\" && (resource.classification == \"public\" || resource.classification == \"internal\" || resource.classification == \"restricted\"))\n 31 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 32 \u2502     !resource.hasPersonalData\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[41:3]\n 40 \u2502     principal.clearance == \"restricted\"\n 41 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 42 \u2502     principal.department == resource.sourceDepartment\n    \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

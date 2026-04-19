@@ -1,0 +1,122 @@
+permit (
+    principal is User,
+    action == Action::"viewOrder",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead" ||
+    principal.role == "returns" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"listOrders",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead" ||
+    principal.role == "returns" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"updateCart",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager"
+} && {
+    resource.status == "cart"
+};
+
+permit (
+    principal is User,
+    action == Action::"placeOrder",
+    resource is Order
+) when {
+    principal.role == "viewer" ||
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"cancelOrder",
+    resource is Order
+) when {
+    principal.role == "cs_agent" ||
+    principal.role == "cs_manager" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"refundOrder",
+    resource is Order
+) when {
+    principal.role == "cs_manager" ||
+    principal.role == "finance_ops" ||
+    principal.role == "finance_manager"
+} && {
+    resource.status == "delivered"
+};
+
+permit (
+    principal is User,
+    action == Action::"shipOrder",
+    resource is Order
+) when {
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead"
+} && {
+    resource.status == "pending"
+};
+
+permit (
+    principal is User,
+    action == Action::"markDelivered",
+    resource is Order
+) when {
+    principal.role == "fulfillment" ||
+    principal.role == "warehouse_lead"
+} && {
+    resource.status == "shipped"
+};
+
+permit (
+    principal is User,
+    action == Action::"modifyPricing",
+    resource is Order
+) when {
+    principal.role == "finance_manager" ||
+    principal.role == "platform_admin"
+};
+
+permit (
+    principal is User,
+    action == Action::"adminOverride",
+    resource is Order
+) when {
+    principal.role == "platform_admin" ||
+    principal.role == "security_admin"
+};

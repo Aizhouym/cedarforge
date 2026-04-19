@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy11`, unable to guarantee safety of access to optional attribute `targetUser` in context for Action::\"grantViewAccessToTemplate\"\n     \u256d\u2500[121:7]\n 120 \u2502       principal.customerId == context.targetUser.customerId) ||\n 121 \u2502      (context.targetUser.job != Job::\"customer\" &&\n     \u00b7       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 122 \u2502       (principal == resource.owner || principal in resource.editors))) ||\n     \u2570\u2500\u2500\u2500\u2500\n  help: try testing for the attribute's presence with `context has targetUser && ..`"
+    }
+  ]
+}

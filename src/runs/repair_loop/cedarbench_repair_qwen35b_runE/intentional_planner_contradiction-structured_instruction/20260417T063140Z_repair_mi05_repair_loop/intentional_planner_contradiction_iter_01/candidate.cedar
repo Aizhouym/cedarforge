@@ -1,0 +1,19 @@
+permit (
+    principal is User,
+    action == Action::"readPost",
+    resource is Post
+) when {
+    principal == resource.author &&
+    !(principal in resource.author.blocked) &&
+    !(resource.author in principal.blocked)
+};
+
+permit (
+    principal is User,
+    action == Action::"readPost",
+    resource is Post
+) when {
+    principal != resource.author &&
+    !(principal in resource.author.blocked) &&
+    !(resource.author in principal.blocked)
+};

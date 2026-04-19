@@ -1,0 +1,381 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 14,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 14,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.634,
+    "checks": [
+      {
+        "name": "read_document_safety",
+        "description": "readDocument permitted only when (same org, read:document scope, not expired, not revoked)",
+        "type": "implies",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/read_document_safety.cedar"
+      },
+      {
+        "name": "write_document_safety",
+        "description": "writeDocument permitted only when (same org, write:document scope, not expired, not revoked)",
+        "type": "implies",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/write_document_safety.cedar"
+      },
+      {
+        "name": "delete_document_safety",
+        "description": "deleteDocument permitted only when (same org, delete:document scope, not expired, not revoked)",
+        "type": "implies",
+        "principal_type": "ApiKey",
+        "action": "Action::\"deleteDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/delete_document_safety.cedar"
+      },
+      {
+        "name": "read_invoice_safety",
+        "description": "readInvoice permitted only when (same org, read:invoice scope, not expired, not revoked)",
+        "type": "implies",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readInvoice\"",
+        "resource_type": "Invoice",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/read_invoice_safety.cedar"
+      },
+      {
+        "name": "write_invoice_safety",
+        "description": "writeInvoice permitted only when (same org, write:invoice scope, not expired, not revoked, NOT submitted)",
+        "type": "implies",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeInvoice\"",
+        "resource_type": "Invoice",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/write_invoice_safety.cedar"
+      },
+      {
+        "name": "valid_key_must_read_document",
+        "description": "Active key with read:document scope MUST read a document in same org",
+        "type": "floor",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/valid_key_must_read_document.cedar"
+      },
+      {
+        "name": "valid_key_must_write_document",
+        "description": "Active key with write:document scope MUST write a document in same org",
+        "type": "floor",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/valid_key_must_write_document.cedar"
+      },
+      {
+        "name": "valid_key_must_read_unsubmitted_invoice",
+        "description": "Active key with read:invoice scope MUST read an invoice in same org",
+        "type": "floor",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readInvoice\"",
+        "resource_type": "Invoice",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/valid_key_must_read_unsubmitted_invoice.cedar"
+      },
+      {
+        "name": "valid_key_must_write_unsubmitted_invoice",
+        "description": "Active key with write:invoice scope MUST write an UNSUBMITTED invoice in same org",
+        "type": "floor",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeInvoice\"",
+        "resource_type": "Invoice",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/api_key_scoped_access-structured_instruction/20260417T062904Z_repair_mi05_repair_loop/api_key_scoped_access_iter_01/_eval_workspace/references/valid_key_must_write_unsubmitted_invoice.cedar"
+      },
+      {
+        "name": "liveness_read_document",
+        "description": "ApiKey+readDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_write_document",
+        "description": "ApiKey+writeDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete_document",
+        "description": "ApiKey+deleteDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "ApiKey",
+        "action": "Action::\"deleteDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_read_invoice",
+        "description": "ApiKey+readInvoice+Invoice liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "ApiKey",
+        "action": "Action::\"readInvoice\"",
+        "resource_type": "Invoice"
+      },
+      {
+        "name": "liveness_write_invoice",
+        "description": "ApiKey+writeInvoice+Invoice liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "ApiKey",
+        "action": "Action::\"writeInvoice\"",
+        "resource_type": "Invoice"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "read_document_safety",
+        "check_type": "implies",
+        "description": "readDocument permitted only when (same org, read:document scope, not expired, not revoked)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "write_document_safety",
+        "check_type": "implies",
+        "description": "writeDocument permitted only when (same org, write:document scope, not expired, not revoked)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_document_safety",
+        "check_type": "implies",
+        "description": "deleteDocument permitted only when (same org, delete:document scope, not expired, not revoked)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "read_invoice_safety",
+        "check_type": "implies",
+        "description": "readInvoice permitted only when (same org, read:invoice scope, not expired, not revoked)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "write_invoice_safety",
+        "check_type": "implies",
+        "description": "writeInvoice permitted only when (same org, write:invoice scope, not expired, not revoked, NOT submitted)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "valid_key_must_read_document",
+        "check_type": "implies",
+        "description": "Active key with read:document scope MUST read a document in same org",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "valid_key_must_write_document",
+        "check_type": "implies",
+        "description": "Active key with write:document scope MUST write a document in same org",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "valid_key_must_read_unsubmitted_invoice",
+        "check_type": "implies",
+        "description": "Active key with read:invoice scope MUST read an invoice in same org",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "valid_key_must_write_unsubmitted_invoice",
+        "check_type": "implies",
+        "description": "Active key with write:invoice scope MUST write an UNSUBMITTED invoice in same org",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read_document",
+        "check_type": "always-denies (liveness)",
+        "description": "ApiKey+readDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_write_document",
+        "check_type": "always-denies (liveness)",
+        "description": "ApiKey+writeDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete_document",
+        "check_type": "always-denies (liveness)",
+        "description": "ApiKey+deleteDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_read_invoice",
+        "check_type": "always-denies (liveness)",
+        "description": "ApiKey+readInvoice+Invoice liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_write_invoice",
+        "check_type": "always-denies (liveness)",
+        "description": "ApiKey+writeInvoice+Invoice liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 14,
+        "solver_time_s": 0.634,
+        "checks": [
+          {
+            "name": "read_document_safety",
+            "type": "implies",
+            "description": "readDocument permitted only when (same org, read:document scope, not expired, not revoked)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "write_document_safety",
+            "type": "implies",
+            "description": "writeDocument permitted only when (same org, write:document scope, not expired, not revoked)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_document_safety",
+            "type": "implies",
+            "description": "deleteDocument permitted only when (same org, delete:document scope, not expired, not revoked)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "read_invoice_safety",
+            "type": "implies",
+            "description": "readInvoice permitted only when (same org, read:invoice scope, not expired, not revoked)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "write_invoice_safety",
+            "type": "implies",
+            "description": "writeInvoice permitted only when (same org, write:invoice scope, not expired, not revoked, NOT submitted)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "valid_key_must_read_document",
+            "type": "implies",
+            "description": "Active key with read:document scope MUST read a document in same org",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "valid_key_must_write_document",
+            "type": "implies",
+            "description": "Active key with write:document scope MUST write a document in same org",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "valid_key_must_read_unsubmitted_invoice",
+            "type": "implies",
+            "description": "Active key with read:invoice scope MUST read an invoice in same org",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "valid_key_must_write_unsubmitted_invoice",
+            "type": "implies",
+            "description": "Active key with write:invoice scope MUST write an UNSUBMITTED invoice in same org",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read_document",
+            "type": "always-denies (liveness)",
+            "description": "ApiKey+readDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_write_document",
+            "type": "always-denies (liveness)",
+            "description": "ApiKey+writeDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete_document",
+            "type": "always-denies (liveness)",
+            "description": "ApiKey+deleteDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_read_invoice",
+            "type": "always-denies (liveness)",
+            "description": "ApiKey+readInvoice+Invoice liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_write_invoice",
+            "type": "always-denies (liveness)",
+            "description": "ApiKey+writeInvoice+Invoice liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

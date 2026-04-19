@@ -1,0 +1,268 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 9,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 9,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.283,
+    "checks": [
+      {
+        "name": "book_safety",
+        "description": "book only when level+capacity+future",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"book\"",
+        "resource_type": "Room",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/book_safety.cedar"
+      },
+      {
+        "name": "cancel_safety",
+        "description": "any employee can cancel",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"cancel\"",
+        "resource_type": "Room",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/cancel_safety.cedar"
+      },
+      {
+        "name": "view_safety",
+        "description": "any employee can view",
+        "type": "implies",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Room",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/view_safety.cedar"
+      },
+      {
+        "name": "floor_qualified_book",
+        "description": "qualified employee MUST book",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"book\"",
+        "resource_type": "Room",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/floor_qualified_book.cedar"
+      },
+      {
+        "name": "floor_any_view",
+        "description": "any employee MUST view",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Room",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/floor_any_view.cedar"
+      },
+      {
+        "name": "floor_any_cancel",
+        "description": "any employee MUST cancel",
+        "type": "floor",
+        "principal_type": "Employee",
+        "action": "Action::\"cancel\"",
+        "resource_type": "Room",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/conference_room_booking-structured_instruction/20260417T062943Z_repair_mi05_repair_loop/conference_room_booking_iter_01/_eval_workspace/references/floor_any_cancel.cedar"
+      },
+      {
+        "name": "liveness_book",
+        "description": "at least one book permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"book\"",
+        "resource_type": "Room"
+      },
+      {
+        "name": "liveness_cancel",
+        "description": "at least one cancel permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"cancel\"",
+        "resource_type": "Room"
+      },
+      {
+        "name": "liveness_view",
+        "description": "at least one view permitted",
+        "type": "always-denies-liveness",
+        "principal_type": "Employee",
+        "action": "Action::\"view\"",
+        "resource_type": "Room"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "book_safety",
+        "check_type": "implies",
+        "description": "book only when level+capacity+future",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "cancel_safety",
+        "check_type": "implies",
+        "description": "any employee can cancel",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "view_safety",
+        "check_type": "implies",
+        "description": "any employee can view",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_qualified_book",
+        "check_type": "implies",
+        "description": "qualified employee MUST book",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_any_view",
+        "check_type": "implies",
+        "description": "any employee MUST view",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_any_cancel",
+        "check_type": "implies",
+        "description": "any employee MUST cancel",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_book",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one book permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_cancel",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one cancel permitted",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view",
+        "check_type": "always-denies (liveness)",
+        "description": "at least one view permitted",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 9,
+        "solver_time_s": 0.283,
+        "checks": [
+          {
+            "name": "book_safety",
+            "type": "implies",
+            "description": "book only when level+capacity+future",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "cancel_safety",
+            "type": "implies",
+            "description": "any employee can cancel",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "view_safety",
+            "type": "implies",
+            "description": "any employee can view",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_qualified_book",
+            "type": "implies",
+            "description": "qualified employee MUST book",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_any_view",
+            "type": "implies",
+            "description": "any employee MUST view",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_any_cancel",
+            "type": "implies",
+            "description": "any employee MUST cancel",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_book",
+            "type": "always-denies (liveness)",
+            "description": "at least one book permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_cancel",
+            "type": "always-denies (liveness)",
+            "description": "at least one cancel permitted",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view",
+            "type": "always-denies (liveness)",
+            "description": "at least one view permitted",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+<cedar_policy>
+permit (
+    principal is Employee,
+    action == Action::"view",
+    resource is Document
+) when {
+    resource.classification == "public" ||
+    resource.classification == "internal" ||
+    (resource.classification == "confidential" && principal in resource.ownerTeam)
+};
+
+permit (
+    principal is Employee,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.ownerTeam &&
+    resource.classification != "confidential"
+};
+
+permit (
+    principal is Employee,
+    action == Action::"delete",
+    resource is Document
+) when {
+    principal in resource.ownerTeam &&
+    resource.classification == "public"
+};
+</cedar_policy>

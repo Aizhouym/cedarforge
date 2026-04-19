@@ -1,0 +1,14 @@
+{
+  "loss": 1,
+  "solver_time_s": 0.0,
+  "checks": [],
+  "results": [
+    {
+      "check_name": "syntax",
+      "check_type": "syntax",
+      "description": "Cedar validation",
+      "passed": false,
+      "counterexample": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 invalid token\n    \u256d\u2500[42:55]\n 41 \u2502 ) -> Bool {\n 42 \u2502     let userTags = principal.allowedTagsForRole[role] ?? {};\n    \u00b7                                                       \u25b2\n 43 \u2502     let workspaceTags = resource.tags;\n    \u2570\u2500\u2500\u2500\u2500"
+    }
+  ]
+}

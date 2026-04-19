@@ -1,0 +1,284 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: audit log immutability (append-only)
+difficulty: medium
+features:
+  - asymmetric action permissions (append always, delete never)
+  - role hierarchy with compliance override for read
+  - forbid rule for unconditional delete denial
+domain: compliance / SOX
+---
+
+# Audit Log Immutability — Policy Specification
+
+## Context
+
+An audit logging system where `AuditEntry` records are append-only.
+Once written, they cannot be modified or deleted — this is a
+fundamental compliance requirement (SOX, HIPAA, PCI-DSS).
+
+Users have roles: `"service"` (application services that write logs),
+`"analyst"` (reads logs for investigation), `"auditor"` (reads logs
+for compliance review), `"admin"` (system administration).
+
+## Requirements
+
+### 1. Append — Services Only
+A User may `append` an AuditEntry when:
+- The user's role is `"service"`.
+
+Only application services can write new audit entries.
+
+### 2. Read — Analysts, Auditors, and Admins
+A User may `read` an AuditEntry when:
+- The user's role is `"analyst"` or `"auditor"` or `"admin"`.
+
+Services do NOT have read access to audit logs (write-only).
+
+### 3. Export — Auditors Only
+A User may `export` an AuditEntry when:
+- The user's role is `"auditor"`.
+
+Exporting bulk audit data is restricted to the compliance function.
+
+### 4. Delete — FORBIDDEN FOR ALL ROLES
+No User may `delete` an AuditEntry, regardless of role. This is the
+immutability guarantee. Even admins cannot delete audit entries.
+
+This must be an unconditional deny.
+
+### 5. Modify — FORBIDDEN FOR ALL ROLES
+No User may `modify` an AuditEntry, regardless of role. Audit entries
+are immutable once written.
+
+### 6. Default Deny
+All other requests are denied.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Audit Log Immutability — append-only audit entries.
+// Tests asymmetric permissions (append OK, delete/modify forbidden).
+
+entity User = {
+    role: String,   // "service" | "analyst" | "auditor" | "admin"
+};
+
+entity AuditEntry;
+
+action append, read, export, delete, modify appliesTo {
+    principal: [User],
+    resource: [AuditEntry],
+    context: {},
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

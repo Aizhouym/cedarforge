@@ -1,0 +1,77 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/sales_base-structured_instruction/20260417T060051Z_repair_mi05_repair_loop/sales_base_iter_01/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": false,
+  "semantic_accuracy": 0.0,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 0,
+  "failed_checks": [
+    "syntax"
+  ],
+  "failed_check_types": [
+    "syntax"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction",
+    "syntax_pass": true,
+    "schema_pass": false,
+    "semantic_accuracy": 0.0,
+    "syntax_error": false,
+    "schema_error": true,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 1.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 0,
+    "primary_error_type": "schema",
+    "validation_message": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy11`, unable to guarantee safety of access to optional attribute `targetUser` in context for Action::\"grantViewAccessToTemplate\"\n     \u256d\u2500[121:7]\n 120 \u2502       principal.customerId == context.targetUser.customerId) ||\n 121 \u2502      (context.targetUser.job != Job::\"customer\" &&\n     \u00b7       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 122 \u2502       (principal == resource.owner || principal in resource.editors))) ||\n     \u2570\u2500\u2500\u2500\u2500\n  help: try testing for the attribute's presence with `context has targetUser && ..`"
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 0.0,
+    "checks": [],
+    "results": [
+      {
+        "check_name": "syntax",
+        "check_type": "syntax",
+        "description": "Cedar validation",
+        "passed": false,
+        "counterexample": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy11`, unable to guarantee safety of access to optional attribute `targetUser` in context for Action::\"grantViewAccessToTemplate\"\n     \u256d\u2500[121:7]\n 120 \u2502       principal.customerId == context.targetUser.customerId) ||\n 121 \u2502      (context.targetUser.job != Job::\"customer\" &&\n     \u00b7       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 122 \u2502       (principal == resource.owner || principal in resource.editors))) ||\n     \u2570\u2500\u2500\u2500\u2500\n  help: try testing for the attribute's presence with `context has targetUser && ..`"
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": false,
+      "status": "fail",
+      "message": "Schema grounding failed during Cedar validation.",
+      "details": {
+        "error": "\u00d7 policy set validation failed\n  \u2570\u2500\u25b6 for policy `policy11`, unable to guarantee safety of access to optional attribute `targetUser` in context for Action::\"grantViewAccessToTemplate\"\n     \u256d\u2500[121:7]\n 120 \u2502       principal.customerId == context.targetUser.customerId) ||\n 121 \u2502      (context.targetUser.job != Job::\"customer\" &&\n     \u00b7       \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n 122 \u2502       (principal == resource.owner || principal in resource.editors))) ||\n     \u2570\u2500\u2500\u2500\u2500\n  help: try testing for the attribute's presence with `context has targetUser && ..`",
+        "explanation": {
+          "category": "schema",
+          "summary": "The policy parses, but it does not ground correctly to the schema.",
+          "likely_cause": "The model likely used a missing identifier, wrong type, or invalid appliesTo combination.",
+          "suggested_fix": "Compare every entity type, action, and attribute against the schema exactly."
+        }
+      }
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "skipped",
+      "message": "Skipped because schema grounding failed.",
+      "details": {}
+    }
+  ]
+}

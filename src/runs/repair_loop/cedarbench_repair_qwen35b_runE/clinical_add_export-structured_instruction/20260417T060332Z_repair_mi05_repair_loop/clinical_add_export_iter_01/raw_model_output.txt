@@ -1,0 +1,78 @@
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"View",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.isCompliantDevice &&
+    context.networkRiskScore < 20 &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Edit",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.isCompliantDevice &&
+    context.networkRiskScore < 20 &&
+    resource.projectStatus == "Active"
+};
+
+permit (
+    principal is User,
+    action == Action::"Export",
+    resource is Document
+) when {
+    principal in Role::"ClinicalResearcher" &&
+    principal.clearanceLevel > 3 &&
+    resource.classification != "HighlyRestricted" &&
+    resource.projectStatus == "Active" &&
+    context.isCompliantDevice
+};
+
+permit (
+    principal is User,
+    action == Action::"Export",
+    resource is Document
+) when {
+    principal in Role::"PrincipalInvestigator" &&
+    context.isCompliantDevice &&
+    context.networkRiskScore < 20 &&
+    resource.projectStatus == "Active"
+};
+
+forbid (
+    principal is User,
+    action in [Action::"View", Action::"Edit", Action::"Export"],
+    resource is Document
+) when {
+    principal.department != resource.projectManagingDepartment
+} unless {
+    principal in Role::"GlobalAuditor"
+};
+</cedar_policy>

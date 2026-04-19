@@ -1,0 +1,328 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: customer support ticket escalation
+difficulty: medium
+features:
+  - priority-based access gating (Long comparison)
+  - boolean flag gating (isEscalated)
+  - role-based action restriction (manager-only reassign)
+  - universally permitted action (escalate)
+domain: customer support
+---
+
+# Customer Support Ticket Escalation -- Policy Specification
+
+## Context
+
+This policy governs a customer support ticket system where agents are
+organized by tier (tier1 through tier3, plus manager). Each agent has
+a `maxPriority` attribute (1--4) indicating the highest priority ticket
+they are authorized to handle. Tickets have a numeric `priority`
+(1 = low, 4 = critical) and a boolean `isEscalated` flag.
+
+The system enforces priority-based routing so that agents only work on
+tickets within their competence level. Escalated tickets receive
+special handling: only managers can close them.
+
+## Requirements
+
+### 1. Respond -- Priority Gating
+
+- **Permit** `respond` when the agent's `maxPriority` is greater than
+  or equal to the ticket's `priority`.
+- An agent with `maxPriority == 2` can respond to priority-1 and
+  priority-2 tickets, but NOT priority-3 or priority-4 tickets.
+
+### 2. Escalate -- Universally Permitted
+
+- **Permit** `escalate` for any agent on any ticket, unconditionally.
+- Rationale: any agent who notices a ticket needs higher-tier
+  attention should be able to escalate it immediately.
+
+### 3. Close -- Priority Gating Plus Escalation Guard
+
+- **Permit** `close` when the agent's `maxPriority` is greater than or
+  equal to the ticket's `priority` AND the ticket is NOT escalated
+  (`resource.isEscalated == false`).
+- Escalated tickets can only be closed by a manager. This is the key
+  safety property: a tier-2 agent cannot close a priority-2 escalated
+  ticket even though they meet the priority requirement.
+- Managers (`role == "manager"`) can close any ticket including
+  escalated ones, subject to the priority gate.
+
+### 4. Reassign -- Manager Only
+
+- **Permit** `reassign` only when the agent's role is `"manager"`.
+- No priority gate: managers can reassign any ticket regardless of
+  priority or escalation status.
+
+## Notes
+
+- The priority comparison `principal.maxPriority >= resource.priority`
+  is a numeric (Long) comparison, not a string comparison.
+- The close rule composes two conditions: priority gating AND
+  non-escalation (for non-managers). Per section 8.8 of the harness fix
+  log, floor references for close must include the `!resource.isEscalated`
+  condition so they remain satisfiable alongside the ceiling.
+- There is no global forbid in this scenario. The deny-by-default
+  semantics of Cedar handle unauthorized access: if no permit matches,
+  the request is denied.
+- Common failure modes: (a) forgetting the escalation guard on close,
+  (b) adding a priority gate to escalate, (c) adding a priority gate
+  to reassign, (d) using string comparison instead of Long comparison
+  for priority.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Customer Support Ticket Escalation
+//
+// Agents are tiered support staff (tier1, tier2, tier3, manager).
+// Each agent has a maxPriority indicating the highest ticket priority
+// they can handle. Tickets have a numeric priority and an escalation
+// flag that restricts who can close them.
+
+entity Agent = {
+    // One of "tier1", "tier2", "tier3", "manager".
+    role: String,
+    // 1 = can handle low only, 4 = can handle up to critical.
+    maxPriority: Long,
+};
+
+entity Ticket = {
+    // 1 = low, 2 = medium, 3 = high, 4 = critical.
+    priority: Long,
+    // When true, only a manager can close this ticket.
+    isEscalated: Bool,
+};
+
+action respond appliesTo {
+    principal: [Agent],
+    resource: [Ticket],
+};
+
+action escalate appliesTo {
+    principal: [Agent],
+    resource: [Ticket],
+};
+
+action close appliesTo {
+    principal: [Agent],
+    resource: [Ticket],
+};
+
+action reassign appliesTo {
+    principal: [Agent],
+    resource: [Ticket],
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

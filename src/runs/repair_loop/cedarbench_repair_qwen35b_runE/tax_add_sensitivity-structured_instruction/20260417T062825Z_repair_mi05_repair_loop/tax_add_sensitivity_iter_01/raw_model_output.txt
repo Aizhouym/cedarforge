@@ -1,0 +1,39 @@
+<cedar_policy>
+permit (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    principal.assigned_orgs.contains({
+        organization: resource.owner.organization,
+        serviceline: resource.serviceline,
+        location: resource.location
+    })
+};
+
+permit (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    true
+};
+
+forbid (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    context.consent.client != resource.owner ||
+    !context.consent.team_region_list.contains(principal.location)
+};
+
+forbid (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    resource.isSensitive &&
+    !context.consent.team_region_list.contains("HQ")
+};
+</cedar_policy>

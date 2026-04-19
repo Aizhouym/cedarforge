@@ -1,0 +1,594 @@
+# Role
+You are a **Cedar Policy Semantic Engineer**.
+
+Your job is to fix semantic alignment failures in the previous candidate.
+The policy is syntactically valid and schema-correct, but it does not satisfy the formal verification checks.
+
+---
+
+# Repair Context
+
+Current repair iteration: 2
+
+
+
+---
+
+# How to interpret the failures
+
+Each failing check tells you:
+- **Direction**: whether your policy is too permissive (TIGHTEN) or too restrictive (RELAX)
+- **Reference policy**: the exact Cedar policy that defines the boundary
+- **Counterexample**: a concrete request that exposes the violation
+
+Use the reference policy and counterexample together to understand what needs to change.
+Make the minimum adjustment necessary — do not rewrite the whole policy.
+
+---
+
+# Hard Requirements
+
+- Output only the final repaired Cedar policy.
+- Do not output explanations, reasoning, or comments outside the policy block.
+- Do not collapse to a deny-all policy unless the specification truly requires it.
+- Preserve all checks that currently pass — do not regress passing checks while fixing failing ones.
+- Use only entity types, actions, and attributes that exist in the schema.
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Specification
+---
+pattern: "add role"
+difficulty: medium
+features:
+  - ACL-based sharing
+  - owner/viewer/editor roles
+  - blocking semantics
+  - admin group
+domain: document management
+source: mutation (doccloud domain)
+---
+
+# Document Cloud Permissions -- Policy Specification
+
+## Context
+
+This policy governs access control for a document management platform with
+Documents, Users, Groups, Drives, and sharing ACLs (DocumentShare).
+
+Documents have three ACL attributes (viewACL, modifyACL, manageACL), each
+referencing a DocumentShare entity that Groups and Public can be members of.
+Documents also have a publicAccess string attribute and an owner reference.
+
+## Requirements
+
+### 1. Owner Permissions
+- The **owner** of a document may perform ALL actions on that document:
+  ViewDocument, ModifyDocument, DeleteDocument, EditIsPrivate, EditPublicAccess,
+  AddToShareACL.
+
+### 2. View ACL Permissions
+- A user who is in a document's **viewACL** may **ViewDocument**.
+
+### 3. Modify ACL Permissions
+- A user who is in a document's **modifyACL** may **ModifyDocument**.
+
+### 4. Manage ACL Permissions
+- A user who is in a document's **manageACL** may perform:
+  **AddToShareACL**, **DeleteDocument**, **EditIsPrivate**, **EditPublicAccess**.
+
+### 5. Public Access Rules
+- If a document's `publicAccess == "view"`, then **Public** principals (or any
+  authenticated user) may **ViewDocument**.
+- If a document's `publicAccess == "edit"`, then **Public** principals may
+  **ViewDocument** and **ModifyDocument**.
+
+### 6. Blocking Rules (Deny Rules -- Bidirectional, with Exception)
+- If the **principal** is in the document owner's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- If the document **owner** is in the principal's **blocked** set, forbid
+  **ViewDocument** and **ModifyDocument**.
+- **Exception**: Users who are in the document's **manageACL** bypass the
+  blocking rules. They can ViewDocument and ModifyDocument even if blocking
+  would otherwise apply.
+- The blocking forbid rules must use an `unless` clause:
+  `unless { principal in resource.manageACL }`.
+
+### 7. Authentication Requirement (Deny Rule)
+- For **User** principals, all actions are forbidden unless
+  `context.is_authenticated == true`.
+
+### 8. Group Owner Permissions
+- The **owner** of a Group may **DeleteGroup** and **ModifyGroup** on that Group.
+
+## Notes
+- The manageACL bypass creates a forbid/unless interaction for blocking rules.
+- ACL membership is checked via `principal in resource.viewACL` (etc.).
+- The Public entity type is a separate principal type, not a User.
+- Cedar denies by default -- no explicit deny-by-default policy is needed.
+
+---
+
+# Cedar Schema
+```cedar
+entity DocumentShare, Drive;
+entity Document  = {
+  "isPrivate": Bool,
+  "manageACL": DocumentShare,
+  "modifyACL": DocumentShare,
+  "owner": User,
+  "publicAccess": String,
+  "viewACL": DocumentShare,
+};
+entity Group in [DocumentShare] = {
+  "owner": User,
+};
+entity Public in [DocumentShare];
+entity User in [Group] = {
+  "blocked": Set<User>,
+  "personalGroup": Group,
+};
+
+action DeleteGroup, ModifyGroup appliesTo {
+  principal: [User],
+  resource: [Group],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action CreateGroup appliesTo {
+  principal: [User],
+  resource: [Drive],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action ViewDocument appliesTo {
+  principal: [User, Public],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action AddToShareACL, DeleteDocument, EditIsPrivate, EditPublicAccess appliesTo {
+  principal: [User],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action ModifyDocument appliesTo {
+  principal: [User],
+  resource: [Document],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+action CreateDocument appliesTo {
+  principal: [User],
+  resource: [Drive],
+  context: {
+    "is_authenticated": Bool,
+  }
+};
+```
+
+---
+
+# Previous Candidate
+```cedar
+permit (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.viewACL ||
+    (resource.publicAccess == "view" && principal is Public) ||
+    (resource.publicAccess == "edit" && principal is Public)
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.modifyACL ||
+    (resource.publicAccess == "edit" && principal is Public)
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteDocument",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditIsPrivate",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"EditPublicAccess",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"AddToShareACL",
+    resource is Document
+) when {
+    principal == resource.owner ||
+    principal in resource.manageACL
+};
+
+permit (
+    principal is User,
+    action == Action::"DeleteGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"ModifyGroup",
+    resource is Group
+) when {
+    principal == resource.owner
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateDocument",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+permit (
+    principal is User,
+    action == Action::"CreateGroup",
+    resource is Drive
+) when {
+    context.is_authenticated
+};
+
+forbid (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+) when {
+    (principal in resource.owner.blocked || resource.owner in principal.blocked) &&
+    principal != resource.owner
+};
+
+forbid (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+) when {
+    (principal in resource.owner.blocked || resource.owner in principal.blocked) &&
+    principal != resource.owner
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"ViewDocument",
+        Action::"ModifyDocument",
+        Action::"DeleteDocument",
+        Action::"EditIsPrivate",
+        Action::"EditPublicAccess",
+        Action::"AddToShareACL",
+        Action::"DeleteGroup",
+        Action::"ModifyGroup",
+        Action::"CreateDocument",
+        Action::"CreateGroup"
+    ],
+    resource is Document
+) when {
+    !context.is_authenticated
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"DeleteGroup",
+        Action::"ModifyGroup"
+    ],
+    resource is Group
+) when {
+    !context.is_authenticated
+};
+
+forbid (
+    principal is User,
+    action in [
+        Action::"CreateDocument",
+        Action::"CreateGroup"
+    ],
+    resource is Drive
+) when {
+    !context.is_authenticated
+};
+```
+
+---
+
+# Semantic Failures
+SEMANTIC FAILURE — 4 of 28 check(s) failed.
+
+--- Check 1: view_acl_floor [implies] ---
+Description: Users in viewACL MUST be able to ViewDocument when authenticated (and in manageACL to bypass blocks)
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (floor_view_acl.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"ViewDocument",
+    resource is Document
+)
+when {
+    context.is_authenticated == true &&
+    principal in resource.viewACL &&
+    principal in resource.manageACL
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ViewDocument", resource: Document::""
+context: {is_authenticated: true}
+entities: [
+  Action::"DeleteGroup",
+  Action::"ModifyGroup",
+  Action::"CreateGroup",
+  Action::"EditIsPrivate",
+  User::"" in [DocumentShare::"", DocumentShare::"A"] {
+    blocked: [User::""],
+    personalGroup: G
+...[truncated]...
+
+--- Check 2: modify_acl_floor [implies] ---
+Description: Users in modifyACL MUST be able to ModifyDocument when authenticated (and in manageACL to bypass blocks)
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (floor_modify_acl.cedar):
+```cedar
+permit (
+    principal is User,
+    action == Action::"ModifyDocument",
+    resource is Document
+)
+when {
+    context.is_authenticated == true &&
+    principal in resource.modifyACL &&
+    principal in resource.manageACL
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: User::"", action: Action::"ModifyDocument", resource: Document::""
+context: {is_authenticated: true}
+entities: [
+  Action::"DeleteDocument",
+  DocumentShare::"A",
+  Action::"AddToShareACL",
+  DocumentShare::"B",
+  Action::"EditIsPrivate",
+  Action::"ModifyGroup",
+  Document::"" {
+    isPrivate: true,
+    manageAC
+...[truncated]...
+
+--- Check 3: public_view_floor [implies] ---
+Description: Public principal MUST be able to ViewDocument when publicAccess is view
+
+Direction: TIGHTEN — your policy permits requests that the ceiling forbids.
+Action: Add a condition or tighten the when-clause to block the counterexample request.
+
+Reference policy (floor_public_view.cedar):
+```cedar
+permit (
+    principal is Public,
+    action == Action::"ViewDocument",
+    resource is Document
+)
+when {
+    resource.publicAccess == "view"
+};
+```
+
+Counterexample:
+✗ Policy set 1 implies policy set 2: DOES NOT HOLD
+  Counterexample found:
+principal: Public::"", action: Action::"ViewDocument", resource: Document::""
+context: {is_authenticated: false}
+entities: [
+  Action::"AddToShareACL",
+  Action::"CreateDocument",
+  Action::"DeleteGroup",
+  User::"" {
+    blocked: [],
+    personalGroup: Group::"",
+  },
+  Action::"EditPublicAccess",
+  Group::"" {
+    owner:
+...[truncated]...
+
+... 1 additional failed checks omitted to keep the repair prompt within context limits.
+
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

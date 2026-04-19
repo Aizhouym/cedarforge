@@ -1,0 +1,181 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.55,
+  "checks": [
+    {
+      "name": "read_safety",
+      "description": "readDocument permitted only when (owner OR legal team)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"readDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "edit_safety",
+      "description": "editDocument permitted only when ((owner AND pre-expiry) OR (legal team AND legal hold))",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"editDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/edit_safety.cedar"
+    },
+    {
+      "name": "delete_safety",
+      "description": "deleteDocument permitted only when (owner AND pre-expiry AND NOT legal hold)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"deleteDocument\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/delete_safety.cedar"
+    },
+    {
+      "name": "owner_must_read",
+      "description": "Owner MUST read their own document",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/owner_must_read.cedar"
+    },
+    {
+      "name": "legal_team_must_read",
+      "description": "Legal team member MUST read any document",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"readDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/legal_team_must_read.cedar"
+    },
+    {
+      "name": "owner_pre_expiry_must_edit",
+      "description": "Owner MUST edit their own document when pre-expiry",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"editDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/owner_pre_expiry_must_edit.cedar"
+    },
+    {
+      "name": "legal_team_must_edit_on_hold",
+      "description": "Legal team member MUST edit a document under legal hold regardless of expiry",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"editDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/legal_team_must_edit_on_hold.cedar"
+    },
+    {
+      "name": "owner_pre_expiry_no_hold_must_delete",
+      "description": "Owner MUST delete their document when pre-expiry AND not under legal hold",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"deleteDocument\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/legal_hold_override_expiry-structured_instruction/20260417T063157Z_repair_mi05_repair_loop/legal_hold_override_expiry_iter_01/_eval_workspace/references/owner_pre_expiry_no_hold_must_delete.cedar"
+    },
+    {
+      "name": "liveness_read",
+      "description": "User+readDocument+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"readDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_edit",
+      "description": "User+editDocument+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"editDocument\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_delete",
+      "description": "User+deleteDocument+Document liveness",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"deleteDocument\"",
+      "resource_type": "Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "readDocument permitted only when (owner OR legal team)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_safety",
+      "check_type": "implies",
+      "description": "editDocument permitted only when ((owner AND pre-expiry) OR (legal team AND legal hold))",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "delete_safety",
+      "check_type": "implies",
+      "description": "deleteDocument permitted only when (owner AND pre-expiry AND NOT legal hold)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_must_read",
+      "check_type": "implies",
+      "description": "Owner MUST read their own document",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "legal_team_must_read",
+      "check_type": "implies",
+      "description": "Legal team member MUST read any document",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_pre_expiry_must_edit",
+      "check_type": "implies",
+      "description": "Owner MUST edit their own document when pre-expiry",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "legal_team_must_edit_on_hold",
+      "check_type": "implies",
+      "description": "Legal team member MUST edit a document under legal hold regardless of expiry",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "owner_pre_expiry_no_hold_must_delete",
+      "check_type": "implies",
+      "description": "Owner MUST delete their document when pre-expiry AND not under legal hold",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_read",
+      "check_type": "always-denies (liveness)",
+      "description": "User+readDocument+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit",
+      "check_type": "always-denies (liveness)",
+      "description": "User+editDocument+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_delete",
+      "check_type": "always-denies (liveness)",
+      "description": "User+deleteDocument+Document liveness",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

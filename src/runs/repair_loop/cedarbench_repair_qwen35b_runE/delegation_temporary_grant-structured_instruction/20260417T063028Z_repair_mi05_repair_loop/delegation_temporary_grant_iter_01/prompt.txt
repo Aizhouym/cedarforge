@@ -1,0 +1,345 @@
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: delegation (ephemeral grant)
+difficulty: medium
+features:
+  - optional context attribute (`has` guarding)
+  - datetime comparison on nested record attribute
+  - fallback access path (owner vs grantee)
+  - per-action scoping on the same grant
+domain: engineering / SRE
+---
+
+# Delegation with Temporary Grant — Policy Specification
+
+## Context
+
+This policy implements time-bounded access delegation. A Resource has
+an `owner` who may always act on it. The owner can also issue temporary
+grants to other users, authorizing them to perform a specific action
+(read or write) on the resource until a pinned expiry datetime.
+
+In production, the grant database is managed by the host application.
+When a request comes in, the host looks up "is there an active,
+unexpired grant from this user on this resource for this action?" and,
+if found, attaches the grant to the request context as the optional
+`activeGrant` attribute. The policy verifies the grant's claims
+against the request.
+
+Principal is `User`; resource is `Resource`. Four actions: `read`,
+`write`, `createGrant`, `revokeGrant`.
+
+## Requirements
+
+### 1. Owner Baseline Access
+- The resource's owner may always `read`, `write`, `createGrant`, and
+  `revokeGrant`. No grant lookup needed.
+- Concretely: for each of the four actions, permit when
+  `principal == resource.owner`.
+
+### 2. Grant-Based Read
+- A non-owner User may `read` the Resource when ALL of the following
+  hold:
+  - The request's context includes an `activeGrant` attribute
+    (`context has activeGrant`), AND
+  - The grant's `grantee` is the principal: `context.activeGrant.grantee
+    == principal`, AND
+  - The grant's `allowedAction` is `"read"`, AND
+  - The grant has not expired: `context.activeGrant.expiresAt >
+    context.now.datetime`.
+
+### 3. Grant-Based Write
+- A non-owner User may `write` the Resource under the same conditions
+  as §2, but with `allowedAction == "write"`. A "read" grant does NOT
+  authorize writing, and vice versa.
+
+### 4. Grant Management (Owner Only)
+- Only the owner may `createGrant` or `revokeGrant`. Grantees themselves
+  have no authority to create grants for other users, even if they have
+  an active grant of their own.
+
+## Notes
+- The `activeGrant` attribute is **optional** in the schema (declared
+  with `?`). Per Cedar's type-checker, every read of
+  `context.activeGrant.X` must be guarded by `context has activeGrant`
+  in the same conjunct. A naive policy that reads `context.activeGrant.grantee`
+  without the `has` guard will fail Cedar validation.
+- The grant's `expiresAt` check uses `>` (strict inequality): a grant
+  that expires exactly at `context.now.datetime` is no longer valid.
+- The policy intentionally uses separate permits for read and write
+  grants because a single grant authorizes only one action. Attempting
+  to collapse the two into one permit with a combined action check
+  (`action in [read, write]`) breaks the action-scope semantics.
+- Common failure modes: (a) forgetting the `has` guard on the optional
+  attribute, (b) using `==` instead of `>` on the expiry check
+  (permitting the exact-expiry boundary case), (c) missing the
+  `allowedAction` string match and thus allowing cross-action use of
+  a single grant.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Delegation with Temporary Grant — a principal can grant another
+// principal time-bounded access to a specific resource. Represents the
+// "ephemeral grant" pattern used in on-call handoffs, contractor
+// access, and customer-support escalation.
+//
+// Design note: in a real production system, the host application
+// maintains the grant database and looks up the relevant grant when a
+// request comes in. It attaches the looked-up grant to the request
+// context as an optional attribute. The policy then verifies the
+// claim against the request. This is more realistic than storing a
+// `Set<Grant>` on the resource because Cedar's `.contains()` cannot
+// perform partial-record existential searches.
+
+entity User;
+
+entity Resource = {
+    owner: User,
+};
+
+// A pre-validated grant, looked up by the host application and attached
+// to the request context. If no grant applies, the context attribute is
+// absent — the policy then falls back to owner-only access.
+type Grant = {
+    grantee: User,
+    allowedAction: String,
+    expiresAt: datetime,
+};
+
+action read, write appliesTo {
+    principal: [User],
+    resource: [Resource],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+        // Optional: present when the host application has pre-validated
+        // a grant for this request. Absent when the request is not
+        // relying on a grant (e.g. when the owner is acting directly).
+        activeGrant?: Grant,
+    },
+};
+
+// Grant management — only the owner may create or revoke grants on
+// their own resource.
+action createGrant, revokeGrant appliesTo {
+    principal: [User],
+    resource: [Resource],
+    context: {
+        now: {
+            datetime: datetime,
+        },
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>

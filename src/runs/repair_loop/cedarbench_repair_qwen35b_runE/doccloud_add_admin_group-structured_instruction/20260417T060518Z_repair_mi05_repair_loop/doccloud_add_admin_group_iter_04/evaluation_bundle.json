@@ -1,0 +1,700 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 28,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 28,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 1.389,
+    "checks": [
+      {
+        "name": "owner_view_safety",
+        "description": "ViewDocument for User principals is only allowed if owner, in viewACL, in manageACL, or publicAccess is view/edit",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_user_view.cedar"
+      },
+      {
+        "name": "modify_safety",
+        "description": "ModifyDocument for User principals is only allowed if owner, in modifyACL, or publicAccess is edit",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_user_modify.cedar"
+      },
+      {
+        "name": "delete_safety",
+        "description": "DeleteDocument is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_delete.cedar"
+      },
+      {
+        "name": "edit_is_private_safety",
+        "description": "EditIsPrivate is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"EditIsPrivate\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_edit_is_private.cedar"
+      },
+      {
+        "name": "edit_public_access_safety",
+        "description": "EditPublicAccess is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"EditPublicAccess\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_edit_public_access.cedar"
+      },
+      {
+        "name": "add_to_share_acl_safety",
+        "description": "AddToShareACL is only allowed if owner or in manageACL",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_add_to_share_acl.cedar"
+      },
+      {
+        "name": "public_view_safety",
+        "description": "ViewDocument for Public principals is only allowed if publicAccess is view or edit",
+        "type": "implies",
+        "principal_type": "Public",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_public_view.cedar"
+      },
+      {
+        "name": "delete_group_safety",
+        "description": "DeleteGroup is only allowed if principal is the group owner",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_delete_group.cedar"
+      },
+      {
+        "name": "modify_group_safety",
+        "description": "ModifyGroup is only allowed if principal is the group owner",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyGroup\"",
+        "resource_type": "Group",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_modify_group.cedar"
+      },
+      {
+        "name": "auth_required_view",
+        "description": "User principals cannot ViewDocument when not authenticated",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_auth_view.cedar"
+      },
+      {
+        "name": "auth_required_modify",
+        "description": "User principals cannot ModifyDocument when not authenticated",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_auth_modify.cedar"
+      },
+      {
+        "name": "auth_required_delete",
+        "description": "User principals cannot DeleteDocument when not authenticated",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/ceiling_auth_delete.cedar"
+      },
+      {
+        "name": "owner_floor_view",
+        "description": "Owner MUST be able to ViewDocument when authenticated and not blocked (or in manageACL)",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_owner_view.cedar"
+      },
+      {
+        "name": "owner_floor_modify",
+        "description": "Owner MUST be able to ModifyDocument when authenticated and not blocked (or in manageACL)",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_owner_modify.cedar"
+      },
+      {
+        "name": "owner_floor_delete",
+        "description": "Owner MUST be able to DeleteDocument when authenticated",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_owner_delete.cedar"
+      },
+      {
+        "name": "view_acl_floor",
+        "description": "Users in viewACL MUST be able to ViewDocument when authenticated (and in manageACL to bypass blocks)",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_view_acl.cedar"
+      },
+      {
+        "name": "modify_acl_floor",
+        "description": "Users in modifyACL MUST be able to ModifyDocument when authenticated (and in manageACL to bypass blocks)",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_modify_acl.cedar"
+      },
+      {
+        "name": "manage_acl_floor_add_share",
+        "description": "Users in manageACL MUST be able to AddToShareACL when authenticated",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_manage_add_share.cedar"
+      },
+      {
+        "name": "public_view_floor",
+        "description": "Public principal MUST be able to ViewDocument when publicAccess is view",
+        "type": "floor",
+        "principal_type": "Public",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_public_view.cedar"
+      },
+      {
+        "name": "group_owner_floor_delete",
+        "description": "Group owner MUST be able to DeleteGroup when authenticated",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/doccloud_add_admin_group-structured_instruction/20260417T060518Z_repair_mi05_repair_loop/doccloud_add_admin_group_iter_04/_eval_workspace/references/floor_group_owner_delete.cedar"
+      },
+      {
+        "name": "liveness_view_document",
+        "description": "ViewDocument is not trivially deny-all for Users",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_modify_document",
+        "description": "ModifyDocument is not trivially deny-all for Users",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"ModifyDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete_document",
+        "description": "DeleteDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"DeleteDocument\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_add_to_share_acl",
+        "description": "AddToShareACL is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"AddToShareACL\"",
+        "resource_type": "Document"
+      },
+      {
+        "name": "liveness_delete_group",
+        "description": "DeleteGroup is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"DeleteGroup\"",
+        "resource_type": "Group"
+      },
+      {
+        "name": "liveness_create_document",
+        "description": "CreateDocument is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"CreateDocument\"",
+        "resource_type": "Drive"
+      },
+      {
+        "name": "liveness_create_group",
+        "description": "CreateGroup is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"CreateGroup\"",
+        "resource_type": "Drive"
+      },
+      {
+        "name": "liveness_public_view",
+        "description": "ViewDocument for Public is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "Public",
+        "action": "Action::\"ViewDocument\"",
+        "resource_type": "Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "owner_view_safety",
+        "check_type": "implies",
+        "description": "ViewDocument for User principals is only allowed if owner, in viewACL, in manageACL, or publicAccess is view/edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_safety",
+        "check_type": "implies",
+        "description": "ModifyDocument for User principals is only allowed if owner, in modifyACL, or publicAccess is edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_safety",
+        "check_type": "implies",
+        "description": "DeleteDocument is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_is_private_safety",
+        "check_type": "implies",
+        "description": "EditIsPrivate is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_public_access_safety",
+        "check_type": "implies",
+        "description": "EditPublicAccess is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "add_to_share_acl_safety",
+        "check_type": "implies",
+        "description": "AddToShareACL is only allowed if owner or in manageACL",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "public_view_safety",
+        "check_type": "implies",
+        "description": "ViewDocument for Public principals is only allowed if publicAccess is view or edit",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "delete_group_safety",
+        "check_type": "implies",
+        "description": "DeleteGroup is only allowed if principal is the group owner",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_group_safety",
+        "check_type": "implies",
+        "description": "ModifyGroup is only allowed if principal is the group owner",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_view",
+        "check_type": "implies",
+        "description": "User principals cannot ViewDocument when not authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_modify",
+        "check_type": "implies",
+        "description": "User principals cannot ModifyDocument when not authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "auth_required_delete",
+        "check_type": "implies",
+        "description": "User principals cannot DeleteDocument when not authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "owner_floor_view",
+        "check_type": "implies",
+        "description": "Owner MUST be able to ViewDocument when authenticated and not blocked (or in manageACL)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "owner_floor_modify",
+        "check_type": "implies",
+        "description": "Owner MUST be able to ModifyDocument when authenticated and not blocked (or in manageACL)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "owner_floor_delete",
+        "check_type": "implies",
+        "description": "Owner MUST be able to DeleteDocument when authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "view_acl_floor",
+        "check_type": "implies",
+        "description": "Users in viewACL MUST be able to ViewDocument when authenticated (and in manageACL to bypass blocks)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "modify_acl_floor",
+        "check_type": "implies",
+        "description": "Users in modifyACL MUST be able to ModifyDocument when authenticated (and in manageACL to bypass blocks)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "manage_acl_floor_add_share",
+        "check_type": "implies",
+        "description": "Users in manageACL MUST be able to AddToShareACL when authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "public_view_floor",
+        "check_type": "implies",
+        "description": "Public principal MUST be able to ViewDocument when publicAccess is view",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "group_owner_floor_delete",
+        "check_type": "implies",
+        "description": "Group owner MUST be able to DeleteGroup when authenticated",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_document",
+        "check_type": "always-denies (liveness)",
+        "description": "ViewDocument is not trivially deny-all for Users",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_modify_document",
+        "check_type": "always-denies (liveness)",
+        "description": "ModifyDocument is not trivially deny-all for Users",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete_document",
+        "check_type": "always-denies (liveness)",
+        "description": "DeleteDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_add_to_share_acl",
+        "check_type": "always-denies (liveness)",
+        "description": "AddToShareACL is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_delete_group",
+        "check_type": "always-denies (liveness)",
+        "description": "DeleteGroup is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_create_document",
+        "check_type": "always-denies (liveness)",
+        "description": "CreateDocument is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_create_group",
+        "check_type": "always-denies (liveness)",
+        "description": "CreateGroup is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_public_view",
+        "check_type": "always-denies (liveness)",
+        "description": "ViewDocument for Public is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 28,
+        "solver_time_s": 1.389,
+        "checks": [
+          {
+            "name": "owner_view_safety",
+            "type": "implies",
+            "description": "ViewDocument for User principals is only allowed if owner, in viewACL, in manageACL, or publicAccess is view/edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_safety",
+            "type": "implies",
+            "description": "ModifyDocument for User principals is only allowed if owner, in modifyACL, or publicAccess is edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_safety",
+            "type": "implies",
+            "description": "DeleteDocument is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_is_private_safety",
+            "type": "implies",
+            "description": "EditIsPrivate is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_public_access_safety",
+            "type": "implies",
+            "description": "EditPublicAccess is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "add_to_share_acl_safety",
+            "type": "implies",
+            "description": "AddToShareACL is only allowed if owner or in manageACL",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "public_view_safety",
+            "type": "implies",
+            "description": "ViewDocument for Public principals is only allowed if publicAccess is view or edit",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "delete_group_safety",
+            "type": "implies",
+            "description": "DeleteGroup is only allowed if principal is the group owner",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_group_safety",
+            "type": "implies",
+            "description": "ModifyGroup is only allowed if principal is the group owner",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_view",
+            "type": "implies",
+            "description": "User principals cannot ViewDocument when not authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_modify",
+            "type": "implies",
+            "description": "User principals cannot ModifyDocument when not authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "auth_required_delete",
+            "type": "implies",
+            "description": "User principals cannot DeleteDocument when not authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "owner_floor_view",
+            "type": "implies",
+            "description": "Owner MUST be able to ViewDocument when authenticated and not blocked (or in manageACL)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "owner_floor_modify",
+            "type": "implies",
+            "description": "Owner MUST be able to ModifyDocument when authenticated and not blocked (or in manageACL)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "owner_floor_delete",
+            "type": "implies",
+            "description": "Owner MUST be able to DeleteDocument when authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "view_acl_floor",
+            "type": "implies",
+            "description": "Users in viewACL MUST be able to ViewDocument when authenticated (and in manageACL to bypass blocks)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "modify_acl_floor",
+            "type": "implies",
+            "description": "Users in modifyACL MUST be able to ModifyDocument when authenticated (and in manageACL to bypass blocks)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "manage_acl_floor_add_share",
+            "type": "implies",
+            "description": "Users in manageACL MUST be able to AddToShareACL when authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "public_view_floor",
+            "type": "implies",
+            "description": "Public principal MUST be able to ViewDocument when publicAccess is view",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "group_owner_floor_delete",
+            "type": "implies",
+            "description": "Group owner MUST be able to DeleteGroup when authenticated",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_document",
+            "type": "always-denies (liveness)",
+            "description": "ViewDocument is not trivially deny-all for Users",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_modify_document",
+            "type": "always-denies (liveness)",
+            "description": "ModifyDocument is not trivially deny-all for Users",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete_document",
+            "type": "always-denies (liveness)",
+            "description": "DeleteDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_add_to_share_acl",
+            "type": "always-denies (liveness)",
+            "description": "AddToShareACL is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_delete_group",
+            "type": "always-denies (liveness)",
+            "description": "DeleteGroup is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_create_document",
+            "type": "always-denies (liveness)",
+            "description": "CreateDocument is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_create_group",
+            "type": "always-denies (liveness)",
+            "description": "CreateGroup is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_public_view",
+            "type": "always-denies (liveness)",
+            "description": "ViewDocument for Public is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

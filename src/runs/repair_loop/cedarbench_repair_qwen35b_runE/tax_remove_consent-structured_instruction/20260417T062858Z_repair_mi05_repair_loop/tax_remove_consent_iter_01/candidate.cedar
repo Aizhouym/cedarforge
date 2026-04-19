@@ -1,0 +1,11 @@
+permit (
+    principal is Professional,
+    action == Action::"viewDocument",
+    resource is Document
+) when {
+    principal.assigned_orgs.contains({
+        organization: resource.owner.organization,
+        serviceline: resource.serviceline,
+        location: resource.location
+    })
+};

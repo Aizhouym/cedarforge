@@ -1,0 +1,200 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_edit-structured_instruction/20260417T062816Z_repair_mi05_repair_loop/tax_add_edit_iter_04/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 1.0,
+  "verification_pass": true,
+  "loss": 0,
+  "total_check_count": 6,
+  "failed_checks": [],
+  "failed_check_types": [],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 1.0,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": false,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 0,
+    "total_check_count": 6,
+    "primary_error_type": "none",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 0,
+    "solver_time_s": 0.205,
+    "checks": [
+      {
+        "name": "view_org_match_and_consent_safety",
+        "description": "Professional may viewDocument only when (org match AND valid consent)",
+        "type": "implies",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_edit-structured_instruction/20260417T062816Z_repair_mi05_repair_loop/tax_add_edit_iter_04/_eval_workspace/references/org_match_and_consent_safety.cedar"
+      },
+      {
+        "name": "view_must_org_match_with_consent",
+        "description": "Professional MUST viewDocument when (org match AND valid consent)",
+        "type": "floor",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_edit-structured_instruction/20260417T062816Z_repair_mi05_repair_loop/tax_add_edit_iter_04/_eval_workspace/references/must_view_org_match_with_consent.cedar"
+      },
+      {
+        "name": "edit_org_match_and_consent_safety",
+        "description": "Professional may editDocument only when (org match AND valid consent)",
+        "type": "implies",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"editDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_edit-structured_instruction/20260417T062816Z_repair_mi05_repair_loop/tax_add_edit_iter_04/_eval_workspace/references/edit_org_match_and_consent_safety.cedar"
+      },
+      {
+        "name": "edit_must_org_match_with_consent",
+        "description": "Professional MUST editDocument when (org match AND valid consent)",
+        "type": "floor",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"editDocument\"",
+        "resource_type": "Taxpreparer::Document",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/tax_add_edit-structured_instruction/20260417T062816Z_repair_mi05_repair_loop/tax_add_edit_iter_04/_eval_workspace/references/edit_must_view_org_match_with_consent.cedar"
+      },
+      {
+        "name": "liveness_view_document",
+        "description": "Professional+viewDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"viewDocument\"",
+        "resource_type": "Taxpreparer::Document"
+      },
+      {
+        "name": "liveness_edit_document",
+        "description": "Professional+editDocument+Document liveness",
+        "type": "always-denies-liveness",
+        "principal_type": "Taxpreparer::Professional",
+        "action": "Taxpreparer::Action::\"editDocument\"",
+        "resource_type": "Taxpreparer::Document"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "view_org_match_and_consent_safety",
+        "check_type": "implies",
+        "description": "Professional may viewDocument only when (org match AND valid consent)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "view_must_org_match_with_consent",
+        "check_type": "implies",
+        "description": "Professional MUST viewDocument when (org match AND valid consent)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_org_match_and_consent_safety",
+        "check_type": "implies",
+        "description": "Professional may editDocument only when (org match AND valid consent)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "edit_must_org_match_with_consent",
+        "check_type": "implies",
+        "description": "Professional MUST editDocument when (org match AND valid consent)",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_view_document",
+        "check_type": "always-denies (liveness)",
+        "description": "Professional+viewDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_edit_document",
+        "check_type": "always-denies (liveness)",
+        "description": "Professional+editDocument+Document liveness",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": true,
+      "status": "pass",
+      "message": "All semantic checks passed.",
+      "details": {
+        "total_checks": 6,
+        "solver_time_s": 0.205,
+        "checks": [
+          {
+            "name": "view_org_match_and_consent_safety",
+            "type": "implies",
+            "description": "Professional may viewDocument only when (org match AND valid consent)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "view_must_org_match_with_consent",
+            "type": "implies",
+            "description": "Professional MUST viewDocument when (org match AND valid consent)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_org_match_and_consent_safety",
+            "type": "implies",
+            "description": "Professional may editDocument only when (org match AND valid consent)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "edit_must_org_match_with_consent",
+            "type": "implies",
+            "description": "Professional MUST editDocument when (org match AND valid consent)",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_view_document",
+            "type": "always-denies (liveness)",
+            "description": "Professional+viewDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_edit_document",
+            "type": "always-denies (liveness)",
+            "description": "Professional+editDocument+Document liveness",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

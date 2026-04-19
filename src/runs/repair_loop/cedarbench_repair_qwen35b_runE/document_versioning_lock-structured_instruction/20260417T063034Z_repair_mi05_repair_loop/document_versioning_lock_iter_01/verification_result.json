@@ -1,0 +1,181 @@
+{
+  "loss": 0,
+  "solver_time_s": 0.468,
+  "checks": [
+    {
+      "name": "read_safety",
+      "description": "read permitted for any User on any Document (no restrictions)",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"read\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/read_safety.cedar"
+    },
+    {
+      "name": "edit_safety",
+      "description": "edit permitted only for editor/admin AND document is unlocked or locked by this user",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"edit\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/edit_safety.cedar"
+    },
+    {
+      "name": "lock_safety",
+      "description": "lock permitted only for editor/admin",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"lock\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/lock_safety.cedar"
+    },
+    {
+      "name": "unlock_safety",
+      "description": "unlock permitted only when principal is lock holder or admin",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"unlock\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/unlock_safety.cedar"
+    },
+    {
+      "name": "publish_safety",
+      "description": "publish permitted only for admin AND document is draft",
+      "type": "implies",
+      "principal_type": "User",
+      "action": "Action::\"publish\"",
+      "resource_type": "Document",
+      "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/publish_safety.cedar"
+    },
+    {
+      "name": "floor_editor_edit",
+      "description": "Editor MUST be permitted to edit an unlocked document",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"edit\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/floor_editor_edit.cedar"
+    },
+    {
+      "name": "floor_admin_unlock",
+      "description": "Admin MUST be permitted to unlock any document",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"unlock\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/floor_admin_unlock.cedar"
+    },
+    {
+      "name": "floor_admin_publish_draft",
+      "description": "Admin MUST be permitted to publish a draft document",
+      "type": "floor",
+      "principal_type": "User",
+      "action": "Action::\"publish\"",
+      "resource_type": "Document",
+      "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/document_versioning_lock-structured_instruction/20260417T063034Z_repair_mi05_repair_loop/document_versioning_lock_iter_01/_eval_workspace/references/floor_admin_publish_draft.cedar"
+    },
+    {
+      "name": "liveness_edit",
+      "description": "User+edit+Document has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"edit\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_unlock",
+      "description": "User+unlock+Document has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"unlock\"",
+      "resource_type": "Document"
+    },
+    {
+      "name": "liveness_publish",
+      "description": "User+publish+Document has at least one permitted request",
+      "type": "always-denies-liveness",
+      "principal_type": "User",
+      "action": "Action::\"publish\"",
+      "resource_type": "Document"
+    }
+  ],
+  "results": [
+    {
+      "check_name": "read_safety",
+      "check_type": "implies",
+      "description": "read permitted for any User on any Document (no restrictions)",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "edit_safety",
+      "check_type": "implies",
+      "description": "edit permitted only for editor/admin AND document is unlocked or locked by this user",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "lock_safety",
+      "check_type": "implies",
+      "description": "lock permitted only for editor/admin",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "unlock_safety",
+      "check_type": "implies",
+      "description": "unlock permitted only when principal is lock holder or admin",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "publish_safety",
+      "check_type": "implies",
+      "description": "publish permitted only for admin AND document is draft",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_editor_edit",
+      "check_type": "implies",
+      "description": "Editor MUST be permitted to edit an unlocked document",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_admin_unlock",
+      "check_type": "implies",
+      "description": "Admin MUST be permitted to unlock any document",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "floor_admin_publish_draft",
+      "check_type": "implies",
+      "description": "Admin MUST be permitted to publish a draft document",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_edit",
+      "check_type": "always-denies (liveness)",
+      "description": "User+edit+Document has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_unlock",
+      "check_type": "always-denies (liveness)",
+      "description": "User+unlock+Document has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    },
+    {
+      "check_name": "liveness_publish",
+      "check_type": "always-denies (liveness)",
+      "description": "User+publish+Document has at least one permitted request",
+      "passed": true,
+      "counterexample": ""
+    }
+  ]
+}

@@ -1,0 +1,662 @@
+{
+  "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace",
+  "syntax_pass": true,
+  "schema_pass": true,
+  "semantic_accuracy": 0.9615,
+  "verification_pass": false,
+  "loss": 1,
+  "total_check_count": 26,
+  "failed_checks": [
+    "floor_admin_createReservation_renovation"
+  ],
+  "failed_check_types": [
+    "implies"
+  ],
+  "metrics": {
+    "prompt_variant": "structured_instruction_repair_semantic",
+    "syntax_pass": true,
+    "schema_pass": true,
+    "semantic_accuracy": 0.9615,
+    "syntax_error": false,
+    "schema_error": false,
+    "semantic_error": true,
+    "syntax_error_rate": 0.0,
+    "schema_violation_rate": 0.0,
+    "hallucinated_identifier_rate": 0.0,
+    "hallucinated_identifier_count": 0,
+    "failed_check_count": 1,
+    "total_check_count": 26,
+    "primary_error_type": "semantic",
+    "validation_message": ""
+  },
+  "verification": {
+    "loss": 1,
+    "solver_time_s": 6.291,
+    "checks": [
+      {
+        "name": "viewReservation_ceiling",
+        "description": "viewReservation is only allowed if resource is reachable via viewPermissions, memberPermissions, or admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"viewReservation\"",
+        "resource_type": "Reservation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_viewReservation.cedar"
+      },
+      {
+        "name": "updateReservation_ceiling",
+        "description": "updateReservation is only allowed via memberPermissions or admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"updateReservation\"",
+        "resource_type": "Reservation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_updateReservation.cedar"
+      },
+      {
+        "name": "grantAccessReservation_ceiling",
+        "description": "grantAccessReservation is only allowed via admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessReservation\"",
+        "resource_type": "Reservation",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_grantAccessReservation.cedar"
+      },
+      {
+        "name": "createReservation_ceiling",
+        "description": "createReservation on a Property is only allowed via memberPermissions or admin permissions, and blocked by renovation unless admin",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"createReservation\"",
+        "resource_type": "Property",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_createReservation.cedar"
+      },
+      {
+        "name": "viewProperty_ceiling",
+        "description": "viewProperty is only allowed via viewPermissions, memberPermissions, or admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"viewProperty\"",
+        "resource_type": "Property",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_viewProperty.cedar"
+      },
+      {
+        "name": "updateProperty_ceiling",
+        "description": "updateProperty is only allowed via memberPermissions or admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"updateProperty\"",
+        "resource_type": "Property",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_updateProperty.cedar"
+      },
+      {
+        "name": "grantAccessProperty_ceiling",
+        "description": "grantAccessProperty is only allowed via admin permissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessProperty\"",
+        "resource_type": "Property",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_grantAccessProperty.cedar"
+      },
+      {
+        "name": "viewHotel_ceiling",
+        "description": "viewHotel is only allowed via viewPermissions.hotelReservations, memberPermissions.hotelReservations, or hotelAdminPermissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"viewHotel\"",
+        "resource_type": "Hotel",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_viewHotel.cedar"
+      },
+      {
+        "name": "updateHotel_ceiling",
+        "description": "updateHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"updateHotel\"",
+        "resource_type": "Hotel",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_updateHotel.cedar"
+      },
+      {
+        "name": "createProperty_ceiling",
+        "description": "createProperty on a Hotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"createProperty\"",
+        "resource_type": "Hotel",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_createProperty.cedar"
+      },
+      {
+        "name": "createHotel_ceiling",
+        "description": "createHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"createHotel\"",
+        "resource_type": "Hotel",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_createHotel.cedar"
+      },
+      {
+        "name": "grantAccessHotel_ceiling",
+        "description": "grantAccessHotel is only allowed via hotelAdminPermissions",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessHotel\"",
+        "resource_type": "Hotel",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_grantAccessHotel.cedar"
+      },
+      {
+        "name": "renovation_forbid_ceiling",
+        "description": "createReservation must be forbidden on renovating properties for non-admin users",
+        "type": "implies",
+        "principal_type": "User",
+        "action": "Action::\"createReservation\"",
+        "resource_type": "Property",
+        "reference_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/ceiling_createReservation.cedar"
+      },
+      {
+        "name": "floor_viewer_viewReservation",
+        "description": "Users with viewPermissions for a reservation's hotel MUST be able to view that reservation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"viewReservation\"",
+        "resource_type": "Reservation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_viewer_viewReservation.cedar"
+      },
+      {
+        "name": "floor_member_updateReservation",
+        "description": "Users with memberPermissions for a reservation's hotel MUST be able to update that reservation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"updateReservation\"",
+        "resource_type": "Reservation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_member_updateReservation.cedar"
+      },
+      {
+        "name": "floor_admin_grantAccessReservation",
+        "description": "Users with admin permissions for a reservation's hotel MUST be able to grant access on that reservation",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessReservation\"",
+        "resource_type": "Reservation",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_admin_grantAccessReservation.cedar"
+      },
+      {
+        "name": "floor_member_createReservation",
+        "description": "Members MUST be able to createReservation on non-renovating properties",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"createReservation\"",
+        "resource_type": "Property",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_member_createReservation.cedar"
+      },
+      {
+        "name": "floor_admin_createReservation_renovation",
+        "description": "Admins MUST be able to createReservation even on renovating properties",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"createReservation\"",
+        "resource_type": "Property",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_admin_createReservation_renovation.cedar"
+      },
+      {
+        "name": "floor_admin_grantAccessHotel",
+        "description": "Hotel admins MUST be able to grant access on hotels in their admin set",
+        "type": "floor",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessHotel\"",
+        "resource_type": "Hotel",
+        "floor_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hotel_add_renovation_lock-structured_instruction/20260417T061339Z_repair_mi05_repair_loop/hotel_add_renovation_lock_iter_03/_eval_workspace/references/floor_admin_grantAccessHotel.cedar"
+      },
+      {
+        "name": "liveness_viewReservation",
+        "description": "viewReservation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"viewReservation\"",
+        "resource_type": "Reservation"
+      },
+      {
+        "name": "liveness_updateReservation",
+        "description": "updateReservation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"updateReservation\"",
+        "resource_type": "Reservation"
+      },
+      {
+        "name": "liveness_createReservation",
+        "description": "createReservation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"createReservation\"",
+        "resource_type": "Property"
+      },
+      {
+        "name": "liveness_grantAccessReservation",
+        "description": "grantAccessReservation is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessReservation\"",
+        "resource_type": "Reservation"
+      },
+      {
+        "name": "liveness_viewProperty",
+        "description": "viewProperty is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"viewProperty\"",
+        "resource_type": "Property"
+      },
+      {
+        "name": "liveness_viewHotel",
+        "description": "viewHotel is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"viewHotel\"",
+        "resource_type": "Hotel"
+      },
+      {
+        "name": "liveness_grantAccessHotel",
+        "description": "grantAccessHotel is not trivially deny-all",
+        "type": "always-denies-liveness",
+        "principal_type": "User",
+        "action": "Action::\"grantAccessHotel\"",
+        "resource_type": "Hotel"
+      }
+    ],
+    "results": [
+      {
+        "check_name": "viewReservation_ceiling",
+        "check_type": "implies",
+        "description": "viewReservation is only allowed if resource is reachable via viewPermissions, memberPermissions, or admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "updateReservation_ceiling",
+        "check_type": "implies",
+        "description": "updateReservation is only allowed via memberPermissions or admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grantAccessReservation_ceiling",
+        "check_type": "implies",
+        "description": "grantAccessReservation is only allowed via admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "createReservation_ceiling",
+        "check_type": "implies",
+        "description": "createReservation on a Property is only allowed via memberPermissions or admin permissions, and blocked by renovation unless admin",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "viewProperty_ceiling",
+        "check_type": "implies",
+        "description": "viewProperty is only allowed via viewPermissions, memberPermissions, or admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "updateProperty_ceiling",
+        "check_type": "implies",
+        "description": "updateProperty is only allowed via memberPermissions or admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grantAccessProperty_ceiling",
+        "check_type": "implies",
+        "description": "grantAccessProperty is only allowed via admin permissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "viewHotel_ceiling",
+        "check_type": "implies",
+        "description": "viewHotel is only allowed via viewPermissions.hotelReservations, memberPermissions.hotelReservations, or hotelAdminPermissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "updateHotel_ceiling",
+        "check_type": "implies",
+        "description": "updateHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "createProperty_ceiling",
+        "check_type": "implies",
+        "description": "createProperty on a Hotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "createHotel_ceiling",
+        "check_type": "implies",
+        "description": "createHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "grantAccessHotel_ceiling",
+        "check_type": "implies",
+        "description": "grantAccessHotel is only allowed via hotelAdminPermissions",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "renovation_forbid_ceiling",
+        "check_type": "implies",
+        "description": "createReservation must be forbidden on renovating properties for non-admin users",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_viewer_viewReservation",
+        "check_type": "implies",
+        "description": "Users with viewPermissions for a reservation's hotel MUST be able to view that reservation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_member_updateReservation",
+        "check_type": "implies",
+        "description": "Users with memberPermissions for a reservation's hotel MUST be able to update that reservation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_admin_grantAccessReservation",
+        "check_type": "implies",
+        "description": "Users with admin permissions for a reservation's hotel MUST be able to grant access on that reservation",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_member_createReservation",
+        "check_type": "implies",
+        "description": "Members MUST be able to createReservation on non-renovating properties",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "floor_admin_createReservation_renovation",
+        "check_type": "implies",
+        "description": "Admins MUST be able to createReservation even on renovating properties",
+        "passed": false,
+        "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"createReservation\", resource: Property::\"\"\ncontext: {}\nentities: [\n  Action::\"grantAccessHotel\",\n  Property::\"\" in [Hotel::\"\"] {\n    isUnderRenovation: true,\n  },\n  Action::\"grantAccessReservation\",\n  Action::\"createHotel\",\n  Action::\"createProperty\",\n  Hotel::\"\",\n  Action::\"viewHotel\",\n  Action::\"createReservation\",\n  Action::\"grantAccessProperty\",\n  Action::\"updateHotel\",\n  Action::\"updateProperty\",\n  Action::\"updateReservation\",\n  Action::\"viewProperty\",\n  Action::\"viewReservation\",\n  User::\"\" {\n    hotelAdminPermissions: [Hotel::\"\"],\n    memberPermissions: {\"hotelReservations\": [], \"propertyReservations\": []},\n    propertyAdminPermissions: [Property::\"\"],\n    viewPermissions: {\"hotelReservations\": [], \"propertyReservations\": [Property::\"\"]},\n  },\n]"
+      },
+      {
+        "check_name": "floor_admin_grantAccessHotel",
+        "check_type": "implies",
+        "description": "Hotel admins MUST be able to grant access on hotels in their admin set",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_viewReservation",
+        "check_type": "always-denies (liveness)",
+        "description": "viewReservation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_updateReservation",
+        "check_type": "always-denies (liveness)",
+        "description": "updateReservation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_createReservation",
+        "check_type": "always-denies (liveness)",
+        "description": "createReservation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_grantAccessReservation",
+        "check_type": "always-denies (liveness)",
+        "description": "grantAccessReservation is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_viewProperty",
+        "check_type": "always-denies (liveness)",
+        "description": "viewProperty is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_viewHotel",
+        "check_type": "always-denies (liveness)",
+        "description": "viewHotel is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      },
+      {
+        "check_name": "liveness_grantAccessHotel",
+        "check_type": "always-denies (liveness)",
+        "description": "grantAccessHotel is not trivially deny-all",
+        "passed": true,
+        "counterexample": ""
+      }
+    ]
+  },
+  "stages": [
+    {
+      "name": "syntax",
+      "passed": true,
+      "status": "pass",
+      "message": "Cedar parsing/DSL validation passed.",
+      "details": {}
+    },
+    {
+      "name": "schema",
+      "passed": true,
+      "status": "pass",
+      "message": "Schema grounding passed.",
+      "details": {}
+    },
+    {
+      "name": "semantic",
+      "passed": false,
+      "status": "fail",
+      "message": "One or more semantic checks failed.",
+      "details": {
+        "total_checks": 26,
+        "failed_checks": [
+          "floor_admin_createReservation_renovation"
+        ],
+        "solver_time_s": 6.291,
+        "checks": [
+          {
+            "name": "viewReservation_ceiling",
+            "type": "implies",
+            "description": "viewReservation is only allowed if resource is reachable via viewPermissions, memberPermissions, or admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "updateReservation_ceiling",
+            "type": "implies",
+            "description": "updateReservation is only allowed via memberPermissions or admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grantAccessReservation_ceiling",
+            "type": "implies",
+            "description": "grantAccessReservation is only allowed via admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "createReservation_ceiling",
+            "type": "implies",
+            "description": "createReservation on a Property is only allowed via memberPermissions or admin permissions, and blocked by renovation unless admin",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "viewProperty_ceiling",
+            "type": "implies",
+            "description": "viewProperty is only allowed via viewPermissions, memberPermissions, or admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "updateProperty_ceiling",
+            "type": "implies",
+            "description": "updateProperty is only allowed via memberPermissions or admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grantAccessProperty_ceiling",
+            "type": "implies",
+            "description": "grantAccessProperty is only allowed via admin permissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "viewHotel_ceiling",
+            "type": "implies",
+            "description": "viewHotel is only allowed via viewPermissions.hotelReservations, memberPermissions.hotelReservations, or hotelAdminPermissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "updateHotel_ceiling",
+            "type": "implies",
+            "description": "updateHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "createProperty_ceiling",
+            "type": "implies",
+            "description": "createProperty on a Hotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "createHotel_ceiling",
+            "type": "implies",
+            "description": "createHotel is only allowed via memberPermissions.hotelReservations or hotelAdminPermissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "grantAccessHotel_ceiling",
+            "type": "implies",
+            "description": "grantAccessHotel is only allowed via hotelAdminPermissions",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "renovation_forbid_ceiling",
+            "type": "implies",
+            "description": "createReservation must be forbidden on renovating properties for non-admin users",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_viewer_viewReservation",
+            "type": "implies",
+            "description": "Users with viewPermissions for a reservation's hotel MUST be able to view that reservation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_member_updateReservation",
+            "type": "implies",
+            "description": "Users with memberPermissions for a reservation's hotel MUST be able to update that reservation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_admin_grantAccessReservation",
+            "type": "implies",
+            "description": "Users with admin permissions for a reservation's hotel MUST be able to grant access on that reservation",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_member_createReservation",
+            "type": "implies",
+            "description": "Members MUST be able to createReservation on non-renovating properties",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "floor_admin_createReservation_renovation",
+            "type": "implies",
+            "description": "Admins MUST be able to createReservation even on renovating properties",
+            "passed": false,
+            "counterexample": "\u2717 Policy set 1 implies policy set 2: DOES NOT HOLD\n  Counterexample found:\nprincipal: User::\"\", action: Action::\"createReservation\", resource: Property::\"\"\ncontext: {}\nentities: [\n  Action::\"grantAccessHotel\",\n  Property::\"\" in [Hotel::\"\"] {\n    isUnderRenovation: true,\n  },\n  Action::\"grantAccessReservation\",\n  Action::\"createHotel\",\n  Action::\"createProperty\",\n  Hotel::\"\",\n  Action::\"viewHotel\",\n  Action::\"createReservation\",\n  Action::\"grantAccessProperty\",\n  Action::\"updateHotel\",\n  Action::\"updateProperty\",\n  Action::\"updateReservation\",\n  Action::\"viewProperty\",\n  Action::\"viewReservation\",\n  User::\"\" {\n    hotelAdminPermissions: [Hotel::\"\"],\n    memberPermissions: {\"hotelReservations\": [], \"propertyReservations\": []},\n    propertyAdminPermissions: [Property::\"\"],\n    viewPermissions: {\"hotelReservations\": [], \"propertyReservations\": [Property::\"\"]},\n  },\n]"
+          },
+          {
+            "name": "floor_admin_grantAccessHotel",
+            "type": "implies",
+            "description": "Hotel admins MUST be able to grant access on hotels in their admin set",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_viewReservation",
+            "type": "always-denies (liveness)",
+            "description": "viewReservation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_updateReservation",
+            "type": "always-denies (liveness)",
+            "description": "updateReservation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_createReservation",
+            "type": "always-denies (liveness)",
+            "description": "createReservation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_grantAccessReservation",
+            "type": "always-denies (liveness)",
+            "description": "grantAccessReservation is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_viewProperty",
+            "type": "always-denies (liveness)",
+            "description": "viewProperty is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_viewHotel",
+            "type": "always-denies (liveness)",
+            "description": "viewHotel is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          },
+          {
+            "name": "liveness_grantAccessHotel",
+            "type": "always-denies (liveness)",
+            "description": "grantAccessHotel is not trivially deny-all",
+            "passed": true,
+            "counterexample": ""
+          }
+        ]
+      }
+    }
+  ]
+}

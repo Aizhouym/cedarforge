@@ -1,0 +1,234 @@
+{
+  "mode": "repair",
+  "run_id": "20260417T063114Z_repair_mi05_repair_loop",
+  "task_id": "hundred_check_scale",
+  "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/realworld/hundred_check_scale",
+  "model": "qwen35b",
+  "base_url": "http://g002:8002/v1",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "max_iterations": 5,
+  "stop_reason": "verification_pass",
+  "completed_iterations": 2,
+  "final_verification_pass": true,
+  "best_semantic_accuracy": 1.0,
+  "first_success_iteration": 2,
+  "results": [
+    {
+      "iteration": 1,
+      "is_repair_iteration": false,
+      "prompt_variant": "structured_instruction",
+      "syntax_pass": false,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1,
+      "failed_checks": [
+        "syntax"
+      ],
+      "failed_check_types": [
+        "syntax"
+      ],
+      "duration_s": 4.65,
+      "metrics": {
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": false,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "syntax_error": true,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 1.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 0,
+        "primary_error_type": "syntax",
+        "validation_message": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 unexpected token `&&`\n    \u256d\u2500[43:3]\n 42 \u2502     principal.role == \"cs_manager\"\n 43 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 44 \u2502     resource.status == \"cart\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[55:3]\n 54 \u2502     principal.role == \"cs_manager\"\n 55 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 56 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[68:3]\n 67 \u2502     principal.role == \"finance_manager\"\n 68 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 69 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[80:3]\n 79 \u2502     principal.role == \"finance_manager\"\n 80 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 81 \u2502     resource.status == \"delivered\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[91:3]\n 90 \u2502     principal.role == \"warehouse_lead\"\n 91 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 92 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n     \u256d\u2500[102:3]\n 101 \u2502     principal.role == \"warehouse_lead\"\n 102 \u2502 } && {\n     \u00b7   \u2500\u252c\n     \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 103 \u2502     resource.status == \"shipped\"\n     \u2570\u2500\u2500\u2500\u2500"
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/run.log"
+    },
+    {
+      "iteration": 2,
+      "is_repair_iteration": true,
+      "prompt_variant": "structured_instruction_repair_syntax",
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0,
+      "failed_checks": [],
+      "failed_check_types": [],
+      "duration_s": 3.918,
+      "metrics": {
+        "prompt_variant": "structured_instruction_repair_syntax",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "syntax_error": false,
+        "schema_error": false,
+        "semantic_error": false,
+        "syntax_error_rate": 0.0,
+        "schema_violation_rate": 0.0,
+        "hallucinated_identifier_rate": 0.0,
+        "hallucinated_identifier_count": 0,
+        "failed_check_count": 0,
+        "total_check_count": 157,
+        "primary_error_type": "none",
+        "validation_message": ""
+      },
+      "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/raw_model_output.txt",
+      "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/candidate.cedar",
+      "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/evaluation_bundle.json",
+      "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/verification_result.json",
+      "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace",
+      "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/prompt.txt",
+      "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/run.log"
+    }
+  ],
+  "metrics_by_prompt_variant": [
+    {
+      "prompt_variant": "structured_instruction",
+      "run_count": 1,
+      "syntax_pass_rate": 0.0,
+      "schema_pass_rate": 0.0,
+      "semantic_accuracy": 0.0
+    },
+    {
+      "prompt_variant": "structured_instruction_repair_syntax",
+      "run_count": 1,
+      "syntax_pass_rate": 1.0,
+      "schema_pass_rate": 1.0,
+      "semantic_accuracy": 1.0
+    }
+  ],
+  "metrics_by_iteration": [
+    {
+      "iteration": 1,
+      "syntax_pass": false,
+      "schema_pass": false,
+      "semantic_accuracy": 0.0,
+      "verification_pass": false,
+      "loss": 1
+    },
+    {
+      "iteration": 2,
+      "syntax_pass": true,
+      "schema_pass": true,
+      "semantic_accuracy": 1.0,
+      "verification_pass": true,
+      "loss": 0
+    }
+  ],
+  "repair_loop_record": {
+    "run_id": "20260417T063114Z_repair_mi05_repair_loop",
+    "task_id": "hundred_check_scale",
+    "task_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/cedarbench/scenarios/realworld/hundred_check_scale",
+    "initial_prompt_variant": "structured_instruction",
+    "model": "qwen35b",
+    "base_url": "http://g002:8002/v1",
+    "max_iterations": 5,
+    "completed_iterations": 2,
+    "stop_reason": "verification_pass",
+    "final_syntax_pass": true,
+    "final_schema_pass": true,
+    "final_semantic_accuracy": 1.0,
+    "final_verification_pass": true,
+    "final_loss": 0,
+    "best_semantic_accuracy": 1.0,
+    "best_candidate_iteration": 2,
+    "first_success_iteration": 2,
+    "oscillation_count": 0,
+    "failure_layer_sequence": [
+      "syntax",
+      "pass"
+    ],
+    "iterations": [
+      {
+        "iteration": 1,
+        "is_repair_iteration": false,
+        "prompt_variant": "structured_instruction",
+        "syntax_pass": false,
+        "schema_pass": false,
+        "semantic_accuracy": 0.0,
+        "verification_pass": false,
+        "loss": 1,
+        "failed_checks": [
+          "syntax"
+        ],
+        "failed_check_types": [
+          "syntax"
+        ],
+        "duration_s": 4.65,
+        "metrics": {
+          "prompt_variant": "structured_instruction",
+          "syntax_pass": false,
+          "schema_pass": false,
+          "semantic_accuracy": 0.0,
+          "syntax_error": true,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 1.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 0,
+          "primary_error_type": "syntax",
+          "validation_message": "\u00d7 failed to parse policy set\n  \u2570\u2500\u25b6 unexpected token `&&`\n    \u256d\u2500[43:3]\n 42 \u2502     principal.role == \"cs_manager\"\n 43 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 44 \u2502     resource.status == \"cart\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[55:3]\n 54 \u2502     principal.role == \"cs_manager\"\n 55 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 56 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[68:3]\n 67 \u2502     principal.role == \"finance_manager\"\n 68 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 69 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[80:3]\n 79 \u2502     principal.role == \"finance_manager\"\n 80 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 81 \u2502     resource.status == \"delivered\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n    \u256d\u2500[91:3]\n 90 \u2502     principal.role == \"warehouse_lead\"\n 91 \u2502 } && {\n    \u00b7   \u2500\u252c\n    \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 92 \u2502     resource.status == \"pending\"\n    \u2570\u2500\u2500\u2500\u2500\n\nError: \n  \u00d7 unexpected token `&&`\n     \u256d\u2500[102:3]\n 101 \u2502     principal.role == \"warehouse_lead\"\n 102 \u2502 } && {\n     \u00b7   \u2500\u252c\n     \u00b7    \u2570\u2500\u2500 expected `;` or identifier\n 103 \u2502     resource.status == \"shipped\"\n     \u2570\u2500\u2500\u2500\u2500"
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_01/run.log"
+      },
+      {
+        "iteration": 2,
+        "is_repair_iteration": true,
+        "prompt_variant": "structured_instruction_repair_syntax",
+        "syntax_pass": true,
+        "schema_pass": true,
+        "semantic_accuracy": 1.0,
+        "verification_pass": true,
+        "loss": 0,
+        "failed_checks": [],
+        "failed_check_types": [],
+        "duration_s": 3.918,
+        "metrics": {
+          "prompt_variant": "structured_instruction_repair_syntax",
+          "syntax_pass": true,
+          "schema_pass": true,
+          "semantic_accuracy": 1.0,
+          "syntax_error": false,
+          "schema_error": false,
+          "semantic_error": false,
+          "syntax_error_rate": 0.0,
+          "schema_violation_rate": 0.0,
+          "hallucinated_identifier_rate": 0.0,
+          "hallucinated_identifier_count": 0,
+          "failed_check_count": 0,
+          "total_check_count": 157,
+          "primary_error_type": "none",
+          "validation_message": ""
+        },
+        "raw_output_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/raw_model_output.txt",
+        "candidate_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/candidate.cedar",
+        "evaluation_bundle_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/evaluation_bundle.json",
+        "verification_result_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/verification_result.json",
+        "workspace_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/_eval_workspace",
+        "prompt_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/prompt.txt",
+        "log_path": "/mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/hundred_check_scale-structured_instruction/20260417T063114Z_repair_mi05_repair_loop/hundred_check_scale_iter_02/run.log"
+      }
+    ]
+  }
+}

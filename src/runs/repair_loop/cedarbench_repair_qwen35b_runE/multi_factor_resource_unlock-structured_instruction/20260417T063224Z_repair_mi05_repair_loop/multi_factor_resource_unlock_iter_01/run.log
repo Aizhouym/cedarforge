@@ -1,0 +1,468 @@
+========================================================================
+ITERATION START
+task:       multi_factor_resource_unlock
+iteration:  1
+strategy:   structured_instruction
+model:      qwen35b
+base_url:   http://g002:8002/v1
+========================================================================
+
+--- Prompt ---
+# Role
+You are an **Access Control Policy Engineer** with expertise in:
+- Cedar policy language
+- Access control design
+- Translating natural language specifications into formal policies
+
+Your responsibility is to generate **correct and schema-grounded Cedar policies** from specifications.
+
+---
+
+# Task
+You are given two inputs:
+1. a detailed natural language policy specification (`policy_spec.md`)
+2. a responding Cedar schema (`schema.cedarschema`)
+
+Your goal is to generate a **complete Cedar policy** that faithfully implements the specification and conforms to the provided schema.
+
+---
+
+# Guidelines
+When generating the Cedar policy, ensure the following:
+- The policy faithfully reflects the access control requirements described in the specification.
+- Only entity types, actions, attributes, and relations defined in the provided schema may be used.
+- Do **not invent** schema elements.
+- All constraints described in the specification must be represented in the policy.
+- The policy must follow valid Cedar syntax.
+
+The schema should be treated as the **authoritative source of valid types and fields**.
+
+---
+
+
+# Requirements
+
+The generated policy must:
+- Be **syntactically valid Cedar**
+- Be **consistent with the schema**
+- Correctly represent the specification semantics
+
+Output **only the final Cedar policy**.
+Do **not output explanations, reasoning steps, or comments.**
+
+---
+
+# Cedar Syntax Cheat Sheet
+# Cedar Policy Syntax Cheat Sheet
+
+## Policy Structure
+
+```
+permit | forbid (
+    principal [== | is | in] ...,
+    action    [== | in]      ...,
+    resource  [== | is | in] ...
+)
+[when   { <condition> }]
+[unless { <condition> }];
+```
+
+- `permit` → allow; `forbid` → deny (forbid overrides permit)
+- `when { C }` → rule fires only if C is true
+- `unless { C }` → rule fires only if C is false
+- `when` and `unless` may both appear on the same policy
+- Condition body **must** be wrapped in `{ }` — `unless principal in ...` is invalid
+- Every policy statement ends with `;`
+
+---
+
+## Scope Patterns
+
+```cedar
+// exact match
+principal == User::"alice"
+action    == Action::"read"
+resource  == File::"doc1"
+
+// type constraint
+principal is User
+resource  is Document
+
+// group / hierarchy membership
+principal in Group::"engineering"
+resource  in Folder::"docs"
+
+// action set
+action in [Action::"read", Action::"write"]
+```
+
+---
+
+## Condition Operators
+
+### Comparison
+```cedar
+principal.age >= 18
+resource.classification != "HighlyRestricted"
+context.networkRiskScore < 20
+```
+Operators: `==`  `!=`  `<`  `<=`  `>`  `>=`
+
+### Logical
+```cedar
+principal.department == "eng" && !resource.isArchived
+principal in Role::"Admin" || principal in Role::"Owner"
+```
+Operators: `&&`  `||`  `!`
+
+### Membership (`in`)
+```cedar
+principal in Role::"ClinicalResearcher"   // entity group membership
+principal in resource.readers             // membership in attribute set
+```
+
+### Attribute existence (`has`) — use before accessing optional attributes
+```cedar
+resource has expiryDate && resource.expiryDate > context.now
+```
+
+### Collection contains
+```cedar
+resource.tags.contains("public")
+```
+
+---
+
+## Attribute Access
+
+```cedar
+principal.department
+resource.owner
+resource.project.status      // nested
+context.isCompliantDevice
+```
+
+---
+
+## Common Patterns
+
+### Allow a group, block an exception
+```cedar
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Document
+) when {
+    principal in Role::"Researcher"
+} unless {
+    resource.classification == "HighlyRestricted"
+};
+```
+
+### Forbid everyone except a role
+```cedar
+forbid (
+    principal is User,
+    action == Action::"delete",
+    resource is Document
+) unless {
+    principal in Role::"Admin"
+};
+```
+
+### Conditional access with context
+```cedar
+permit (
+    principal is User,
+    action == Action::"edit",
+    resource is Document
+) when {
+    principal in resource.writers &&
+    context.isCompliantDevice &&
+    !resource.isLocked
+};
+```
+
+---
+
+## Key Rules
+
+1. Use only entity types, actions, and attributes that exist in the schema — do not invent names
+2. `unless { C }` requires braces — never write `unless <expr>` without `{ }`
+3. Check optional attributes with `has` before accessing them
+4. `in` checks group/hierarchy membership — use `.contains()` for set membership
+5. `forbid` always overrides `permit` — Cedar denies by default
+
+---
+
+# Policy Skeleton
+```cedar
+// Example Cedar skeleton
+permit (
+    principal is User,
+    action == Action::"some_action",
+    resource is SomeResource
+) when {
+    true
+};
+```
+
+---
+
+# Input: policy_spec.md
+---
+pattern: multi-factor resource unlock
+difficulty: hard
+features:
+  - multiple boolean context attestations
+  - role + context conjunction
+  - graduated unlock levels
+domain: security / vault
+---
+
+# Multi-Factor Resource Unlock — Policy Specification
+
+## Context
+
+This policy implements a **graduated multi-factor unlock** scheme for a
+secrets vault. Sensitive resources (secrets) are assigned a sensitivity
+level (1 = low, 2 = medium, 3 = high). Higher-sensitivity secrets
+require progressively more attestation factors before access is granted.
+Factors are boolean context attributes representing out-of-band
+verifications performed by the authentication layer before the
+authorization request reaches Cedar.
+
+Principals are `User` entities with a `role` attribute. Resources are
+`Secret` entities with a `sensitivityLevel` attribute. Three actions
+exist: `view`, `rotate`, and `revoke`, each with distinct role and
+factor requirements.
+
+## Entities
+
+- **User** — `role: String` — one of `"operator"`, `"security_officer"`,
+  or `"admin"`.
+- **Secret** — `sensitivityLevel: Long` — `1` (low), `2` (medium), or
+  `3` (high).
+
+## Context attributes
+
+All three are boolean flags injected by the authentication gateway:
+
+| Attribute             | Meaning                                      |
+|-----------------------|----------------------------------------------|
+| `hasMfa`              | User completed a second-factor challenge.    |
+| `hasManagerApproval`  | A manager approved this specific request.    |
+| `hasSecurityReview`   | Security team reviewed and cleared request.  |
+
+## Access rules
+
+### 1. View
+
+Any role may view a secret. The factor requirements scale with
+sensitivity level:
+
+| Level | Factors required            |
+|-------|-----------------------------|
+| 1     | None                        |
+| 2     | `hasMfa`                    |
+| 3     | `hasMfa` AND `hasManagerApproval` |
+
+### 2. Rotate
+
+Only `security_officer` or `admin` may rotate a secret. Factor
+requirements:
+
+| Level | Factors required                  |
+|-------|-----------------------------------|
+| 1     | `hasMfa`                          |
+| 2     | `hasMfa`                          |
+| 3     | `hasMfa` AND `hasSecurityReview`  |
+
+### 3. Revoke
+
+Only `admin` may revoke a secret. Regardless of sensitivity level,
+revocation always requires `hasMfa` AND `hasManagerApproval`.
+
+## Notes
+
+- The three context booleans are independent attestations — they are
+  not hierarchical (having `hasSecurityReview` does not imply `hasMfa`).
+- The graduated structure is the core complexity: a candidate that
+  applies uniform factor requirements across all levels will either
+  be too permissive (failing a ceiling) or too restrictive (failing a
+  floor).
+- Common failure modes: (a) forgetting to gate level-2 view on MFA,
+  (b) applying `hasManagerApproval` universally instead of only where
+  specified, (c) allowing operators to rotate.
+
+---
+
+# Input: schema.cedarschema
+```cedar
+// Multi-Factor Resource Unlock — graduated factor requirements for
+// secrets vault access. Higher-sensitivity secrets demand progressively
+// more out-of-band attestations (MFA, manager approval, security review).
+
+entity User = {
+    // One of "operator", "security_officer", "admin".
+    role: String,
+};
+
+entity Secret = {
+    // 1 = low, 2 = medium, 3 = high.
+    sensitivityLevel: Long,
+};
+
+// View: any role, factors scale with sensitivity level.
+action view appliesTo {
+    principal: [User],
+    resource: [Secret],
+    context: {
+        hasMfa: Bool,
+        hasManagerApproval: Bool,
+        hasSecurityReview: Bool,
+    },
+};
+
+// Rotate: security_officer or admin only.
+action rotate appliesTo {
+    principal: [User],
+    resource: [Secret],
+    context: {
+        hasMfa: Bool,
+        hasManagerApproval: Bool,
+        hasSecurityReview: Bool,
+    },
+};
+
+// Revoke: admin only, always requires hasMfa + hasManagerApproval.
+action revoke appliesTo {
+    principal: [User],
+    resource: [Secret],
+    context: {
+        hasMfa: Bool,
+        hasManagerApproval: Bool,
+        hasSecurityReview: Bool,
+    },
+};
+```
+---
+
+# Output Format
+Only output the final Cedar policy inside `<cedar_policy>` tags.
+
+<cedar_policy>
+Cedar policy here
+</cedar_policy>
+temperature: 0.0
+
+--- Raw Model Output ---
+<cedar_policy>
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Secret
+) when {
+    (resource.sensitivityLevel == 1) ||
+    (resource.sensitivityLevel == 2 && context.hasMfa) ||
+    (resource.sensitivityLevel == 3 && context.hasMfa && context.hasManagerApproval)
+};
+
+permit (
+    principal is User,
+    action == Action::"rotate",
+    resource is Secret
+) when {
+    (principal.role == "security_officer" || principal.role == "admin") &&
+    (context.hasMfa &&
+     (resource.sensitivityLevel != 3 || context.hasSecurityReview))
+};
+
+permit (
+    principal is User,
+    action == Action::"revoke",
+    resource is Secret
+) when {
+    principal.role == "admin" &&
+    context.hasMfa &&
+    context.hasManagerApproval
+};
+</cedar_policy>
+
+--- Extracted Candidate ---
+permit (
+    principal is User,
+    action == Action::"view",
+    resource is Secret
+) when {
+    (resource.sensitivityLevel == 1) ||
+    (resource.sensitivityLevel == 2 && context.hasMfa) ||
+    (resource.sensitivityLevel == 3 && context.hasMfa && context.hasManagerApproval)
+};
+
+permit (
+    principal is User,
+    action == Action::"rotate",
+    resource is Secret
+) when {
+    (principal.role == "security_officer" || principal.role == "admin") &&
+    (context.hasMfa &&
+     (resource.sensitivityLevel != 3 || context.hasSecurityReview))
+};
+
+permit (
+    principal is User,
+    action == Action::"revoke",
+    resource is Secret
+) when {
+    principal.role == "admin" &&
+    context.hasMfa &&
+    context.hasManagerApproval
+};
+
+--- Evaluation ---
+[SYNTAX]
+status=pass passed=True
+message: Cedar parsing/DSL validation passed.
+
+[SCHEMA]
+status=pass passed=True
+message: Schema grounding passed.
+
+[SEMANTIC]
+status=pass passed=True
+message: All semantic checks passed.
+total_checks: 10
+solver_time_s: 0.429
+
+semantic check results:
+  - view_safety [implies] PASS
+    description: view permitted only when correct factors present for sensitivity level (L1: none, L2: MFA, L3: MFA+approval)
+  - rotate_safety [implies] PASS
+    description: rotate permitted only when (security_officer/admin AND MFA AND (level!=3 OR securityReview))
+  - revoke_safety [implies] PASS
+    description: revoke permitted only when (admin AND MFA AND managerApproval)
+  - view_level1_must_permit [implies] PASS
+    description: Any user MUST view a level-1 secret with no factors
+  - view_level3_must_permit [implies] PASS
+    description: Any user with MFA + managerApproval MUST view a level-3 secret
+  - rotate_level2_must_permit [implies] PASS
+    description: Security officer with MFA MUST rotate a level-2 secret
+  - revoke_must_permit [implies] PASS
+    description: Admin with MFA + managerApproval MUST revoke any secret
+  - liveness_view [always-denies (liveness)] PASS
+    description: User+view+Secret liveness
+  - liveness_rotate [always-denies (liveness)] PASS
+    description: User+rotate+Secret liveness
+  - liveness_revoke [always-denies (liveness)] PASS
+    description: User+revoke+Secret liveness
+
+--- Metrics ---
+SyntaxPass:        True
+SchemaPass:        True
+SemanticAccuracy:  1.0
+VerificationPass:  True
+Loss:              0
+DurationSec:       1.862
+
+log saved to: /mmfs1/home/yzhou136/cedar-synthesis-engine/cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE/multi_factor_resource_unlock-structured_instruction/20260417T063224Z_repair_mi05_repair_loop/multi_factor_resource_unlock_iter_01/run.log
