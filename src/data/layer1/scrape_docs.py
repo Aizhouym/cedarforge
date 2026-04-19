@@ -12,8 +12,8 @@ For each code block, extract:
 Output: JSONL files in data/layer1_raw/
 
 Usage:
-    python src/data/scrape_docs.py
-    python src/data/scrape_docs.py --output-dir /custom/path
+    python src/data/layer1/scrape_docs.py
+    python src/data/layer1/scrape_docs.py --output-dir /custom/path
 """
 
 from __future__ import annotations

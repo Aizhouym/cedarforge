@@ -1,366 +1,66 @@
 # Cedar SFT Data Construction Plan
 
-## Core Principle
-
-The goal of data construction is not to make the model memorize Cedar examples,
-but to make it understand Cedar's **generative rules**.
-This means: syntax coverage > raw quantity, diversity > repetition, error contrast > correct-only.
-
----
-
-## Data Layer Overview
-
-Three layers ordered by quality and trustworthiness, mixed at training time:
+## Current Status
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  Layer 1: Ground Truth                                   │
-│  Source : Cedar official documentation (scraped)        │
-│  Quality: ★★★★★   Count: ~72 raw records (expanding)   │
-│  Role   : Seed data — high-fidelity NL + Cedar pairs    │
-├─────────────────────────────────────────────────────────┤
-│  Layer 2: Validated Synthetic                           │
-│  Source : LLM-generated → Cedar CLI validated           │
-│  Quality: ★★★★☆   Count: ~750 target records           │
-│  Role   : Bulk training data                            │
-├─────────────────────────────────────────────────────────┤
-│  Layer 3: Negative Examples                             │
-│  Source : Systematic error injection + model errors     │
-│  Quality: ★★★★☆   Count: ~1500–2500 records            │
-│  Role   : Teach the model to detect and fix errors      │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-## Layer 1: Ground Truth Data
-
-### Data Source
-
-Layer 1 is scraped from **Cedar official documentation** at `docs.cedarpolicy.com`.
-
-> **Why not cedar-integration-tests or cedar-examples?**
-> Both repositories are used as the CedarBench evaluation benchmark and therefore
-> cannot be used for training (data contamination risk).
-
-### Pages Scraped
-
-The scraper (`src/data/scrape_docs.py`) fetches the following pages:
-
-| Category | Pages |
-|---|---|
-| Overview | `scenario` |
-| Authorization | `authorization`, `entities-syntax` |
-| Policies | `syntax-policy`, `syntax-entity`, `syntax-datatypes`, `syntax-operators`, `policy-examples`, `templates`, `validation`, `json-format` |
-| Schema | `human-readable-schema`, `json-schema` |
-| Best Practices | `bp-compound-auth`, `bp-fine-grained-permissions`, `bp-relationship-representation`, `bp-resources-containers`, `bp-normalize-data-input`, `bp-meta-permissions`, `bp-implementing-roles`, `bp-implementing-roles-groups`, `bp-implementing-roles-attributes`, `bp-implementing-roles-templates`, and more |
-
-### Extraction Method
+The active training-data path is `sft_gen/`.
 
-The scraper uses Python's built-in `html.parser` to traverse each page:
-
-1. Track the current `<h2>` / `<h3>` heading as `section_heading`.
-2. Track the last `<p>` paragraph before a code block as `nl_description`.
-3. For every `<pre><code class="language-cedar">` block, extract the code text.
-4. Classify `code_type` with the following rules:
-   - Block contains `permit` or `forbid` → `policy`
-   - Block has `entity`/`namespace`/`type` at the start of a non-comment line,
-     or `action ... appliesTo` → `schema`
-   - Block contains both → split into two separate records
-   - Anything else (JSON, shell, plaintext) → skip
-
-### Current Output
-
-File: `data/layer1_raw/cedar_docs.jsonl`
-
-| Metric | Value |
-|---|---|
-| Total records | 72 |
-| `code_type = policy` | 66 |
-| `code_type = schema` | 6 |
-| All records | `needs_expansion: true` |
+Layer 1 remains in the repository as seed data:
 
-### Record Format
+- `data/layer1_raw/cedar_docs.jsonl` contains the scraped Cedar documentation
+  examples.
+- `src/data/layer1/scrape_docs.py` is the extractor used to reproduce that
+  dataset.
 
-```json
-{
-  "source": "cedar_docs",
-  "page_url": "https://docs.cedarpolicy.com/policies/policy-examples.html",
-  "page_title": "Policy examples",
-  "section_heading": "Viewing photos in an album",
-  "nl_description": "The following policy allows any user in the group janeFriends to view photos in the album janeTrips.",
-  "cedar_code": "permit(\n  principal in Group::\"janeFriends\",\n  action == Action::\"view\",\n  resource in Album::\"janeTrips\"\n);",
-  "code_type": "policy",
-  "needs_expansion": true
-}
-```
+The previous standalone Layer 2 pipeline under `src/data/layer2/` has been
+removed. It was an unfinished LLM-generation design with a placeholder API
+function. Current second-stage SFT data generation now lives in `sft_gen/` and
+uses structured scenario mutation, validation, synthesis, and packing steps.
 
-### Next Steps for Layer 1
+## Active Stage 2 Pipeline
 
-- [ ] Human review of 72 raw records (remove low-quality, fix misclassified)
-- [ ] Expand `nl_description` using Claude/OpenAI API into full requirement descriptions
-- [ ] Convert to Qwen ChatML training format
+The current second-stage data path is:
 
----
+1. `python sft_gen/generate.py`
+   - Creates scenario directories under `sft_gen/scenarios/`.
+   - Uses CedarBench base schemas and SFT-only mutations.
+   - Writes `schema.cedarschema`, `policy_spec.md`, copied verification assets,
+     and `manifest.json`.
 
-## Layer 2: Validated Synthetic Data
+2. `python sft_gen/synthesize.py --resume`
+   - Reads each scenario.
+   - Calls a model to generate `candidate.cedar`.
+   - Runs `cedar validate` and retries with validation feedback.
 
-Layer 2 is generated by a strong LLM (Claude or OpenAI) and validated by the
-Cedar CLI before being saved. The pipeline is in `src/data/layer2/`.
+3. `python sft_gen/pack_sft.py`
+   - Packs scenarios into chat-format SFT records.
 
-### Scenario Matrix
+4. `python sft_gen/finetune/prepare_data.py`
+   - Creates Qwen ChatML-style training and validation files under
+     `sft_gen/finetune/data/`.
 
-`200 slots = 10 industries × 5 authorization models × 4 complexity levels`
+## Stage 3 Direction
 
-#### Industries (10)
+The next stage should build negative/error-correction examples primarily from
+the current `sft_gen/scenarios/` corpus. The retained Layer 1 documentation
+examples can still be used as lightweight syntax seed material, but they should
+not replace the validated `sft_gen` scenario corpus.
 
-| ID | Industry | Core Scenarios |
-|---|---|---|
-| `healthcare` | Healthcare | Patient record access, prescriptions, department isolation |
-| `finance` | Finance | Transaction approval, account viewing, risk-based limits |
-| `education` | Education | Course management, grade access, student privacy |
-| `ecommerce` | E-commerce | Product management, order operations, seller permissions |
-| `saas_multitenant` | SaaS Multi-tenant | Tenant isolation, admin permissions, API key access |
-| `government` | Government | Document routing, data classification, cross-department workflows |
-| `media` | Media | Content moderation, publishing permissions, subscriber access |
-| `iot` | IoT | Device control, sensor data reading, firmware updates |
-| `gaming` | Gaming | Item trading, chat moderation, GM privilege escalation |
-| `hr` | HR | Payroll viewing, leave approval, performance reviews |
+Recommended source fields:
 
-#### Authorization Models (5)
+- `policy_spec.md` as the natural-language intent.
+- `schema.cedarschema` as the grounding schema.
+- `candidate.cedar` as the correct policy.
+- `verification_plan.py` and `references/` where semantic checks are available.
 
-| ID | Model | Characteristic |
-|---|---|---|
-| `rbac` | RBAC | Role determines access — `principal in RoleGroup` |
-| `abac` | ABAC | Attributes determine access — `when { resource.sensitivity == "high" }` |
-| `rebac` | ReBAC | Relationship hierarchy — `principal in resource.owner.team` |
-| `mixed` | Mixed | RBAC + ABAC combined in a single policy set |
-| `multi_policy` | Multi-policy | `permit` + `forbid` conflict resolution, multiple interacting policies |
+Recommended error families:
 
-#### Complexity Levels (4)
+- Syntax errors: missing semicolon, malformed scope, wrong quotes, invalid
+  operator, malformed `when`/`unless`.
+- Schema errors: wrong entity type, wrong action name, missing namespace,
+  unguarded optional attribute, type mismatch.
+- Semantic errors: over-permissive wildcard, missing forbid, inverted
+  `when`/`unless`, replacing hierarchy `in` with equality, missing liveness
+  permit.
 
-| Level | Name | Characteristics | Records / slot |
-|---|---|---|---|
-| L1 | Simple | Single policy, single condition, direct equality or boolean | 4 |
-| L2 | Moderate | 2–3 conditions with `&&` / `\|\|`, one-level hierarchy via `in` | 4 |
-| L3 | Complex | Multiple interacting policies, nested attribute traversal, templates | 4 |
-| L4 | Edge case | `unless`, negation of set membership, `has` guards, narrow-allow policies | 3 |
-
-**Total target records: 200 × (4+4+4+3) = 750**
-
-### Generation Prompt
-
-Each slot produces a structured prompt asking the LLM to return a JSON object:
-
-```
-System: You are an expert in the Cedar policy language...
-        [Cedar syntax rules and constraints]
-
-User:   ## Scenario
-        - Industry: Healthcare — Medical records, prescriptions...
-        - Authorization model: RBAC — Role-Based Access Control...
-        - Complexity level: L2 (Moderate) — 2–3 conditions...
-
-        ## Requirements
-        1. Design a Cedar Schema for this scenario.
-        2. Write a natural language description of one access-control requirement.
-        3. Write the Cedar policy implementing that requirement.
-        4. Provide 4 authorization test cases (ALLOW and DENY).
-
-        ## Output format
-        { "schema": "...", "nl_requirement": "...",
-          "cedar_policy": "...", "test_cases": [...] }
-```
-
-See `src/data/layer2/prompt_builder.py` for the full prompt template.
-
-### Cedar CLI Validation Pipeline
-
-Every generated record must pass all three validation steps before being saved.
-Implemented in `src/data/layer2/validator.py`.
-
-#### Step 1 — Syntax + Schema Validation
-
-```bash
-cedar validate \
-  --schema  /tmp/schema.cedarschema \
-  --policies /tmp/policy.cedar
-```
-
-- Checks that the policy parses correctly (no syntax errors).
-- Checks that all entity types, attribute accesses, and action references are
-  consistent with the schema (type-safety).
-- If this step fails → record is discarded or sent to Layer 3 as a negative example.
-
-#### Step 2 — Semantic Validation (test cases)
-
-For each test case in the LLM response:
-
-```bash
-cedar authorize \
-  --schema    /tmp/schema.cedarschema \
-  --policies  /tmp/policy.cedar \
-  --entities  /tmp/entities.json \
-  --principal "User::\"alice\"" \
-  --action    "Action::\"read\"" \
-  --resource  "Document::\"doc1\"" \
-  --context   '{}'
-```
-
-- The CLI outputs `ALLOW` or `DENY`.
-- The actual decision is compared to `expected_decision` in the test case.
-- A record is saved only if **all** test cases pass.
-
-#### Validation Result Handling
-
-```
-Step 1 pass + Step 2 all pass → save to data/layer2_raw/<slot_id>.jsonl
-Step 1 fail (syntax error)    → discard or route to Layer 3
-Step 2 partial fail           → discard (retry with a new generation attempt)
-```
-
-### Running the Pipeline
-
-```bash
-# Full run (750 records across 200 slots)
-python -m src.data.layer2.run_layer2 --output-dir data/layer2_raw
-
-# Test a single slot
-python -m src.data.layer2.run_layer2 --slots healthcare_rbac_l1 --dry-run
-
-# Resume after interruption
-python -m src.data.layer2.run_layer2 --resume
-```
-
-> **Note:** Fill in the `generate()` function in `src/data/layer2/run_layer2.py`
-> with your Claude or OpenAI API call before running.
-
----
-
-## Layer 3: Negative Examples (Error Detection & Correction)
-
-Layer 3 teaches the model to recognize and fix common Cedar mistakes.
-Records are constructed by **systematic error injection** into correct policies
-from Layers 1 and 2.
-
-### Error Injectors
-
-Ten error types are defined, each with a transform function and a target frequency:
-
-#### Syntax Errors
-
-| Error type | Transform | Frequency |
-|---|---|---|
-| `missing_semicolon` | Remove trailing `;` | 15% |
-| `single_equals` | Replace `==` with `=` | 15% |
-| `missing_action_prefix` | Remove `Action::` type prefix | 10% |
-| `wrong_quotes` | Replace `"` with `'` in entity IDs | 8% |
-| `missing_braces` | Replace `when {` with `when (` | 10% |
-| `scope_condition_confusion` | Move a `when` condition into the scope block | 10% |
-
-#### Semantic Errors
-
-| Error type | Transform | Frequency |
-|---|---|---|
-| `unless_logic_inversion` | Replace `when` with `unless`, inverting the allow condition | 8% |
-| `missing_has_check` | Remove an optional attribute `has` guard, causing potential runtime error | 8% |
-| `in_vs_equals` | Replace hierarchy `in` with strict equality `==` | 8% |
-| `wildcard_scope_unintended` | Remove `principal`/`action`/`resource` scope constraints, over-permitting | 8% |
-
-### Record Format
-
-Each Layer 3 record is an error-correction training pair:
-
-```json
-{
-  "task_type": "error_correction",
-  "instruction": "The following Cedar policy contains an error. Identify and fix it.\n\n<broken policy>\n\nPolicy intent: <nl_description>",
-  "output": "**Error analysis:**\n<description of the error>\n\n**Corrected policy:**\n<correct policy>",
-  "metadata": {
-    "error_type": "missing_semicolon",
-    "source": "synthetic_error_injection",
-    "original_slot_id": "healthcare_rbac_l1"
-  }
-}
-```
-
-### Generation Process
-
-```python
-# For each correct policy from Layer 1 or Layer 2:
-error_type = weighted_random_choice(ERROR_INJECTORS)
-broken_policy = ERROR_INJECTORS[error_type]["transform"](correct_policy)
-
-# Save as an error-correction training pair
-record = {
-    "task_type": "error_correction",
-    "instruction": f"The following Cedar policy contains an error. "
-                   f"Identify and fix it.\n\n{broken_policy}\n\n"
-                   f"Policy intent: {nl_description}",
-    "output": f"**Error analysis:**\n"
-              f"{ERROR_INJECTORS[error_type]['error_description']}\n\n"
-              f"**Corrected policy:**\n{correct_policy}",
-}
-```
-
-> **Status:** Layer 3 pipeline not yet implemented.
-> Will be built after Layer 1 and Layer 2 data collection is complete.
-
----
-
-## Final Training Format
-
-All records from all three layers are converted to **Qwen ChatML** format:
-
-```
-<|im_start|>system
-You are an expert in the Cedar policy language. Your task is to generate
-syntactically correct and semantically accurate Cedar policy code based on
-the user's requirements.
-<|im_end|>
-<|im_start|>user
-{instruction}
-<|im_end|>
-<|im_start|>assistant
-{output}
-<|im_end|>
-```
-
-### Dataset Split
-
-```
-Total target: ~1500–2500 records (after Layer 3 completion)
-
-Training   : 90%
-Validation : 5%
-Test       : 5%  ← Layer 1 records only (no synthetic data in test set)
-```
-
-### Task Type Mix (Training Set)
-
-| Task type | Target ratio | Description |
-|---|---|---|
-| Policy generation | ~35% | NL requirement → Cedar policy |
-| Error detection & correction | ~25% | Broken policy → fixed policy + explanation |
-| Schema-aware generation | ~20% | NL + schema → Cedar policy |
-| Policy explanation | ~10% | Cedar policy → NL description |
-| Multi-policy reasoning | ~10% | Multiple policies → interaction analysis |
-
----
-
-## Quality Control Checklist
-
-Every record must satisfy all of the following before being saved:
-
-```
-□ Cedar policy passes `cedar validate` syntax check
-□ If schema present: passes `cedar validate --schema` type-safety check
-□ If test cases present: all `cedar authorize` decisions match expected
-□ nl_description accurately reflects the policy intent
-□ Output formatting is consistent (indentation, line breaks)
-□ No structural duplicate of an existing record
-□ Policy ends with a semicolon ;
-□ Entity references use correct format — Type::"id"
-□ task_type and metadata fields are populated
-□ Complexity label is correct (L1–L4)
-```
+Each Stage 3 record should include the broken policy, the schema and intent, the
+expected corrected policy, and metadata describing the injected error type.
