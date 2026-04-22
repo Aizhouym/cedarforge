@@ -398,3 +398,225 @@ The numbers in this document were derived from per-task `summary.json` files und
 - `cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b`
 - `cedarforge/src/runs/no_repair_loop/cedarbench_repair_qwen35b_runE`
 - `cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE`
+
+---
+
+## Fine-Tuned Models: runG / runH / runI (repair loop, max_iterations=20)
+
+These three runs evaluate the next generation of fine-tuned models on all 121 CedarBench tasks using the updated multi-turn repair loop (v3) with `max_iterations=20`.
+
+**Key changes from the runE experiments:**
+- Repair loop upgraded from single-turn (stateless) to **multi-turn conversation history** — the model sees its own prior outputs and feedback across iterations.
+- Max iterations increased from 5 to **20**.
+- Oscillation threshold raised from 3 to **6**.
+- Context trimming (`_trim_messages`): system + initial prompt + last 3 turns kept; earlier history dropped.
+
+### Run paths
+
+| Run | Path |
+|---|---|
+| runG | `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runG` |
+| runH | `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runH` |
+| runI | `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runI` |
+
+### Overall Results
+
+| Method | Tasks | Passed | Pass rate | Avg semantic acc | Avg runtime |
+|---|---:|---:|---:|---:|---:|
+| `qwen35b` repair (mi=5) | 120 | 76 | 63.3% | 0.756 | 29.8s |
+| `qwen35B_runE` repair (mi=5) | 121 | 95 | 78.5% | 0.821 | 9.3s |
+| **`qwen35B_runG` repair (mi=20)** | 121 | 100 | **82.6%** | **0.879** | 16.9s |
+| **`qwen35B_runH` repair (mi=20)** | 121 | 100 | **82.6%** | 0.857 | 17.4s |
+| **`qwen35B_runI` repair (mi=20)** | 121 | 101 | **83.5%** | **0.881** | 16.4s |
+
+runI achieves the highest pass rate (83.5%) and semantic accuracy (0.881). runG and runH tie at 82.6%.
+
+### Stop Reason Distribution
+
+| Stop reason | runG | runH | runI |
+|---|---:|---:|---:|
+| `verification_pass` | 100 | 100 | 101 |
+| `oscillation_no_progress` | 19 | 20 | 19 |
+| `max_iterations_reached` | 2 | 1 | 1 |
+
+Almost all failures stopped due to oscillation, not from running out of iterations. This means additional iterations beyond 20 would not help the stuck tasks — they are structurally stuck.
+
+### Final Failure Type Distribution
+
+Failure layer of the last completed iteration for each failing task:
+
+| Failure layer | baseline (mi=5) | runE (mi=5) | runG (mi=20) | runH (mi=20) | runI (mi=20) |
+|---|---:|---:|---:|---:|---:|
+| syntax | 24 | 8 | 9 | 10 | 10 |
+| schema | 7 | 13 | 6 | 7 | 4 |
+| semantic | 13 | 5 | 6 | 4 | 6 |
+| **total failing** | **44** | **26** | **21** | **21** | **20** |
+
+**Key observation:** Compared to runE, the G/H/I models significantly reduced schema failures (13→4–6). Syntax failures remain stubbornly at 8–10 across all fine-tuned models, pointing to a class of tasks where the model consistently produces malformed Cedar regardless of repair feedback.
+
+### First Success Iteration — Window Breakdown
+
+| Iteration window | runG | runH | runI |
+|---|---:|---:|---:|
+| iter 1–5 | 95 | 99 | 97 |
+| iter 6–10 | 4 | 1 | 3 |
+| iter 11–15 | 1 | 0 | 1 |
+| iter 16–20 | 0 | 0 | 0 |
+| never | 21 | 21 | 20 |
+
+The vast majority of passing tasks succeed within the first 5 iterations. Iterations 6–20 rescued only 1–5 additional tasks. This suggests the benefit of extending `max_iterations` from 5 to 20 is marginal on its own — the main gains came from the stronger model and multi-turn context.
+
+### Task-Level Transitions: runE → runI
+
+| Outcome | Task count |
+|---|---:|
+| Fail → Pass (new wins) | 13 |
+| Pass → Pass | 88 |
+| Pass → Fail (regressions) | 7 |
+| Fail → Fail | 13 |
+
+**New wins (runE fail → runI pass, 13 tasks):**
+`clinical_add_sponsor`, `hotel_add_cancel`, `hotel_add_franchise`, `hotel_add_renovation_lock`, `hotel_franchise_loyalty`, `hotel_remove_hierarchy`, `sales_add_regional_manager`, `streaming_add_download`, `streaming_add_trial_tier`, `streaming_remove_oscars`, `subscription_content_gate`, `tags_base`, `tags_sensitivity_and_owner`
+
+**Regressions (runE pass → runI fail, 7 tasks):**
+`data_lineage_ancestry`, `doccloud_graduated_sharing`, `sales_add_delete`, `sales_add_team`, `sales_full_expansion`, `streaming_add_geo_restriction`, `streaming_parental_controls`
+
+Net gain: +6 tasks. The regressions cluster in `sales_*` and `streaming_*` scenarios, both of which involve complex multi-action schemas where the model now overshoots or misses optional-attribute guards.
+
+### Tasks Failing in All Four Fine-Tuned Models (10 tasks)
+
+These tasks fail across runE, runG, runH, and runI:
+
+| Task | Final failure layer | Pattern |
+|---|---|---|
+| `hotel_add_loyalty_tier` | schema | Hallucinated attribute loop |
+| `policy_annotations` | syntax | `@id(...)` placed after `}` — model never learns correct pre-permit placement |
+| `sales_add_archive` | semantic | `floor_view_archived` floor not satisfied; model drops archive viewer permit |
+| `streaming_full_expansion` | semantic | Two ceiling checks unresolved; complex datetime/duration conditions |
+| `tags_add_approval` | syntax | Incomplete expression — `principal.allowedTagsForRole` truncated; also `<cedar_policy>` leakage |
+| `tags_add_fourth_dimension` | syntax | Tags schema requires 4-dimensional role intersection; model loops on syntax |
+| `tags_add_owner_bypass` | syntax | Same tags syntax oscillation pattern |
+| `tags_add_role_c` | syntax | Same |
+| `tags_add_sensitivity` | syntax | Same |
+| `tax_base` | syntax | Complex tax schema; model consistently produces malformed output |
+
+### Concrete Stuck Error Patterns
+
+#### Syntax pattern 1: `<cedar_policy>` tag leakage
+
+The model outputs `<cedar_policy>` as the first token of the policy body rather than stripping it. Cedar's parser rejects this immediately:
+
+```
+× unexpected token `<`
+  ╭─[1:1]
+1 │ <cedar_policy>
+  · ┬
+  · ╰── expected `@` or identifier
+```
+
+Occurs in `tags_add_approval`. The model was trained on the tagged format and sometimes emits the opening tag verbatim inside the policy.
+
+#### Syntax pattern 2: annotation placement
+
+The model places `@id(...)` annotations *after* the closing `}` of a policy instead of *before* the `permit`/`forbid` keyword:
+
+```cedar
+// Generated (wrong):
+permit ( ... ) when { ... }
+@id("viewer-read-published")    ← Cedar rejects: unexpected token @
+
+// Correct:
+@id("viewer-read-published")
+permit ( ... ) when { ... }
+```
+
+Occurs persistently in `policy_annotations` across all four fine-tuned models despite repair feedback.
+
+#### Schema pattern: hallucinated attribute (`hotel_add_loyalty_tier`)
+
+The model cycles through non-existent attribute names on `Hotel`:
+
+```
+iter 1: resource.property.viewPermissions   ← "property" not found
+iter 2: resource.viewPermissions.property   ← "viewPermissions" not found
+iter 3: resource.property.viewPermissions   ← repeats
+```
+
+The repair feedback correctly identifies the wrong attribute each iteration, but the model substitutes a different hallucinated name rather than consulting the schema.
+
+#### Schema pattern: missing `has` guard on optional attribute
+
+Cedar requires `context has targetUser` before accessing `context.targetUser` when `targetUser` is declared optional (`?`) in the schema. The model consistently omits this guard in `sales_add_team` and `streaming_add_geo_restriction`:
+
+```cedar
+// Wrong — accesses optional attribute without guard:
+when { context.targetUser.role == "distributor" }
+
+// Correct:
+when { context has targetUser && context.targetUser.role == "distributor" }
+```
+
+The schema validation error clearly states the issue each iteration, but the model does not reliably apply the `has` guard pattern.
+
+#### Semantic pattern: floor not satisfied (`sales_add_archive`)
+
+`floor_view_archived` requires that viewers can always view archived presentations. The model generates a policy that blocks archive access under certain conditions, and despite being shown the counterexample and the floor reference policy every iteration, it fails to relax the condition correctly.
+
+#### Semantic pattern: complex ceiling check (`streaming_full_expansion`)
+
+Two ceiling checks remain unresolved involving `datetime` + `duration` arithmetic:
+
+- `subscriber_show_premium_or_not_early`: Subscriber may watch a Show only when `!isEarlyAccess OR tier==premium`
+- `subscriber_must_watch_movie_no_rent_no_kid_in_region`: Non-kid in-region Subscriber must watch any non-rent movie
+
+The counterexamples expose edge cases with extreme datetime values (e.g., `duration("-9223372036854775807ms")`), suggesting the model has difficulty reasoning about datetime boundary conditions in Cedar.
+
+### Iteration Distribution
+
+| Completed iterations | runG | runH | runI |
+|---|---:|---:|---:|
+| 1 | 59 | 61 | 55 |
+| 2 | 26 | 23 | 29 |
+| 3 | 6 | 7 | 9 |
+| 4 | 3 | 5 | 3 |
+| 5 | 1 | 3 | 1 |
+| 6–7 | 2 | 1 | 2 |
+| 8–9 | 16 | 12 | 15 |
+| 10–15 | 6 | 8 | 5 |
+| 16–20 | 2 | 1 | 2 |
+
+The bimodal distribution (most tasks finish in 1–4 iters; a cluster finishes at 8–9) reflects the oscillation threshold: tasks that do not converge early tend to hit the oscillation detector at iteration 8 (threshold=6, starting from iteration 2 repairs).
+
+### Updated Full Comparison Table
+
+| Method | Tasks | Pass | Pass rate | Avg sem acc | Avg runtime |
+|---|---:|---:|---:|---:|---:|
+| `qwen35b` no repair | 121 | 59 | 48.8% | 0.607 | 10.8s |
+| `qwen35b` repair (mi=5) | 120 | 76 | 63.3% | 0.756 | 29.8s |
+| `qwen35B_runE` no repair | 121 | 51 | 42.1% | 0.625 | 6.1s |
+| `qwen35B_runE` repair (mi=5) | 121 | 95 | 78.5% | 0.821 | 9.3s |
+| `qwen35B_runG` repair (mi=20) | 121 | 100 | 82.6% | 0.879 | 16.9s |
+| `qwen35B_runH` repair (mi=20) | 121 | 100 | 82.6% | 0.857 | 17.4s |
+| **`qwen35B_runI` repair (mi=20)** | **121** | **101** | **83.5%** | **0.881** | **16.4s** |
+
+### Open Questions
+
+1. **Syntax oscillation on `tags_*`:** The model cycles through malformed tag-access expressions without converging. May require targeted training examples showing correct `has`-guarded tag policy patterns.
+
+2. **Annotation placement (`policy_annotations`):** The `@id(...)` pre-permit placement is a recurring failure. A single training example that gets this right may fix it.
+
+3. **Regressions in `sales_*` and `streaming_*`:** 7 tasks regressed from runE. Worth investigating whether a lower learning rate (runH) or a different checkpoint resolves these without losing the 13 new wins.
+
+4. **Multi-turn vs single-turn contribution:** The improvement from runE (mi=5, single-turn) to runG/H/I (mi=20, multi-turn) conflates model quality improvement with repair loop upgrade. A controlled comparison (runG with mi=5 single-turn) would isolate the repair loop contribution.
+
+## Data Source
+
+The numbers in this document were derived from per-task `summary.json` files under:
+
+- `cedarforge/src/runs/no_repair_loop/cedarbench_single_qwen35b`
+- `cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b`
+- `cedarforge/src/runs/no_repair_loop/cedarbench_repair_qwen35b_runE`
+- `cedarforge/src/runs/repair_loop/cedarbench_repair_qwen35b_runE`
+- `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runG`
+- `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runH`
+- `cedarforge/src/runs/repair_loop/cedarbench_qwen35b_runI`

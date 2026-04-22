@@ -33,7 +33,7 @@ from pathlib import Path
 import torch
 import torch.distributed as dist
 from datasets import load_dataset
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -299,6 +299,14 @@ def main() -> None:
             frozen_params += param.numel()
     if is_main and frozen_params > 0:
         print(f"Frozen vision encoder: {frozen_params/1e9:.2f}B params")
+
+    # ------------------------------------------------------------------
+    # QLoRA prep (only when bitsandbytes actually quantized the model)
+    # ------------------------------------------------------------------
+    if args.use_qlora and getattr(model, "is_quantized", False):
+        model = prepare_model_for_kbit_training(
+            model, use_gradient_checkpointing=True
+        )
 
     # ------------------------------------------------------------------
     # LoRA

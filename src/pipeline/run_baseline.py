@@ -47,6 +47,12 @@ PROMPT_STRATEGY_DIR = PIPELINE_DIR / "prompt_strategies"
 # pointless and triggering oscillation detection immediately.
 REPAIR_TEMPERATURE = 0.4
 
+# Multi-turn conversation trimming.
+# Keep system message + initial user message + this many most-recent turns.
+# Each turn = one assistant message + one user feedback message (2 messages).
+# With max_model_len=16384: initial ~2500t + 3 turns × ~1400t + 2048 output ≈ 8600t — safe.
+CONVERSATION_HISTORY_TURNS = 3
+
 
 @dataclass
 class RunRecord:
@@ -231,20 +237,14 @@ def _load_task_inputs(task_path: Path) -> tuple[str, str]:
     return _load_text(schema_path), _load_text(spec_path)
 
 
-def _call_model(base_url: str, model: str, prompt: str, temperature: float, max_tokens: int) -> str:
+SYSTEM_MESSAGE = "You are a careful Cedar policy generator. Output only final Cedar code."
+
+
+def _call_model(base_url: str, model: str, messages: list[dict], temperature: float, max_tokens: int) -> str:
     client = OpenAI(base_url=base_url, api_key="EMPTY")
     response = client.chat.completions.create(
         model=model,
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a careful Cedar policy generator. Output only final Cedar code."
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
+        messages=messages,
         temperature=temperature,
         max_tokens=max_tokens,
         extra_body={
@@ -254,6 +254,19 @@ def _call_model(base_url: str, model: str, prompt: str, temperature: float, max_
         },
     )
     return response.choices[0].message.content or ""
+
+
+def _trim_messages(messages: list[dict]) -> list[dict]:
+    """Keep system + initial user message + last CONVERSATION_HISTORY_TURNS turns.
+
+    Each turn = 1 assistant message + 1 user feedback message (2 messages).
+    messages[0] = system, messages[1] = initial user prompt (schema+spec).
+    Everything after index 1 is alternating assistant/user repair messages.
+    """
+    keep_tail = CONVERSATION_HISTORY_TURNS * 2  # 3 turns × 2 messages = 6
+    if len(messages) <= 2 + keep_tail:
+        return messages
+    return messages[:2] + messages[-keep_tail:]
 
 
 def _append_log(log_lines: list[str], line: str = "") -> None:
@@ -503,7 +516,11 @@ def run_once(
     _print_and_log(log_lines, prompt)
 
     t0 = time.monotonic()
-    raw_output = _call_model(base_url, model, prompt, temperature, max_tokens)
+    messages = [
+        {"role": "system", "content": SYSTEM_MESSAGE},
+        {"role": "user",   "content": prompt},
+    ]
+    raw_output = _call_model(base_url, model, messages, temperature, max_tokens)
     candidate = _extract_cedar(raw_output)
 
     raw_output_path = run_dir / "raw_model_output.txt"
@@ -618,7 +635,116 @@ def run_once(
     )
 
 
-OSCILLATION_THRESHOLD = 3
+OSCILLATION_THRESHOLD = 6
+
+
+def _build_repair_feedback(
+    *,
+    failure_feedback: str,
+    failing_layer: str,
+    iteration: int,
+    oscillation_warning: str = "",
+) -> str:
+    """Build the user message for a repair iteration in multi-turn mode.
+
+    Schema and spec are already in the conversation history — only send feedback.
+    """
+    parts: list[str] = []
+    parts.append(f"--- Iteration {iteration} Feedback ---")
+    if oscillation_warning:
+        parts.append(oscillation_warning)
+        parts.append("")
+    parts.append(failure_feedback)
+    parts.append("")
+    parts.append("Please provide a corrected Cedar policy.")
+    return "\n".join(parts)
+
+
+CHECKPOINT_EVERY = 5
+
+
+def _build_repair_summary(
+    *,
+    run_root: Path,
+    task_id: str,
+    task_path: Path,
+    variant: str,
+    model: str,
+    base_url: str,
+    temperature: float,
+    max_tokens: int,
+    max_iterations: int,
+    stop_reason: str,
+    iteration_records: list,
+    oscillation_count: int,
+    failure_layer_sequence: list[str],
+    best_candidate_iteration: int | None,
+) -> dict:
+    final_record = iteration_records[-1]
+    first_success_iteration = next(
+        (record.iteration for record in iteration_records if record.verification_pass),
+        None,
+    )
+    best_semantic_accuracy = max(record.semantic_accuracy for record in iteration_records)
+
+    loop_record = RepairLoopRecord(
+        run_id=run_root.name,
+        task_id=task_id,
+        task_path=str(task_path),
+        initial_prompt_variant=variant,
+        model=model,
+        base_url=base_url,
+        max_iterations=max_iterations,
+        completed_iterations=len(iteration_records),
+        stop_reason=stop_reason,
+        final_syntax_pass=final_record.syntax_pass,
+        final_schema_pass=final_record.schema_pass,
+        final_semantic_accuracy=final_record.semantic_accuracy,
+        final_verification_pass=final_record.verification_pass,
+        final_loss=final_record.loss,
+        best_semantic_accuracy=best_semantic_accuracy,
+        best_candidate_iteration=best_candidate_iteration,
+        first_success_iteration=first_success_iteration,
+        oscillation_count=oscillation_count,
+        failure_layer_sequence=failure_layer_sequence,
+        iterations=[asdict(record) for record in iteration_records],
+    )
+
+    return {
+        "mode": "repair",
+        "run_id": run_root.name,
+        "task_id": task_id,
+        "task_path": str(task_path),
+        "model": model,
+        "base_url": base_url,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "max_iterations": max_iterations,
+        "stop_reason": stop_reason,
+        "completed_iterations": len(iteration_records),
+        "final_verification_pass": final_record.verification_pass,
+        "best_semantic_accuracy": best_semantic_accuracy,
+        "first_success_iteration": first_success_iteration,
+        "results": [asdict(record) for record in iteration_records],
+        "metrics_by_prompt_variant": [
+            strategy_summary_to_dict(s)
+            for s in aggregate_by_prompt_variant(
+                [RunMetricRecord(**record.metrics) for record in iteration_records]
+            )
+        ],
+        "metrics_by_iteration": [
+            {
+                "iteration": record.iteration,
+                "syntax_pass": record.syntax_pass,
+                "schema_pass": record.schema_pass,
+                "semantic_accuracy": record.semantic_accuracy,
+                "verification_pass": record.verification_pass,
+                "loss": record.loss,
+            }
+            for record in iteration_records
+        ],
+        "repair_loop_record": asdict(loop_record),
+    }
 
 
 def run_repair_loop(
@@ -642,7 +768,13 @@ def run_repair_loop(
     candidate_text = ""
     stop_reason = "max_iterations_reached"
 
-    # v2 state tracking
+    # Conversation state (multi-turn)
+    messages: list[dict] = [
+        {"role": "system", "content": SYSTEM_MESSAGE},
+        {"role": "user",   "content": initial_prompt},
+    ]
+
+    # Oscillation / best-candidate tracking
     candidate_hashes: list[str] = []
     failure_layer_sequence: list[str] = []
     best_candidate = ""
@@ -652,7 +784,6 @@ def run_repair_loop(
 
     for iteration in range(1, max_iterations + 1):
         if iteration == 1:
-            prompt = initial_prompt
             prompt_variant = variant
         else:
             oscillation_warning = ""
@@ -666,20 +797,15 @@ def run_repair_loop(
                     "2. Once syntax passes, address semantic issues separately.\n"
                     "3. Do not revert to a candidate that failed syntax."
                 )
-                repair_base = best_candidate if best_candidate else candidate_text
-            else:
-                repair_base = candidate_text
 
             failure_feedback, failing_layer = _render_failure_feedback(bundle, task_path)
-            prompt = _build_repair_prompt(
-                schema=schema,
-                policy_spec=policy_spec,
-                previous_candidate=repair_base,
+            repair_user_msg = _build_repair_feedback(
                 failure_feedback=failure_feedback,
                 failing_layer=failing_layer,
                 iteration=iteration,
                 oscillation_warning=oscillation_warning,
             )
+            messages.append({"role": "user", "content": repair_user_msg})
             prompt_variant = f"{variant}_repair_{failing_layer}"
 
         iteration_dir = run_root / f"{task_id}_iter_{iteration:02d}"
@@ -697,16 +823,21 @@ def run_repair_loop(
         _print_and_log(log_lines, f"strategy:   {prompt_variant}")
         _print_and_log(log_lines, f"model:      {model}")
         _print_and_log(log_lines, f"base_url:   {base_url}")
+        _print_and_log(log_lines, f"messages in context: {len(messages)} (trimmed from {iteration*2-1})")
         _print_and_log(log_lines, "=" * 72)
         _print_and_log(log_lines, "")
-        _print_and_log(log_lines, "--- Prompt ---")
-        _print_and_log(log_lines, prompt)
+        _print_and_log(log_lines, "--- Last user message ---")
+        _print_and_log(log_lines, messages[-1]["content"])
 
+        trimmed = _trim_messages(messages)
         iter_temperature = temperature if iteration == 1 else REPAIR_TEMPERATURE
         _print_and_log(log_lines, f"temperature: {iter_temperature}")
         t0 = time.monotonic()
-        raw_output = _call_model(base_url, model, prompt, iter_temperature, max_tokens)
+        raw_output = _call_model(base_url, model, trimmed, iter_temperature, max_tokens)
         candidate = _extract_cedar(raw_output)
+
+        # Append assistant response to conversation history for next iteration
+        messages.append({"role": "assistant", "content": raw_output})
         duration_s = round(time.monotonic() - t0, 3)
 
         raw_output_path = iteration_dir / "raw_model_output.txt"
@@ -714,7 +845,7 @@ def run_repair_loop(
         prompt_path = iteration_dir / "prompt.txt"
         raw_output_path.write_text(raw_output)
         candidate_path.write_text(candidate)
-        prompt_path.write_text(prompt)
+        prompt_path.write_text(messages[-2]["content"])  # last user message sent
 
         _print_and_log(log_lines, "")
         _print_and_log(log_lines, "--- Raw Model Output ---")
@@ -845,71 +976,43 @@ def run_repair_loop(
             stop_reason = "oscillation_no_progress"
             break
 
-    final_record = iteration_records[-1]
-    first_success_iteration = next(
-        (record.iteration for record in iteration_records if record.verification_pass),
-        None,
-    )
-    best_semantic_accuracy = max(record.semantic_accuracy for record in iteration_records)
+        # Checkpoint every CHECKPOINT_EVERY iterations so progress is not lost on crash
+        if iteration % CHECKPOINT_EVERY == 0:
+            checkpoint = _build_repair_summary(
+                run_root=run_root,
+                task_id=task_id,
+                task_path=task_path,
+                variant=variant,
+                model=model,
+                base_url=base_url,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                max_iterations=max_iterations,
+                stop_reason="in_progress",
+                iteration_records=iteration_records,
+                oscillation_count=oscillation_count,
+                failure_layer_sequence=failure_layer_sequence,
+                best_candidate_iteration=best_candidate_iteration,
+            )
+            (run_root / "summary.json").write_text(json.dumps(checkpoint, indent=2))
+            print(f"[checkpoint] saved summary.json after iteration {iteration}")
 
-    loop_record = RepairLoopRecord(
-        run_id=run_root.name,
+    summary = _build_repair_summary(
+        run_root=run_root,
         task_id=task_id,
-        task_path=str(task_path),
-        initial_prompt_variant=variant,
+        task_path=task_path,
+        variant=variant,
         model=model,
         base_url=base_url,
+        temperature=temperature,
+        max_tokens=max_tokens,
         max_iterations=max_iterations,
-        completed_iterations=len(iteration_records),
         stop_reason=stop_reason,
-        final_syntax_pass=final_record.syntax_pass,
-        final_schema_pass=final_record.schema_pass,
-        final_semantic_accuracy=final_record.semantic_accuracy,
-        final_verification_pass=final_record.verification_pass,
-        final_loss=final_record.loss,
-        best_semantic_accuracy=best_semantic_accuracy,
-        best_candidate_iteration=best_candidate_iteration,
-        first_success_iteration=first_success_iteration,
+        iteration_records=iteration_records,
         oscillation_count=oscillation_count,
         failure_layer_sequence=failure_layer_sequence,
-        iterations=[asdict(record) for record in iteration_records],
+        best_candidate_iteration=best_candidate_iteration,
     )
-
-    summary = {
-        "mode": "repair",
-        "run_id": run_root.name,
-        "task_id": task_id,
-        "task_path": str(task_path),
-        "model": model,
-        "base_url": base_url,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "max_iterations": max_iterations,
-        "stop_reason": stop_reason,
-        "completed_iterations": len(iteration_records),
-        "final_verification_pass": final_record.verification_pass,
-        "best_semantic_accuracy": best_semantic_accuracy,
-        "first_success_iteration": first_success_iteration,
-        "results": [asdict(record) for record in iteration_records],
-        "metrics_by_prompt_variant": [
-            strategy_summary_to_dict(summary)
-            for summary in aggregate_by_prompt_variant(
-                [RunMetricRecord(**record.metrics) for record in iteration_records]
-            )
-        ],
-        "metrics_by_iteration": [
-            {
-                "iteration": record.iteration,
-                "syntax_pass": record.syntax_pass,
-                "schema_pass": record.schema_pass,
-                "semantic_accuracy": record.semantic_accuracy,
-                "verification_pass": record.verification_pass,
-                "loss": record.loss,
-            }
-            for record in iteration_records
-        ],
-        "repair_loop_record": asdict(loop_record),
-    }
     (run_root / "summary.json").write_text(json.dumps(summary, indent=2))
     return summary
 
@@ -934,7 +1037,7 @@ def main() -> int:
     parser.add_argument("--model", required=True, help="OpenAI-compatible model id")
     parser.add_argument("--base-url", required=True, help="OpenAI-compatible base URL")
     parser.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature")
-    parser.add_argument("--max-tokens", type=int, default=2048, help="Max completion tokens")
+    parser.add_argument("--max-tokens", type=int, default=4096, help="Max completion tokens")
     parser.add_argument("--max-iterations", type=int, default=3, help="Maximum total iterations for repair mode, including the first generation")
     parser.add_argument("--run-id", default=None, help="Optional run id")
     parser.add_argument(

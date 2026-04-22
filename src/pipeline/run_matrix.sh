@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 BASE_URL=""
 MODEL=""
-MAX_ITERATIONS="4"
+MAX_ITERATIONS="20"
 EXPERIMENT=""
 BENCHMARK="all"
 MODES_CSV="single,repair"

@@ -198,3 +198,44 @@ scope constraints"`.
 3. **Stronger repair prompts:** give a detailed error feedback.
 
 4. **GRPO RL Method:** enhance model's semantic ability.  
+
+
+## How to merge the adapter and rerun the experiments:
+
+```
+Step 1 — Merge Run I:
+conda activate vllm
+cd ~/cedar-synthesis-engine/cedarforge
+python sft_gen/finetune/merge_adapter.py --run I
+```
+
+```
+Step 2 — 补 VL 文件：
+for f in preprocessor_config.json video_preprocessor_config.json vocab.json config.json; do
+  cp ~/model/qwen35b-full/$f ~/model/cedar-qwen35b-runI/
+done
+```
+
+```
+Step 3 — Serve：
+vllm serve ~/model/cedar-qwen35b-runI \
+  --served-model-name cedar-qwen35b \
+  --port 8002 \
+  --max-model-len 20480 \
+  --trust-remote-code
+```
+```
+Step 4 — 评估（新终端，等 vLLM 启动后）：
+cd ~/cedar-synthesis-engine/cedarforge
+bash src/pipeline/run_matrix.sh \
+  --base-url http://localhost:8002/v1 \
+  --model cedar-qwen35b \
+  --experiment cedar_sft_runI \
+  --benchmark all \
+  --modes repair \
+  --variants structured_instruction \
+  --max-iterations 5
+```
+
+
+# SFT Meeting Notes - April 19/2026

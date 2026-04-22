@@ -4,7 +4,7 @@ This document tracks the design evolution of the verifier-guided repair loop in 
 
 ---
 
-## v1 — Flat Feedback (current implementation)
+## v1 — Flat Feedback (superseded)
 
 **Implemented in:** `run_baseline.py` — `_render_failure_feedback()`, `_build_repair_prompt()`
 
@@ -22,76 +22,143 @@ This document tracks the design evolution of the verifier-guided repair loop in 
 
 ---
 
-## v2 — Layered, Directional, Memory-Aware Feedback (planned)
+## v2 — Layered, Directional, Memory-Aware Feedback (implemented)
 
-**Design principles:**
+**Status:** Fully implemented in `run_baseline.py`.
 
-### 1. Strict layer prioritization
+### What was built
 
-Only surface the highest-priority failing layer. Do not show semantic errors if syntax is still broken.
+#### 1. Strict layer prioritization
 
-Priority order: `syntax > schema > semantic`
+Only the highest-priority failing layer is surfaced per iteration.
 
-Rationale: `cedar symcc` is not run on syntactically invalid policies. Semantic counterexamples shown while syntax is broken may be stale or misleading artifacts.
+Priority: `syntax > schema > semantic`
 
-### 2. Error-type-specific repair prompts
+Rationale: `cedar symcc` is not run on syntactically invalid policies. Semantic counterexamples shown while syntax is broken may be stale or misleading.
 
-Use separate prompt templates for each failure layer:
-- `repair_syntax.md`: focus on fixing the specific token/expression; preserve all policy logic
-- `repair_schema.md`: identify which entity type, attribute, or action does not exist in the schema
-- `repair_semantic.md`: use reference policy + counterexample + directional hint
+#### 2. Error-type-specific repair prompts
 
-### 3. Directional hints for semantic failures
+Three separate prompt templates, each targeting a specific failure layer:
+- `repair_syntax.md`: fix the specific token/expression; preserve all policy logic
+- `repair_schema.md`: fix entity type, attribute, or action identifiers not in the schema
+- `repair_semantic.md`: reference policy + counterexample + directional hint
 
-For each failing semantic check, include:
-- **Direction**: `ceiling` fail → "your policy allows requests that the ceiling forbids — tighten this rule"; `floor` fail → "your policy denies requests that the floor requires — relax this rule"
-- **Reference policy**: the full Cedar text of the violated ceiling or floor policy
+#### 3. Directional hints for semantic failures
+
+For each failing semantic check the repair prompt includes:
+- **Direction**: `implies` fail → "TIGHTEN — your policy permits requests the ceiling forbids"; `floor` fail → "RELAX — your policy denies requests the floor requires"
+- **Reference policy**: full Cedar text of the violated ceiling/floor (`references/<check_name>.cedar`)
 - **Counterexample**: the specific request that exposed the violation
 
-This reduces the repair task from "re-derive the policy from the spec" to "adjust this rule against this concrete boundary."
+#### 4. Oscillation detection (`_is_oscillating`)
 
-### 4. Oscillation detection
+Tracked per iteration:
+- `candidate_hashes`: SHA-256 of each candidate. Identical to previous → stuck.
+- `failure_layer_sequence`: list of per-iteration failing layers. Detects `syntax → semantic → syntax` cycling.
 
-Track across iterations:
-- `candidate_hash`: SHA of the candidate text. Identical hash = model output is stuck.
-- `failure_set`: set of failing check names. Same failure set across iterations = no convergence progress.
-- `failure_type_sequence`: list of which layers failed per iteration. Detect syntax → semantic → syntax cycling.
+`OSCILLATION_THRESHOLD = 6`: loop stops with `stop_reason="oscillation_no_progress"` after 6 oscillations.
 
-When oscillation is detected, add an explicit warning to the repair prompt:
-> "You have been alternating between syntax errors and semantic failures. In your next attempt, ensure syntax is correct first, then address semantic issues. Do not change policy logic while fixing syntax."
+When oscillation is detected, an explicit warning is prepended to the repair feedback:
+> "WARNING: Oscillation detected (#N). You have been alternating between error types without converging. Rules: fix syntax FIRST, then address semantic issues separately."
 
-### 5. Best-so-far tracking and rollback
+#### 5. Best-so-far tracking
 
-Maintain the best candidate seen across all iterations, defined as:
-- syntax-passing AND lowest loss (fewest failed semantic checks)
+Maintains the best candidate across all iterations, defined as: syntax-passing AND lowest loss (fewest failed semantic checks). Stored in `best_candidate`, reported in `summary.json`.
 
-If oscillation is detected, resume repair from the best-so-far candidate rather than the most recent one.
+#### 6. Temperature split
 
-### 6. Escalation stop condition
+- Iteration 1 (initial generation): caller-supplied temperature (default `0.0`)
+- Iterations 2+ (repair): fixed `REPAIR_TEMPERATURE = 0.4`
 
-If oscillation persists for N consecutive iterations with no improvement in loss, stop with `stop_reason="oscillation_no_progress"` and report the best-so-far candidate.
+**Why:** At `temperature=0` the model is fully deterministic. The same wrong candidate is produced every iteration regardless of feedback; the oscillation detector triggers immediately and shuts down the loop. `0.4` gives enough stochasticity to explore alternative candidates while staying coherent on a constrained Cedar generation task. Values above `0.5` risk hallucinating schema elements.
 
-Do not attempt to auto-diagnose whether the verification plan or references are at fault — that requires human review.
-
----
-
-## Open Questions for v2
-
-- How many iterations of oscillation before triggering the warning? (current tentative: 2 cycles)
-- Should the repair prompt include the full iteration history, or only the last N iterations? (context window concern for 9B models)
+**Observed failure (2026-04-09):** 10 consecutive runs on `clinical_trial` all hit `oscillation_no_progress` at iteration 6 with `failure_layer_sequence = ['syntax', 'syntax', ...]` at `temperature=0`. Fixed by the temperature split.
 
 ---
 
-## v2 Implementation Notes
+## v3 — Multi-Turn Conversation History (implemented)
 
-### Temperature split: initial vs repair
+**Status:** Implemented in `run_baseline.py`. Replaces the stateless single-turn repair of v2.
 
-**Decision:** Initial generation uses the caller-supplied temperature (default `0.0`). Repair iterations (iteration > 1) use a fixed `REPAIR_TEMPERATURE = 0.4`.
+### Motivation
 
-**Why:** At `temperature=0` the model is fully deterministic — the same prompt always produces the same output. This means if the first candidate is wrong, every repair iteration will produce the exact same wrong candidate regardless of what feedback is given. The oscillation detector then triggers immediately (hash collision every iteration) and stops the loop after 6 iterations, making the repair loop completely ineffective.
+In v2 (single-turn), each repair iteration builds a fresh standalone prompt:
 
-Setting repair iterations to `0.4` gives the model enough stochasticity to explore different candidates while staying constrained enough to produce coherent Cedar. Values above `0.5` risk introducing hallucinated schema elements on a strongly-constrained generation task like Cedar.
+```
+[system] + [schema + spec + previous_candidate + feedback]
+```
 
-**Observed failure (2026-04-09):** 10 consecutive runs on `clinical_trial` all hit `oscillation_no_progress` at iteration 6 with `failure_layer_sequence = ['syntax', 'syntax', ...]` — the model was outputting the identical syntactically invalid candidate every iteration at `temperature=0`.
+The model sees the history only by reading its own prior output pasted into the prompt. This has two problems:
+1. The prompt grows with each iteration (schema + spec repeated every turn).
+2. The model has no conversational context — it cannot reason about *why* previous attempts failed in sequence.
 
----
+In v3 (multi-turn), the conversation history is maintained as a real message list:
+
+```
+messages[0]  = {"role": "system",    "content": SYSTEM_MESSAGE}
+messages[1]  = {"role": "user",      "content": initial_prompt}  # schema + spec, sent once
+messages[2]  = {"role": "assistant", "content": <iter 1 output>}
+messages[3]  = {"role": "user",      "content": <iter 2 feedback only>}
+messages[4]  = {"role": "assistant", "content": <iter 2 output>}
+...
+```
+
+Repair iterations only send feedback (no schema/spec repeat), since those are already in the history. This is implemented in `_build_repair_feedback()`.
+
+### Context management: `_trim_messages`
+
+To keep total tokens within the vLLM context limit (`--max-model-len 20480`):
+
+```python
+CONVERSATION_HISTORY_TURNS = 3  # keep last 3 turns = 6 messages
+
+def _trim_messages(messages):
+    keep_tail = CONVERSATION_HISTORY_TURNS * 2
+    if len(messages) <= 2 + keep_tail:
+        return messages
+    return messages[:2] + messages[-keep_tail:]
+```
+
+- Always keeps `messages[0]` (system) and `messages[1]` (initial prompt with schema/spec).
+- Keeps the last 3 turns (6 messages) of repair history.
+- Earlier turns are dropped to stay within context.
+
+**Token budget (estimated):** initial prompt ~2500t + 3 turns × ~3650t (output 2650t + feedback 1000t) + 4096 output ≈ 17,600t, within 20480. Tags scenarios were the driver: their outputs are ~2650t (measured), which exceeds the previous 2048 max_tokens limit and caused truncation.
+
+### Repair feedback format (`_build_repair_feedback`)
+
+```
+--- Iteration N Feedback ---
+[OSCILLATION_WARNING if triggered]
+
+<layered failure feedback from _render_failure_feedback>
+
+Please provide a corrected Cedar policy.
+```
+
+Schema and spec are not repeated — the model already has them from `messages[1]`.
+
+### Key differences from v2
+
+| | v2 (single-turn) | v3 (multi-turn) |
+|---|---|---|
+| Schema/spec per iteration | Repeated every turn | Sent once (messages[1]) |
+| Repair feedback | Standalone prompt via `_build_repair_prompt` | Feedback-only message via `_build_repair_feedback` |
+| Model sees prior attempts | Via pasted `PREVIOUS_CANDIDATE` | Via conversation history |
+| Context growth | Linear in tokens per turn | Bounded by `_trim_messages` |
+| Max iterations | Was 5, now **20** | 20 |
+| Oscillation threshold | 6 | 6 (unchanged) |
+
+### vLLM serving requirement
+
+Multi-turn with `max_iterations=20` requires `--max-model-len 20480`:
+
+```bash
+vllm serve ~/model/cedar-qwen35b-runE \
+  --served-model-name cedar-qwen35b \
+  --port 8002 \
+  --max-model-len 20480 \
+  --trust-remote-code
+```
+
+The default `--max-model-len 8192` is insufficient for complex scenarios at 20 iterations. 16384 is also insufficient when `max_tokens=4096` and 3 turns of tags-scenario history are in context (~17,600t worst case).

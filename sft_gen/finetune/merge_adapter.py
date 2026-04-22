@@ -115,7 +115,7 @@ def main() -> None:
 
     print(f"\nDone. Merged model saved → {output_dir}")
     print(f"\nServe with:")
-    print(f"  vllm serve {output_dir} --served-model-name cedar-qwen35b --port 8002 --max-model-len 8192")
+    print(f"  vllm serve {output_dir} --served-model-name cedar-qwen35b --port 8002 --max-model-len 20480")
 
 
 if __name__ == "__main__":

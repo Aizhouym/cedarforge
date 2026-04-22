@@ -241,7 +241,7 @@ cp ~/model/qwen35b-full/config.json ~/model/cedar-qwen35b-runE/  # fixes model_t
 vllm serve ~/model/cedar-qwen35b-runE \
   --served-model-name cedar-qwen35b \
   --port 8002 \
-  --max-model-len 8192 \
+  --max-model-len 20480 \
   --trust-remote-code
 ```
 
